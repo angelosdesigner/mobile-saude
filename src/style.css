@@ -36,10 +36,27 @@
   color-scheme: light;
   /* Fonte do design (Figma): Inter. Sobrescreve a fonte do Element Plus. */
   --el-font-family: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  /* Tokens de forma/sombra extraídos do Figma, aplicados como variáveis do
+     Element Plus (customização idiomática — vale para todos os componentes). */
+  --el-border-radius-base: 8px; /* botões, inputs, selects (Figma ~6–8px) */
+  --el-border-radius-small: 6px;
+  --el-box-shadow-light: 0 4px 12px rgba(0, 0, 0, 0.06); /* sombra suave do design */
+  --el-box-shadow-lighter: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 body {
   margin: 0;
   background: #f5f7fa;
   font-family: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Customizações de componentes na layer `components`: ficam ACIMA do
+   Element Plus (não são achatadas) e ABAIXO das utilities do Tailwind
+   (uma classe utilitária ainda sobrepõe, se necessário). */
+@layer components {
+  .el-card {
+    --el-card-border-radius: 12px; /* containers/cards do Figma */
+    --el-card-border-color: #ebeef5;
+  }
 }

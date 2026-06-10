@@ -97,7 +97,9 @@ const kpis = [
       <!-- ── 1. Contenção de Dano (danger) ───────────────────────────────── -->
       <section class="rounded-xl border border-[#FDE2E2] bg-[#FEF2F2] p-5">
         <header class="mb-4 flex items-start gap-3">
-          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F56C6C] text-white">!</div>
+          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F56C6C] text-white">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h.01" /></svg>
+          </div>
           <div>
             <h2 class="text-lg font-bold text-[#991B1B]">Contenção de Dano — Risco Jurídico Imediato</h2>
             <p class="text-sm text-[#606266]">Situações com SLA Regulatório ultrapassado ou infração em tempo real.</p>
@@ -105,7 +107,7 @@ const kpis = [
         </header>
 
         <div class="grid gap-4 md:grid-cols-2">
-          <el-card v-for="card in contencaoCards" :key="card.title" shadow="never" class="!border-[#FDE2E2]">
+          <el-card v-for="card in contencaoCards" :key="card.title" shadow="always" class="!border-[#FDE2E2]">
             <el-tag type="danger" effect="light" size="small" class="!uppercase">{{ card.tag }}</el-tag>
             <h3 class="mt-2 text-2xl font-bold text-[#303133]">{{ card.title }}</h3>
             <ul class="mt-3 flex flex-wrap gap-x-6 gap-y-1">
@@ -120,7 +122,9 @@ const kpis = [
       <!-- ── 2. Risco Jurídico e Financeiro (warning) ────────────────────── -->
       <section class="rounded-xl border border-[#FAECD8] bg-[#FFFBEB] p-5">
         <header class="mb-4 flex items-start gap-3">
-          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#E6A23C] text-white">⏱</div>
+          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#E6A23C] text-white">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+          </div>
           <div>
             <h2 class="text-lg font-bold text-[#92400E]">Risco Jurídico e Financeiro — Prazos Críticos</h2>
             <p class="text-sm text-[#606266]">Demandas próximas do vencimento do SLA Regulatório.</p>
@@ -128,7 +132,7 @@ const kpis = [
         </header>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <el-card v-for="card in prazosCards" :key="card.title" shadow="never" class="!border-[#FAECD8]">
+          <el-card v-for="card in prazosCards" :key="card.title" shadow="always" class="!border-[#FAECD8]">
             <el-tag type="warning" effect="light" size="small" class="!uppercase">{{ card.tag }}</el-tag>
             <div class="mt-2 flex items-baseline gap-2">
               <span class="text-[22px] font-bold text-[#E6A23C]">{{ card.number }}</span>
@@ -145,7 +149,9 @@ const kpis = [
       <!-- ── 3. Controle Operacional (primary) ───────────────────────────── -->
       <section class="rounded-xl border border-[#D9ECFF] bg-[#ECF5FF] p-5">
         <header class="mb-4 flex items-start gap-3">
-          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#409EFF] text-white">◎</div>
+          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#409EFF] text-white">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4" /></svg>
+          </div>
           <div>
             <h2 class="text-lg font-bold text-[#1D4ED8]">Controle Operacional — Prevenção de Risco</h2>
             <p class="text-sm text-[#606266]">Demandas dentro do SLA Regulatório com monitoramento preventivo.</p>
@@ -153,7 +159,7 @@ const kpis = [
         </header>
 
         <div class="grid gap-4 lg:grid-cols-2">
-          <el-card v-for="col in encColumns" :key="col.title" shadow="never" class="!border-[#D9ECFF]">
+          <el-card v-for="col in encColumns" :key="col.title" shadow="always" class="!border-[#D9ECFF]">
             <h3 class="text-sm font-bold uppercase text-[#303133]">{{ col.title }}</h3>
             <div v-for="row in col.rows" :key="row.label" class="mt-3 border-t border-[#EBEEF5] pt-3 first:border-t-0 first:pt-0">
               <div class="flex items-center justify-between">
@@ -169,7 +175,7 @@ const kpis = [
 
         <div class="mt-4 grid gap-4 lg:grid-cols-2">
           <!-- Gestão de SLA Interno -->
-          <el-card shadow="never" class="!border-[#D9ECFF]">
+          <el-card shadow="always" class="!border-[#D9ECFF]">
             <h3 class="text-sm font-bold uppercase text-[#303133]">Gestão de SLA Interno</h3>
             <ul class="mt-3 space-y-1">
               <li v-for="l in slaInterno.lines" :key="l" class="text-sm font-medium text-[#606266]">{{ l }}</li>
@@ -180,7 +186,7 @@ const kpis = [
 
           <!-- Tiles numéricos -->
           <div class="grid grid-cols-2 gap-4">
-            <el-card v-for="t in statTiles" :key="t.label" shadow="never" body-class="!p-4" class="!border-[#D9ECFF]">
+            <el-card v-for="t in statTiles" :key="t.label" shadow="always" body-class="!p-4" class="!border-[#D9ECFF]">
               <div class="text-xl font-bold text-[#303133]">{{ t.value }}</div>
               <div class="text-xs text-[#606266]">{{ t.label }}</div>
               <el-button type="primary" size="small" class="mt-2">Acessar</el-button>
@@ -192,12 +198,14 @@ const kpis = [
       <!-- ── 4. Meu Desempenho (success) ─────────────────────────────────── -->
       <section class="rounded-xl border border-[#E1F3D8] bg-[#F0F9EB] p-5">
         <header class="mb-4 flex items-start gap-3">
-          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#67C23A] text-white">✓</div>
+          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#67C23A] text-white">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+          </div>
           <h2 class="text-lg font-bold text-[#15803D]">Meu desempenho</h2>
         </header>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <el-card v-for="k in kpis" :key="k.tag" shadow="never" class="!border-[#E1F3D8]">
+          <el-card v-for="k in kpis" :key="k.tag" shadow="always" class="!border-[#E1F3D8]">
             <el-tag type="success" effect="light" size="small">{{ k.tag }}</el-tag>
             <div class="mt-2 text-[28px] font-bold text-[#67C23A]">{{ k.value }}</div>
             <div class="text-sm font-medium text-[#606266]">{{ k.label }}</div>

@@ -44,13 +44,10 @@ const stats = [
 
       <div class="flex items-center gap-3">
         <span class="text-sm text-[#606266]">Modo de visualização:</span>
-        <el-segmented
-          v-model="viewMode"
-          :options="[
-            { label: 'Quadro', value: 'quadro' },
-            { label: 'Lista', value: 'lista' },
-          ]"
-        />
+        <el-radio-group v-model="viewMode">
+          <el-radio-button value="quadro">Quadro</el-radio-button>
+          <el-radio-button value="lista">Lista</el-radio-button>
+        </el-radio-group>
         <el-button>Configurar colunas</el-button>
       </div>
     </div>
