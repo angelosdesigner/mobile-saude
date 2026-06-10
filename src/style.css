@@ -34,10 +34,12 @@
 
 :root {
   color-scheme: light;
+  /* Fonte do design (Figma): Inter. Sobrescreve a fonte do Element Plus. */
+  --el-font-family: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
 }
 
 body {
   margin: 0;
   background: #f5f7fa;
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
 }

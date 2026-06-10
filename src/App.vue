@@ -1,33 +1,17 @@
 <script setup lang="ts">
-// Shell da aplicação: cabeçalho de navegação + área de rota.
+// Shell mínimo: cada página traz seu próprio layout (ex.: DashboardLayout).
+// el-config-provider aplica o locale pt-BR ao Element Plus (paginação, tabelas…).
+import ptBr from 'element-plus/es/locale/lang/pt-br'
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50">
-    <header class="border-b border-slate-200 bg-white">
-      <nav class="mx-auto flex max-w-3xl items-center gap-6 px-8 py-4">
-        <router-link to="/" class="font-bold text-slate-800 no-underline">
-          Mobile Saúde
-        </router-link>
-        <div class="flex gap-4 text-sm">
-          <router-link to="/" class="text-slate-500 no-underline hover:text-slate-800">
-            Início
-          </router-link>
-          <router-link to="/demo" class="text-slate-500 no-underline hover:text-slate-800">
-            Demo
-          </router-link>
-        </div>
-      </nav>
-    </header>
-
-    <main>
-      <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
-    </main>
-  </div>
+  <el-config-provider :locale="ptBr">
+    <router-view v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
+  </el-config-provider>
 </template>
 
 <style scoped>

@@ -15,6 +15,21 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Início' },
   },
   {
+    // Tela "Início" (Painel do Atendente) — convertida do Figma 3049:34138.
+    path: '/inicio',
+    name: 'inicio',
+    component: () => import('@/pages/InicioView.vue'),
+    meta: { title: 'Painel do Atendente' },
+  },
+  {
+    // Tela "Ocorrências" (Quadro + Lista) — Figma 2244:8452 / 2244:8483.
+    // A interação Quadro/Lista fica no query param ?view=quadro|lista.
+    path: '/ocorrencias',
+    name: 'ocorrencias',
+    component: () => import('@/pages/OcorrenciasView.vue'),
+    meta: { title: 'Ocorrências' },
+  },
+  {
     // Página de validação da stack (Element Plus + Tailwind). Pode remover
     // depois que os fluxos reais estiverem prontos.
     path: '/demo',
