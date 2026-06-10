@@ -1,0 +1,43 @@
+/*
+ * Cascade layer order — declared BEFORE any @import so the browser locks in
+ * the priority by DECLARATION order, regardless of where each file is imported.
+ *
+ * Lowest priority ............................................. highest priority
+ *   theme  <  base (preflight)  <  element-plus  <  components  <  utilities
+ *
+ * Why this exact order (both goals from the brief, made physically consistent):
+ *  - `element-plus` sits ABOVE `base`, so Tailwind's preflight reset does NOT
+ *    flatten Element Plus components. (Preflight sets `button { background:
+ *    transparent; border-width: 0 }` on every button; if EP were *below*
+ *    preflight, that reset would win and EP buttons would lose their fill and
+ *    border — verified empirically. So EP must outrank base/preflight.)
+ *  - `utilities` sits ON TOP of everything, so Tailwind utility classes
+ *    (mt-4, flex, shadow-lg, text-red-500, bg-emerald-500, ...) win when
+ *    applied to an <el-*>.
+ *
+ * IMPORTANT: Element Plus CSS is imported ONCE below, into the `element-plus`
+ * layer. The ElementPlusResolver is configured with importStyle:false (see
+ * vite.config.ts) precisely so it does NOT also inject per-component CSS in the
+ * implicit/unlayered layer — unlayered rules outrank every @layer and would
+ * make it impossible for Tailwind utilities to override Element Plus.
+ */
+@layer theme, base, element-plus, components, utilities;
+
+/* Tailwind v4, split across its layers (equivalent to `@import "tailwindcss"`). */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* Element Plus core styles, pinned to the `element-plus` layer (above the
+   preflight reset, below Tailwind utilities). */
+@import 'element-plus/dist/index.css' layer(element-plus);
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: #f5f7fa;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+}
