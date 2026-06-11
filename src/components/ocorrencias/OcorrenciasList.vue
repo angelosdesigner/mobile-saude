@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ocorrencias } from '@/data/ocorrencias'
+import { ref, computed } from 'vue'
+import { useOcorrencias } from '@/composables/useOcorrencias'
 
-// Protocolo no formato da tela de lista.
-const rows = ocorrencias.map((o) => ({ ...o, protocolList: '00100200300400500' }))
+const { filteredList } = useOcorrencias()
+
+// Aplica os mesmos filtros do Quadro; protocolo no formato da lista.
+const rows = computed(() =>
+  filteredList.value.map((o) => ({ ...o, protocolList: '00100200300400500' })),
+)
 
 const page = ref(1)
 const pageSize = ref(100)
