@@ -5,6 +5,7 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import OcorrenciasBoard from '@/components/ocorrencias/OcorrenciasBoard.vue'
 import OcorrenciasList from '@/components/ocorrencias/OcorrenciasList.vue'
 import ConfigurarColunas from '@/components/ocorrencias/ConfigurarColunas.vue'
+import FiltrosAvancados from '@/components/ocorrencias/FiltrosAvancados.vue'
 import { useOcorrencias } from '@/composables/useOcorrencias'
 import {
   prioridadeOptions,
@@ -17,7 +18,7 @@ import {
 const route = useRoute()
 const router = useRouter()
 
-const { filters, activeFilterCount, clearFilters } = useOcorrencias()
+const { filters, activeFilterCount, clearFilters, savedFilters, applyPreset } = useOcorrencias()
 
 // Interação principal: alterna Quadro/Lista (modo fica na URL ?view=).
 const viewMode = computed<'quadro' | 'lista'>({
@@ -35,6 +36,7 @@ const filterDefs: { key: FilterKey; label: string; options: string[]; width: str
 ]
 
 const showColumns = ref(false)
+const showAvancados = ref(false)
 
 const stats = [
   { label: 'Total', value: 10, color: '#909399' },
@@ -103,8 +105,18 @@ const stats = [
         </el-button>
       </div>
       <div class="flex items-center gap-2">
-        <el-button>Filtros avançados</el-button>
-        <el-button>Filtros salvos</el-button>
+        <el-button @click="showAvancados = true">Filtros avançados</el-button>
+        <el-dropdown trigger="click" @command="applyPreset">
+          <el-button>
+            Filtros salvos
+            <svg class="ml-1 h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item v-for="p in savedFilters" :key="p.name" :command="p">{{ p.name }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
         <el-button>Configurar filtros</el-button>
       </div>
     </div>
@@ -126,7 +138,8 @@ const stats = [
     <OcorrenciasBoard v-if="viewMode === 'quadro'" />
     <OcorrenciasList v-else />
 
-    <!-- Dialog de configuração de colunas -->
+    <!-- Dialog de configuração de colunas + drawer de filtros avançados -->
     <ConfigurarColunas v-model="showColumns" />
+    <FiltrosAvancados v-model="showAvancados" />
   </DashboardLayout>
 </template>

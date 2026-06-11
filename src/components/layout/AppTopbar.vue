@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import NotificacoesPanel from './NotificacoesPanel.vue'
+import { useOcorrencias } from '@/composables/useOcorrencias'
 
 const route = useRoute()
 const router = useRouter()
+
+const { unreadCount } = useOcorrencias()
 
 const activeTitle = computed(() => (route.meta.title as string) ?? 'Início')
 
@@ -47,9 +51,14 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
 
     <!-- Direita: notificações + status + usuário -->
     <div class="flex shrink-0 items-center gap-4">
-      <el-badge is-dot type="danger">
-        <svg class="h-5 w-5 text-[#606266]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
-      </el-badge>
+      <el-popover trigger="click" :width="382" placement="bottom-end" popper-class="!p-0">
+        <template #reference>
+          <el-badge is-dot type="danger" :hidden="!unreadCount" class="cursor-pointer">
+            <svg class="h-5 w-5 text-[#606266]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
+          </el-badge>
+        </template>
+        <NotificacoesPanel />
+      </el-popover>
 
       <el-dropdown trigger="click">
         <span class="flex cursor-pointer items-center gap-2 rounded-full border border-[#DCDFE6] px-3 py-1 text-sm">
