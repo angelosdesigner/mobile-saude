@@ -1,3 +1,4 @@
+import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
 // Perfil do atendente (protótipo, sem backend):
@@ -18,10 +19,9 @@ export const profileHint: Record<Profile, string> = {
   ambos: 'Atua nas duas frentes',
 }
 
-// Estado global (module-level singleton).
-const profile = ref<Profile>('ambos')
+export const useProfileStore = defineStore('profile', () => {
+  const profile = ref<Profile>('ambos')
 
-export function useProfile() {
   // A fila (e o "Atendimento ao vivo") só existem para quem atende a quente.
   const hasQueue = computed(() => profile.value === 'quente' || profile.value === 'ambos')
 
@@ -30,4 +30,4 @@ export function useProfile() {
   }
 
   return { profile, hasQueue, setProfile }
-}
+})

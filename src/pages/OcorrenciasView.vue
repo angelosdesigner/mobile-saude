@@ -1,24 +1,30 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import OcorrenciasBoard from '@/components/ocorrencias/OcorrenciasBoard.vue'
 import OcorrenciasList from '@/components/ocorrencias/OcorrenciasList.vue'
 import ConfigurarColunas from '@/components/ocorrencias/ConfigurarColunas.vue'
 import FiltrosAvancados from '@/components/ocorrencias/FiltrosAvancados.vue'
-import { useOcorrencias } from '@/composables/useOcorrencias'
+import { useOcorrenciasStore } from '@/stores/ocorrencias'
 import {
   prioridadeOptions,
   slaOptions,
   tipoOcorrenciaOptions,
   tipoAtendimentoOptions,
   atendenteOptions,
-} from '@/data/ocorrencias'
+} from '@/types/ocorrencias'
 
 const route = useRoute()
 const router = useRouter()
 
-const { filters, activeFilterCount, clearFilters, savedFilters, applyPreset } = useOcorrencias()
+const store = useOcorrenciasStore()
+const { activeFilterCount, stats } = storeToRefs(store)
+const { filters, savedFilters } = store
+const { clearFilters, applyPreset } = store
+
+onMounted(() => store.load())
 
 // Interação principal: alterna Quadro/Lista (modo fica na URL ?view=).
 const viewMode = computed<'quadro' | 'lista'>({
@@ -27,27 +33,28 @@ const viewMode = computed<'quadro' | 'lista'>({
 })
 
 type FilterKey = 'prioridade' | 'sla' | 'tipoOcorrencia' | 'tipoAtendimento' | 'atendente'
-const filterDefs: { key: FilterKey; label: string; options: string[]; width: string }[] = [
+const filterDefs: { key: FilterKey; label: string; options: readonly string[]; width: string }[] = [
   { key: 'prioridade', label: 'Prioridade', options: prioridadeOptions, width: '!w-36' },
   { key: 'sla', label: 'SLA', options: slaOptions, width: '!w-32' },
-  { key: 'tipoOcorrencia', label: 'Tipo de ocorrência', options: tipoOcorrenciaOptions, width: '!w-48' },
-  { key: 'tipoAtendimento', label: 'Tipo de atendimento', options: tipoAtendimentoOptions, width: '!w-48' },
+  {
+    key: 'tipoOcorrencia',
+    label: 'Tipo de ocorrência',
+    options: tipoOcorrenciaOptions,
+    width: '!w-48',
+  },
+  {
+    key: 'tipoAtendimento',
+    label: 'Tipo de atendimento',
+    options: tipoAtendimentoOptions,
+    width: '!w-48',
+  },
   { key: 'atendente', label: 'Atendente', options: atendenteOptions, width: '!w-44' },
 ]
 
 const showColumns = ref(false)
 const showAvancados = ref(false)
 
-const stats = [
-  { label: 'Total', value: 10, color: '#909399' },
-  { label: 'SLA regulatório', value: 3, color: '#F56C6C' },
-  { label: 'SLA interno', value: 3, color: '#F56C6C' },
-  { label: 'Atenção', value: 3, color: '#E6A23C' },
-  { label: 'Meus pendentes', value: 1, color: '#409EFF' },
-  { label: 'Pendentes do setor', value: 7, color: '#909399' },
-  { label: 'Não atribuídos', value: 7, color: '#909399' },
-  { label: 'Alta prioridade', value: 4, color: '#F56C6C' },
-]
+// `stats` agora vem do store, derivado do conjunto filtrado (store.stats).
 </script>
 
 <template>
@@ -55,26 +62,45 @@ const stats = [
     <!-- Cabeçalho: título + busca | modo de visualização -->
     <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-4">
-        <h1 class="text-2xl font-bold text-[#303133]">Ocorrências</h1>
+        <h1 class="text-2xl font-bold text-ms-text-primary">Ocorrências</h1>
         <el-input placeholder="Buscar protocolo" class="!w-72" clearable>
           <template #prefix>
-            <svg class="h-4 w-4 text-[#C0C4CC]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+            <AppIcon name="search" class="h-4 w-4 text-ms-text-placeholder" />
           </template>
         </el-input>
       </div>
 
       <div class="flex items-center gap-3">
-        <span class="text-sm text-[#606266]">Modo de visualização:</span>
+        <span class="text-sm text-ms-text-regular">Modo de visualização:</span>
         <el-radio-group v-model="viewMode">
           <el-radio-button value="quadro">
             <span class="flex items-center gap-1.5">
-              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
+              <svg
+                class="h-3.5 w-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
               Quadro
             </span>
           </el-radio-button>
           <el-radio-button value="lista">
             <span class="flex items-center gap-1.5">
-              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
+              <svg
+                class="h-3.5 w-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+              </svg>
               Lista
             </span>
           </el-radio-button>
@@ -109,11 +135,13 @@ const stats = [
         <el-dropdown trigger="click" @command="applyPreset">
           <el-button>
             Filtros salvos
-            <svg class="ml-1 h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg>
+            <AppIcon name="chevron-down" class="ml-1 h-3 w-3" />
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item v-for="p in savedFilters" :key="p.name" :command="p">{{ p.name }}</el-dropdown-item>
+              <el-dropdown-item v-for="p in savedFilters" :key="p.name" :command="p">{{
+                p.name
+              }}</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -126,11 +154,11 @@ const stats = [
       <div
         v-for="s in stats"
         :key="s.label"
-        class="flex items-center gap-2 rounded-full border border-[#EBEEF5] bg-white px-3 py-1"
+        class="flex items-center gap-2 rounded-full border border-ms-border-light bg-white px-3 py-1"
       >
         <span class="inline-block h-2 w-2 rounded-full" :style="{ backgroundColor: s.color }" />
-        <span class="text-xs text-[#606266]">{{ s.label }}:</span>
-        <span class="text-xs font-semibold text-[#303133]">{{ s.value }}</span>
+        <span class="text-xs text-ms-text-regular">{{ s.label }}:</span>
+        <span class="text-xs font-semibold text-ms-text-primary">{{ s.value }}</span>
       </div>
     </div>
 

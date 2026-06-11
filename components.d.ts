@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AppIcon: typeof import('./src/components/ui/AppIcon.vue')['default']
     AppSidebar: typeof import('./src/components/layout/AppSidebar.vue')['default']
     AppTopbar: typeof import('./src/components/layout/AppTopbar.vue')['default']
     BrandLogo: typeof import('./src/components/layout/BrandLogo.vue')['default']
@@ -39,6 +40,7 @@ declare module 'vue' {
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    EmptyState: typeof import('./src/components/ui/EmptyState.vue')['default']
     FilaFab: typeof import('./src/components/fila/FilaFab.vue')['default']
     FilaPanel: typeof import('./src/components/fila/FilaPanel.vue')['default']
     FiltrosAvancados: typeof import('./src/components/ocorrencias/FiltrosAvancados.vue')['default']
@@ -57,5 +59,8 @@ declare module 'vue' {
     OcorrenciasList: typeof import('./src/components/ocorrencias/OcorrenciasList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+  }
+  export interface GlobalDirectives {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

@@ -7,6 +7,10 @@ const INTERACTIVE =
   'button, a, input, textarea, select, label, [draggable="true"], [role="button"], ' +
   '.el-card, .el-select, .el-input, .el-checkbox, .el-radio, .el-button, .el-tag'
 
+// Associa cada elemento ao seu cleanup sem poluir o DOM com propriedades
+// não tipadas (WeakMap permite GC quando o elemento é descartado).
+const cleanups = new WeakMap<HTMLElement, () => void>()
+
 export const dragScroll: Directive<HTMLElement> = {
   mounted(el) {
     let down = false
@@ -15,17 +19,6 @@ export const dragScroll: Directive<HTMLElement> = {
     let sy = 0
     let sl = 0
     let st = 0
-
-    const onDown = (e: PointerEvent) => {
-      if (e.button !== 0) return
-      if ((e.target as HTMLElement).closest(INTERACTIVE)) return
-      down = true
-      moved = false
-      sx = e.clientX
-      sy = e.clientY
-      sl = el.scrollLeft
-      st = el.scrollTop
-    }
 
     const onMove = (e: PointerEvent) => {
       if (!down) return
@@ -44,22 +37,38 @@ export const dragScroll: Directive<HTMLElement> = {
     const onUp = () => {
       if (!down) return
       down = false
+      // Listeners de movimento só vivem durante o arraste — fora dele, nenhum
+      // handler global é chamado a cada movimento do ponteiro.
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
       if (moved) {
         document.body.style.cursor = ''
         document.body.style.userSelect = ''
       }
     }
 
+    const onDown = (e: PointerEvent) => {
+      if (e.button !== 0) return
+      if ((e.target as HTMLElement).closest(INTERACTIVE)) return
+      down = true
+      moved = false
+      sx = e.clientX
+      sy = e.clientY
+      sl = el.scrollLeft
+      st = el.scrollTop
+      window.addEventListener('pointermove', onMove)
+      window.addEventListener('pointerup', onUp)
+    }
+
     el.addEventListener('pointerdown', onDown)
-    window.addEventListener('pointermove', onMove)
-    window.addEventListener('pointerup', onUp)
-    ;(el as unknown as { __ds: () => void }).__ds = () => {
+    cleanups.set(el, () => {
       el.removeEventListener('pointerdown', onDown)
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
-    }
+    })
   },
   unmounted(el) {
-    ;(el as unknown as { __ds?: () => void }).__ds?.()
+    cleanups.get(el)?.()
+    cleanups.delete(el)
   },
 }

@@ -6,9 +6,7 @@ const name = ref('')
 
 <template>
   <div class="mx-auto flex max-w-3xl flex-col gap-6 p-8">
-    <h1 class="text-2xl font-bold text-slate-800">
-      Vue 3 + Element Plus + Tailwind v4
-    </h1>
+    <h1 class="text-2xl font-bold text-slate-800">Vue 3 + Element Plus + Tailwind v4</h1>
 
     <!-- Button row: proves the CSS-layer conflict is resolved -->
     <el-card shadow="never" class="p-4">

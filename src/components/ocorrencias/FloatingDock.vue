@@ -61,16 +61,27 @@ onBeforeUnmount(() => {
   <div
     ref="el"
     class="fixed z-30 flex items-center gap-2"
-    :style="pos ? { left: pos.left + 'px', top: pos.top + 'px' } : { left: '50%', bottom: '40px', transform: 'translateX(-50%)' }"
+    :style="
+      pos
+        ? { left: pos.left + 'px', top: pos.top + 'px' }
+        : { left: '50%', bottom: '40px', transform: 'translateX(-50%)' }
+    "
   >
     <!-- Alça de arrastar -->
     <button
-      class="flex h-12 w-6 cursor-grab items-center justify-center rounded-xl bg-white text-[#C0C4CC] shadow-lg transition hover:text-[#909399] active:cursor-grabbing"
+      class="flex h-12 w-6 cursor-grab items-center justify-center rounded-xl bg-white text-ms-text-placeholder shadow-lg transition hover:text-ms-text-secondary active:cursor-grabbing"
       style="touch-action: none"
       title="Arraste para mover"
       @pointerdown="onDown"
     >
-      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5" /><circle cx="15" cy="6" r="1.5" /><circle cx="9" cy="12" r="1.5" /><circle cx="15" cy="12" r="1.5" /><circle cx="9" cy="18" r="1.5" /><circle cx="15" cy="18" r="1.5" /></svg>
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="9" cy="6" r="1.5" />
+        <circle cx="15" cy="6" r="1.5" />
+        <circle cx="9" cy="12" r="1.5" />
+        <circle cx="15" cy="12" r="1.5" />
+        <circle cx="9" cy="18" r="1.5" />
+        <circle cx="15" cy="18" r="1.5" />
+      </svg>
     </button>
 
     <slot />

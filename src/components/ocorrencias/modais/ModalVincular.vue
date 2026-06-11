@@ -39,27 +39,43 @@ function confirmar() {
   >
     <template #header>
       <div>
-        <h3 class="text-xl font-bold text-[#303133]">Vincular protocolo</h3>
-        <p class="mt-1 text-sm text-[#909399]">Associe este atendimento a outro protocolo para manter o histórico conectado.</p>
+        <h3 class="text-xl font-bold text-ms-text-primary">Vincular protocolo</h3>
+        <p class="mt-1 text-sm text-ms-text-secondary">
+          Associe este atendimento a outro protocolo para manter o histórico conectado.
+        </p>
       </div>
     </template>
 
     <div class="space-y-4">
       <div>
-        <label class="mb-1.5 block text-[#303133]">Buscar protocolo</label>
-        <el-select v-model="protocolo" placeholder="Busque ou selecione um protocolo" filterable class="w-full">
+        <label class="mb-1.5 block text-ms-text-primary">Buscar protocolo</label>
+        <el-select
+          v-model="protocolo"
+          placeholder="Busque ou selecione um protocolo"
+          filterable
+          class="w-full"
+        >
           <el-option v-for="p in protocolos" :key="p" :label="p" :value="p" />
         </el-select>
       </div>
       <div>
-        <label class="mb-1.5 block text-[#303133]">Observação <span class="text-[#909399]">(opcional)</span></label>
-        <el-input v-model="obs" type="textarea" :rows="3" placeholder="Descreva o motivo do vínculo" />
+        <label class="mb-1.5 block text-ms-text-primary"
+          >Observação <span class="text-ms-text-secondary">(opcional)</span></label
+        >
+        <el-input
+          v-model="obs"
+          type="textarea"
+          :rows="3"
+          placeholder="Descreva o motivo do vínculo"
+        />
       </div>
     </div>
 
     <template #footer>
       <el-button text @click="emit('update:modelValue', false)">Voltar</el-button>
-      <el-button type="primary" :disabled="!protocolo" @click="confirmar">Confirmar vínculo</el-button>
+      <el-button type="primary" :disabled="!protocolo" @click="confirmar"
+        >Confirmar vínculo</el-button
+      >
     </template>
   </el-dialog>
 </template>

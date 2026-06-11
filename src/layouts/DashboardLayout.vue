@@ -2,13 +2,14 @@
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppTopbar from '@/components/layout/AppTopbar.vue'
 import FilaFab from '@/components/fila/FilaFab.vue'
-import { useProfile } from '@/composables/useProfile'
+import { useProfileStore } from '@/stores/profile'
+import { storeToRefs } from 'pinia'
 
-const { hasQueue } = useProfile()
+const { hasQueue } = storeToRefs(useProfileStore())
 </script>
 
 <template>
-  <div class="flex h-screen w-full overflow-hidden bg-[#F5F7FA]">
+  <div class="flex h-screen w-full overflow-hidden bg-ms-fill-light">
     <AppSidebar />
     <div class="flex min-w-0 flex-1 flex-col">
       <AppTopbar />

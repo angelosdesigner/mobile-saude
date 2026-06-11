@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import { reactive, computed, watch } from 'vue'
-import { useOcorrencias, columnLabel } from '@/composables/useOcorrencias'
+import { useOcorrenciasStore } from '@/stores/ocorrencias'
 import {
   slaOptions,
   tipoOcorrenciaOptions,
   tipoAtendimentoOptions,
   columns,
-} from '@/data/ocorrencias'
+  columnLabel,
+} from '@/types/ocorrencias'
 
 const props = defineProps<{ modelValue: boolean }>()
 const emit = defineEmits<{ 'update:modelValue': [boolean] }>()
 
-const { filters, clearFilters } = useOcorrencias()
+const store = useOcorrenciasStore()
+const { filters } = store
+const { clearFilters } = store
 
 const tipoOcorrenciaChips = [...tipoOcorrenciaOptions, 'Dúvida', 'Solicitação de rede']
 const tags = ['Urgente', 'Judicial', 'VIP', 'Recorrente', 'Complexo']
@@ -84,33 +87,37 @@ function limparTudo() {
   >
     <div class="flex h-full flex-col">
       <!-- Cabeçalho -->
-      <div class="flex items-start justify-between border-b border-[#EBEEF5] px-6 py-5">
+      <div class="flex items-start justify-between border-b border-ms-border-light px-6 py-5">
         <div>
-          <h3 class="text-xl font-bold text-[#303133]">Filtros avançados</h3>
-          <p class="mt-1 text-sm text-[#909399]">Combine diferentes critérios para localizar atendimentos específicos.</p>
+          <h3 class="text-xl font-bold text-ms-text-primary">Filtros avançados</h3>
+          <p class="mt-1 text-sm text-ms-text-secondary">
+            Combine diferentes critérios para localizar atendimentos específicos.
+          </p>
         </div>
         <div class="flex items-center gap-3">
-          <el-tag v-if="activeCount" type="primary" effect="light" round>{{ activeCount }} filtros ativos</el-tag>
-          <el-button circle text @click="emit('update:modelValue', false)">
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" /></svg>
+          <el-tag v-if="activeCount" type="primary" effect="light" round
+            >{{ activeCount }} filtros ativos</el-tag
+          >
+          <el-button circle text aria-label="Fechar" @click="emit('update:modelValue', false)">
+            <AppIcon name="close" class="h-4 w-4" />
           </el-button>
         </div>
       </div>
 
       <!-- Corpo -->
       <div class="flex-1 space-y-4 overflow-y-auto px-6 py-5">
-        <section class="rounded-xl border border-[#EBEEF5] p-4">
-          <label class="mb-2 block font-medium text-[#303133]">SLA</label>
+        <section class="rounded-xl border border-ms-border-light p-4">
+          <label class="mb-2 block font-medium text-ms-text-primary">SLA</label>
           <el-select v-model="form.sla" placeholder="Todos" class="w-full" clearable>
             <el-option v-for="s in slaOptions" :key="s" :label="s" :value="s" />
           </el-select>
         </section>
 
-        <section class="rounded-xl border border-[#EBEEF5] p-4">
-          <label class="mb-2 block font-medium text-[#303133]">Tipo de ocorrência</label>
+        <section class="rounded-xl border border-ms-border-light p-4">
+          <label class="mb-2 block font-medium text-ms-text-primary">Tipo de ocorrência</label>
           <el-input placeholder="Buscar tipo de ocorrência" class="mb-3">
             <template #prefix>
-              <svg class="h-4 w-4 text-[#C0C4CC]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+              <AppIcon name="search" class="h-4 w-4 text-ms-text-placeholder" />
             </template>
           </el-input>
           <div class="flex flex-wrap gap-2">
@@ -119,54 +126,67 @@ function limparTudo() {
               :key="t"
               :checked="form.tipoOcorrencia.includes(t)"
               @change="toggle(form.tipoOcorrencia, t)"
-            >{{ t }}</el-check-tag>
+              >{{ t }}</el-check-tag
+            >
           </div>
         </section>
 
-        <section class="rounded-xl border border-[#EBEEF5] p-4">
-          <label class="mb-2 block font-medium text-[#303133]">Assunto</label>
-          <el-input v-model="form.assunto" placeholder="Digite palavras-chave do assunto..." clearable />
+        <section class="rounded-xl border border-ms-border-light p-4">
+          <label class="mb-2 block font-medium text-ms-text-primary">Assunto</label>
+          <el-input
+            v-model="form.assunto"
+            placeholder="Digite palavras-chave do assunto..."
+            clearable
+          />
         </section>
 
-        <section class="rounded-xl border border-[#EBEEF5] p-4">
-          <label class="mb-2 block font-medium text-[#303133]">Tipo de atendimento</label>
-          <el-select v-model="form.tipoAtendimento" placeholder="Selecione o tipo de atendimento" class="w-full" clearable>
+        <section class="rounded-xl border border-ms-border-light p-4">
+          <label class="mb-2 block font-medium text-ms-text-primary">Tipo de atendimento</label>
+          <el-select
+            v-model="form.tipoAtendimento"
+            placeholder="Selecione o tipo de atendimento"
+            class="w-full"
+            clearable
+          >
             <el-option v-for="t in tipoAtendimentoOptions" :key="t" :label="t" :value="t" />
           </el-select>
         </section>
 
-        <section class="rounded-xl border border-[#EBEEF5] p-4">
-          <label class="mb-2 block font-medium text-[#303133]">Status</label>
+        <section class="rounded-xl border border-ms-border-light p-4">
+          <label class="mb-2 block font-medium text-ms-text-primary">Status</label>
           <div class="flex flex-wrap gap-2">
             <el-check-tag
               v-for="c in columns"
               :key="c"
               :checked="form.status.includes(c)"
               @change="toggle(form.status, c)"
-            >{{ columnLabel[c] }}</el-check-tag>
+              >{{ columnLabel[c] }}</el-check-tag
+            >
           </div>
         </section>
 
-        <section class="rounded-xl border border-[#EBEEF5] p-4">
-          <label class="mb-2 block font-medium text-[#303133]">Tags</label>
+        <section class="rounded-xl border border-ms-border-light p-4">
+          <label class="mb-2 block font-medium text-ms-text-primary">Tags</label>
           <div class="flex flex-wrap gap-2">
             <el-check-tag
               v-for="t in tags"
               :key="t"
               :checked="form.tags.includes(t)"
               @change="toggle(form.tags, t)"
-            >{{ t }}</el-check-tag>
+              >{{ t }}</el-check-tag
+            >
           </div>
-          <p class="mt-2 text-xs text-[#909399]">Selecione uma ou mais tags para filtrar</p>
+          <p class="mt-2 text-xs text-ms-text-secondary">Selecione uma ou mais tags para filtrar</p>
         </section>
 
-        <p class="rounded-lg bg-[#F5F7FA] p-3 text-xs text-[#909399]">
-          Combine múltiplos filtros para refinar ainda mais sua busca. Os filtros avançados funcionam em conjunto com os filtros rápidos.
+        <p class="rounded-lg bg-ms-fill-light p-3 text-xs text-ms-text-secondary">
+          Combine múltiplos filtros para refinar ainda mais sua busca. Os filtros avançados
+          funcionam em conjunto com os filtros rápidos.
         </p>
       </div>
 
       <!-- Rodapé -->
-      <div class="flex items-center justify-between border-t border-[#EBEEF5] px-6 py-4">
+      <div class="flex items-center justify-between border-t border-ms-border-light px-6 py-4">
         <el-button text :disabled="!activeCount" @click="limparTudo">Limpar tudo</el-button>
         <div class="flex gap-2">
           <el-button @click="emit('update:modelValue', false)">Cancelar</el-button>

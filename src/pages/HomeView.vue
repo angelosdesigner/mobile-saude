@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { routes } from '@/router'
 
-// Lista os fluxos navegáveis (exclui home, demo e a rota catch-all).
+// Lista os fluxos navegáveis (exclui a própria home, a demo de stack e a
+// rota catch-all — são telas de infraestrutura, não fluxos do produto).
 const flows = routes.filter(
-  (r) => r.name && !['home', 'not-found'].includes(String(r.name)),
+  (r) => r.name && !['home', 'demo', 'not-found'].includes(String(r.name)),
 )
 </script>
 
@@ -11,9 +12,7 @@ const flows = routes.filter(
   <section class="mx-auto flex max-w-3xl flex-col gap-6 p-8">
     <header class="flex flex-col gap-1">
       <h1 class="text-3xl font-bold text-slate-800">Mobile Saúde</h1>
-      <p class="text-slate-500">
-        Índice de fluxos. Cada tela do Figma vira uma rota linkada aqui.
-      </p>
+      <p class="text-slate-500">Índice de fluxos. Cada tela do Figma vira uma rota linkada aqui.</p>
     </header>
 
     <div class="grid gap-4 sm:grid-cols-2">

@@ -6,13 +6,20 @@
   <el-popover trigger="click" placement="top-end" :width="300">
     <template #reference>
       <button
-        class="flex h-13 w-13 items-center justify-center rounded-full border border-[#EBEEF5] bg-white shadow-lg transition hover:shadow-xl"
+        class="flex h-13 w-13 items-center justify-center rounded-full border border-ms-border-light bg-white shadow-lg transition hover:shadow-xl"
         style="height: 52px; width: 52px"
         title="Copilot"
       >
         <svg class="h-7 w-7" viewBox="0 0 32 32" fill="none">
           <defs>
-            <linearGradient id="copilot-grad" x1="2" y1="6" x2="30" y2="28" gradientUnits="userSpaceOnUse">
+            <linearGradient
+              id="copilot-grad"
+              x1="2"
+              y1="6"
+              x2="30"
+              y2="28"
+              gradientUnits="userSpaceOnUse"
+            >
               <stop offset="0" stop-color="#2E8CF0" />
               <stop offset="0.28" stop-color="#17C3E6" />
               <stop offset="0.5" stop-color="#3FD17A" />
@@ -36,10 +43,10 @@
 
     <div class="p-1">
       <div class="mb-1 flex items-center gap-2">
-        <span class="text-sm font-semibold text-[#303133]">Copilot</span>
+        <span class="text-sm font-semibold text-ms-text-primary">Copilot</span>
         <el-tag size="small" type="info" effect="light" round>beta</el-tag>
       </div>
-      <p class="text-xs text-[#909399]">
+      <p class="text-xs text-ms-text-secondary">
         Assistente de IA para resumir o atendimento, sugerir respostas e próximos passos. Em breve.
       </p>
     </div>
