@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppTopbar from '@/components/layout/AppTopbar.vue'
+import FilaFab from '@/components/fila/FilaFab.vue'
+import { useProfile } from '@/composables/useProfile'
+
+const { hasQueue } = useProfile()
 </script>
 
 <template>
@@ -14,5 +18,8 @@ import AppTopbar from '@/components/layout/AppTopbar.vue'
         </div>
       </main>
     </div>
+
+    <!-- Fila flutuante global — só para perfis que atendem a quente. -->
+    <FilaFab v-if="hasQueue" />
   </div>
 </template>

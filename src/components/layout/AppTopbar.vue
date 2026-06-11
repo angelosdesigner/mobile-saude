@@ -3,11 +3,14 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import NotificacoesPanel from './NotificacoesPanel.vue'
 import { useOcorrencias } from '@/composables/useOcorrencias'
+import { useProfile, profileLabel, profileHint, type Profile } from '@/composables/useProfile'
 
 const route = useRoute()
 const router = useRouter()
 
 const { unreadCount } = useOcorrencias()
+const { profile, setProfile } = useProfile()
+const profileOptions: Profile[] = ['quente', 'frio', 'ambos']
 
 const activeTitle = computed(() => (route.meta.title as string) ?? 'Início')
 
@@ -74,15 +77,34 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
         </template>
       </el-dropdown>
 
-      <div class="flex items-center gap-2">
-        <el-avatar :size="30" class="!bg-[#ECF5FF] !text-[#409EFF]">
-          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-        </el-avatar>
-        <div class="hidden leading-tight sm:block">
-          <div class="text-xs font-medium text-[#303133]">Juliana Santos</div>
-          <div class="text-[10px] text-[#909399]">Atendente</div>
+      <el-dropdown trigger="click" @command="setProfile">
+        <div class="flex cursor-pointer items-center gap-2">
+          <el-avatar :size="30" class="!bg-[#ECF5FF] !text-[#409EFF]">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+          </el-avatar>
+          <div class="hidden leading-tight sm:block">
+            <div class="text-xs font-medium text-[#303133]">Juliana Santos</div>
+            <div class="text-[10px] text-[#909399]">{{ profileLabel[profile] }}</div>
+          </div>
+          <svg class="h-3 w-3 text-[#909399]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg>
         </div>
-      </div>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <div class="px-4 pb-1 pt-2 text-[11px] font-medium uppercase tracking-wide text-[#909399]">Perfil de atendimento</div>
+            <el-dropdown-item v-for="p in profileOptions" :key="p" :command="p">
+              <div class="flex items-center gap-2 py-0.5">
+                <span class="flex h-4 w-4 items-center justify-center">
+                  <svg v-if="profile === p" class="h-4 w-4 text-[#409EFF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5" /></svg>
+                </span>
+                <div class="flex flex-col">
+                  <span class="text-sm font-medium" :class="profile === p ? 'text-[#409EFF]' : 'text-[#303133]'">{{ profileLabel[p] }}</span>
+                  <span class="text-[11px] text-[#909399]">{{ profileHint[p] }}</span>
+                </div>
+              </div>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </div>
   </header>
 </template>

@@ -1,21 +1,26 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import BrandLogo from './BrandLogo.vue'
+import { useProfile } from '@/composables/useProfile'
 
 const route = useRoute()
+const { hasQueue } = useProfile()
 
 // Estado de expansão (colapsada = rail de ícones, expandida = ícones + rótulos).
 const expanded = ref(false)
 
-const items = [
-  { to: '/inicio', label: 'Início', icon: 'home' },
-  { to: '/atendimento', label: 'Atendimento ao vivo', icon: 'chat' },
-  { to: '/ocorrencias', label: 'Ocorrências', icon: 'alert' },
-  { to: '/contatos', label: 'Contatos', icon: 'users' },
-  { to: '/agenda', label: 'Agenda', icon: 'calendar' },
-  { to: '/widgets', label: 'Widgets', icon: 'grid' },
-]
+// "Atendimento ao vivo" só aparece para quem atende a quente (perfil com fila).
+const items = computed(() =>
+  [
+    { to: '/inicio', label: 'Início', icon: 'home', requiresQueue: false },
+    { to: '/atendimento', label: 'Atendimento ao vivo', icon: 'chat', requiresQueue: true },
+    { to: '/ocorrencias', label: 'Ocorrências', icon: 'alert', requiresQueue: false },
+    { to: '/contatos', label: 'Contatos', icon: 'users', requiresQueue: false },
+    { to: '/agenda', label: 'Agenda', icon: 'calendar', requiresQueue: false },
+    { to: '/widgets', label: 'Widgets', icon: 'grid', requiresQueue: false },
+  ].filter((i) => !i.requiresQueue || hasQueue.value),
+)
 
 const isActive = (to: string) =>
   route.path === to || route.path.startsWith(to + '/')

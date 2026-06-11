@@ -38,6 +38,8 @@ declare module 'vue' {
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    FilaFab: typeof import('./src/components/fila/FilaFab.vue')['default']
+    FilaPanel: typeof import('./src/components/fila/FilaPanel.vue')['default']
     FiltrosAvancados: typeof import('./src/components/ocorrencias/FiltrosAvancados.vue')['default']
     NotificacoesPanel: typeof import('./src/components/layout/NotificacoesPanel.vue')['default']
     OcorrenciasBoard: typeof import('./src/components/ocorrencias/OcorrenciasBoard.vue')['default']
