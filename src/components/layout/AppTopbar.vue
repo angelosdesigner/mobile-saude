@@ -37,7 +37,10 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
         </span>
       </div>
 
-      <el-button type="primary" circle size="small">
+      <el-button text circle size="small" class="!text-[#909399]">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+      </el-button>
+      <el-button type="primary" size="small" class="!px-2">
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" /></svg>
       </el-button>
     </div>
@@ -49,7 +52,7 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
       </el-badge>
 
       <el-dropdown trigger="click">
-        <span class="flex cursor-pointer items-center gap-2 text-sm">
+        <span class="flex cursor-pointer items-center gap-2 rounded-full border border-[#DCDFE6] px-3 py-1 text-sm">
           <span class="inline-block h-2 w-2 rounded-full" :class="status === 'Disponível' ? 'bg-[#67C23A]' : 'bg-[#C0C4CC]'" />
           <span class="font-medium text-[#606266]">{{ status }}</span>
           <svg class="h-3 w-3 text-[#909399]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg>
@@ -63,7 +66,9 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
       </el-dropdown>
 
       <div class="flex items-center gap-2">
-        <el-avatar :size="30" class="!bg-[#409EFF]">JS</el-avatar>
+        <el-avatar :size="30" class="!bg-[#ECF5FF] !text-[#409EFF]">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+        </el-avatar>
         <div class="hidden leading-tight sm:block">
           <div class="text-xs font-medium text-[#303133]">Juliana Santos</div>
           <div class="text-[10px] text-[#909399]">Atendente</div>
