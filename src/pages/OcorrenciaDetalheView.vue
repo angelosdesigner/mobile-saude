@@ -8,6 +8,10 @@ import ModalNovaLigacao from '@/components/ocorrencias/modais/ModalNovaLigacao.v
 import ModalEnviarTemplate from '@/components/ocorrencias/modais/ModalEnviarTemplate.vue'
 import ModalEncaminhar from '@/components/ocorrencias/modais/ModalEncaminhar.vue'
 import ModalFinalizar from '@/components/ocorrencias/modais/ModalFinalizar.vue'
+import ModalVideochamada from '@/components/ocorrencias/modais/ModalVideochamada.vue'
+import ModalAnexar from '@/components/ocorrencias/modais/ModalAnexar.vue'
+import ModalCobrarSetor from '@/components/ocorrencias/modais/ModalCobrarSetor.vue'
+import ModalVincular from '@/components/ocorrencias/modais/ModalVincular.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -18,11 +22,21 @@ const showLigacao = ref(false)
 const showTemplate = ref(false)
 const showEncaminhar = ref(false)
 const showFinalizar = ref(false)
+const showVideo = ref(false)
+const showAnexar = ref(false)
+const showCobrar = ref(false)
+const showVincular = ref(false)
 
 function onAcao(cmd: string) {
-  if (cmd === 'finalizar') showFinalizar.value = true
-  else if (cmd === 'encaminhar') showEncaminhar.value = true
-  else ElMessage.info('Em breve')
+  const map: Record<string, { value: boolean }> = {
+    finalizar: showFinalizar,
+    encaminhar: showEncaminhar,
+    vincular: showVincular,
+    cobrar: showCobrar,
+    video: showVideo,
+    anexar: showAnexar,
+  }
+  if (map[cmd]) map[cmd].value = true
 }
 
 const id = computed(() => Number(route.params.id))
@@ -170,5 +184,9 @@ const dados = computed(() =>
     <ModalEnviarTemplate v-model="showTemplate" />
     <ModalEncaminhar v-model="showEncaminhar" />
     <ModalFinalizar v-model="showFinalizar" />
+    <ModalVideochamada v-model="showVideo" :name="oc?.beneficiary" />
+    <ModalAnexar v-model="showAnexar" />
+    <ModalCobrarSetor v-model="showCobrar" />
+    <ModalVincular v-model="showVincular" />
   </DashboardLayout>
 </template>
