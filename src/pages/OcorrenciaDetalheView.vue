@@ -14,6 +14,7 @@ import ModalCobrarSetor from '@/components/ocorrencias/modais/ModalCobrarSetor.v
 import ModalVincular from '@/components/ocorrencias/modais/ModalVincular.vue'
 import FloatingActions from '@/components/ocorrencias/FloatingActions.vue'
 import CopilotButton from '@/components/ocorrencias/CopilotButton.vue'
+import FloatingDock from '@/components/ocorrencias/FloatingDock.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -162,10 +163,10 @@ const dados = computed(() =>
     <ModalCobrarSetor v-model="showCobrar" />
     <ModalVincular v-model="showVincular" />
 
-    <!-- Floating actions bar + Copilot (fixos, canto inferior central) -->
-    <div v-if="oc" class="fixed bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3">
+    <!-- Floating actions bar + Copilot — arrastável; inicia no rodapé (40px) -->
+    <FloatingDock v-if="oc">
       <FloatingActions @action="onAcao" />
       <CopilotButton />
-    </div>
+    </FloatingDock>
   </DashboardLayout>
 </template>

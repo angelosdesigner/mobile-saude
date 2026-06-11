@@ -43,6 +43,7 @@ declare module 'vue' {
     FilaPanel: typeof import('./src/components/fila/FilaPanel.vue')['default']
     FiltrosAvancados: typeof import('./src/components/ocorrencias/FiltrosAvancados.vue')['default']
     FloatingActions: typeof import('./src/components/ocorrencias/FloatingActions.vue')['default']
+    FloatingDock: typeof import('./src/components/ocorrencias/FloatingDock.vue')['default']
     ModalAnexar: typeof import('./src/components/ocorrencias/modais/ModalAnexar.vue')['default']
     ModalCobrarSetor: typeof import('./src/components/ocorrencias/modais/ModalCobrarSetor.vue')['default']
     ModalEncaminhar: typeof import('./src/components/ocorrencias/modais/ModalEncaminhar.vue')['default']
