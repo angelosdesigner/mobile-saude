@@ -47,7 +47,7 @@ const initials = (name: string) =>
 </script>
 
 <template>
-  <div class="flex gap-4 overflow-x-auto pb-2">
+  <div v-drag-scroll class="flex gap-4 overflow-x-auto pb-2">
     <div v-for="col in visibleColumns" :key="col.key" class="flex w-72 shrink-0 flex-col">
       <!-- Cabeçalho da coluna -->
       <div class="mb-3 flex items-center justify-between px-1">

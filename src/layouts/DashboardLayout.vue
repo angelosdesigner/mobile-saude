@@ -12,7 +12,7 @@ const { hasQueue } = useProfile()
     <AppSidebar />
     <div class="flex min-w-0 flex-1 flex-col">
       <AppTopbar />
-      <main class="flex-1 overflow-y-auto">
+      <main v-drag-scroll class="flex-1 overflow-y-auto">
         <div class="mx-auto max-w-[1200px] px-6 py-6">
           <slot />
         </div>
