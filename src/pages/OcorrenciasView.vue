@@ -45,8 +45,18 @@ const stats = [
       <div class="flex items-center gap-3">
         <span class="text-sm text-[#606266]">Modo de visualização:</span>
         <el-radio-group v-model="viewMode">
-          <el-radio-button value="quadro">Quadro</el-radio-button>
-          <el-radio-button value="lista">Lista</el-radio-button>
+          <el-radio-button value="quadro">
+            <span class="flex items-center gap-1.5">
+              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
+              Quadro
+            </span>
+          </el-radio-button>
+          <el-radio-button value="lista">
+            <span class="flex items-center gap-1.5">
+              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
+              Lista
+            </span>
+          </el-radio-button>
         </el-radio-group>
         <el-button>Configurar colunas</el-button>
       </div>

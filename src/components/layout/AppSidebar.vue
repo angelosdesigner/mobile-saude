@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
+import BrandLogo from './BrandLogo.vue'
 
 const route = useRoute()
 
@@ -24,11 +25,7 @@ const isActive = (to: string) =>
     class="flex w-16 shrink-0 flex-col items-center gap-1 border-r border-[#DCDFE6] bg-white py-4"
   >
     <!-- Logo -->
-    <div
-      class="mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-[#409EFF] font-bold text-white"
-    >
-      MS
-    </div>
+    <BrandLogo :size="34" class="mb-4" />
 
     <el-tooltip
       v-for="item in items"

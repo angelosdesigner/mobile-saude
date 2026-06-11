@@ -2,6 +2,22 @@
 import { columns, ocorrencias, type ColumnKey } from '@/data/ocorrencias'
 
 const byColumn = (col: ColumnKey) => ocorrencias.filter((o) => o.column === col)
+
+// Ícone e cor do contador por coluna (fiel ao Figma).
+const colMeta: Record<ColumnKey, { icon: 'none' | 'clock' | 'share' | 'check'; badge: string }> = {
+  NOVO: { icon: 'none', badge: '#1F2937' },
+  'EM ATENDIMENTO': { icon: 'none', badge: '#E6A23C' },
+  'EM ESPERA': { icon: 'clock', badge: '#E6A23C' },
+  ENCAMINHAMENTOS: { icon: 'share', badge: '#E6A23C' },
+  'CONCLUÍDOS NO DIA': { icon: 'check', badge: '#E6A23C' },
+}
+
+const channelIcon = (c: string) =>
+  /whats/i.test(c) ? 'whatsapp' : /tele|fone/i.test(c) ? 'phone' : 'web'
+const channelColor = (c: string) => (/whats/i.test(c) ? '#25D366' : '#909399')
+
+const initials = (name: string) =>
+  name.split(' ').slice(0, 2).map((n) => n[0]).join('').toUpperCase()
 </script>
 
 <template>
@@ -10,9 +26,18 @@ const byColumn = (col: ColumnKey) => ocorrencias.filter((o) => o.column === col)
       <!-- Cabeçalho da coluna -->
       <div class="mb-3 flex items-center justify-between px-1">
         <div class="flex items-center gap-2">
+          <svg class="h-4 w-4 text-[#909399]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <template v-if="colMeta[col].icon === 'clock'"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></template>
+            <template v-else-if="colMeta[col].icon === 'share'"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7" /><path d="M16 6l-4-4-4 4M12 2v13" /></template>
+            <template v-else-if="colMeta[col].icon === 'check'"><path d="M20 6 9 17l-5-5" /></template>
+          </svg>
           <span class="text-xs font-bold uppercase tracking-wide text-[#606266]">{{ col }}</span>
-          <el-badge :value="byColumn(col).length" type="primary" />
+          <span
+            class="flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold text-white"
+            :style="{ backgroundColor: colMeta[col].badge }"
+          >{{ byColumn(col).length }}</span>
         </div>
+        <svg class="h-4 w-4 text-[#C0C4CC]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.5V19l4 2v-8.5L22 3z" /></svg>
       </div>
 
       <!-- Cards -->
@@ -25,8 +50,11 @@ const byColumn = (col: ColumnKey) => ocorrencias.filter((o) => o.column === col)
           class="cursor-pointer !border-[#EBEEF5]"
         >
           <div class="flex items-center justify-between">
-            <span class="text-xs text-[#909399]">{{ o.protocol }}</span>
-            <el-tag :type="o.timeType" effect="light" size="small" round>{{ o.time }}</el-tag>
+            <div class="flex items-center gap-1.5 text-xs text-[#909399]">
+              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg>
+              {{ o.protocol }}
+            </div>
+            <el-tag :type="o.timeType" :effect="o.timeType === 'danger' ? 'dark' : 'light'" size="small" round>{{ o.time }}</el-tag>
           </div>
 
           <h4 class="mt-2 text-sm font-semibold leading-snug text-[#303133]">{{ o.beneficiary }}</h4>
@@ -50,9 +78,19 @@ const byColumn = (col: ColumnKey) => ocorrencias.filter((o) => o.column === col)
             <el-tag :type="o.statusType" effect="light" size="small">{{ o.status }}</el-tag>
           </div>
 
-          <div class="mt-3 flex items-center justify-between border-t border-[#F2F6FC] pt-2 text-xs text-[#909399]">
-            <span>{{ o.channel }}</span>
-            <span v-if="o.assignee" class="font-medium text-[#67C23A]">{{ o.assignee }}</span>
+          <div class="mt-3 flex items-center justify-between border-t border-[#F2F6FC] pt-2.5">
+            <span class="flex items-center gap-1.5 text-xs text-[#909399]" :style="{ color: channelColor(o.channel) }">
+              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <template v-if="channelIcon(o.channel) === 'whatsapp'"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z" /></template>
+                <template v-else-if="channelIcon(o.channel) === 'phone'"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" /></template>
+                <template v-else><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z" /></template>
+              </svg>
+              <span class="text-[#606266]">{{ o.channel }}</span>
+            </span>
+            <span v-if="o.assignee" class="flex items-center gap-1.5">
+              <span class="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#67C23A] text-[9px] font-semibold text-white">{{ initials(o.assignee) }}</span>
+              <span class="text-xs font-medium text-[#67C23A]">{{ o.assignee }}</span>
+            </span>
           </div>
         </el-card>
       </div>

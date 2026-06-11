@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppSidebar: typeof import('./src/components/layout/AppSidebar.vue')['default']
     AppTopbar: typeof import('./src/components/layout/AppTopbar.vue')['default']
+    BrandLogo: typeof import('./src/components/layout/BrandLogo.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElBadge: typeof import('element-plus/es')['ElBadge']
     ElButton: typeof import('element-plus/es')['ElButton']
