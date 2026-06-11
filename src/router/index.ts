@@ -30,6 +30,13 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Ocorrências' },
   },
   {
+    // Detalhe da ocorrência (clique em um card) — Figma 8214:112869.
+    path: '/ocorrencias/:id',
+    name: 'ocorrencia-detalhe',
+    component: () => import('@/pages/OcorrenciaDetalheView.vue'),
+    meta: { title: 'Detalhe da ocorrência' },
+  },
+  {
     // Página de validação da stack (Element Plus + Tailwind). Pode remover
     // depois que os fluxos reais estiverem prontos.
     path: '/demo',

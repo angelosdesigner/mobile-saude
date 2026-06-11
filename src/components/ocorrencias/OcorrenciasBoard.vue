@@ -85,6 +85,7 @@ const initials = (name: string) =>
           :class="dragId === o.id ? 'opacity-40' : ''"
           @dragstart="dragId = o.id"
           @dragend="dragId = null; dragOverCol = null"
+          @click="$router.push(`/ocorrencias/${o.id}`)"
         >
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1.5 text-xs text-[#909399]">

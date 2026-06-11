@@ -34,9 +34,9 @@ const pageSize = ref(100)
         </template>
       </el-table-column>
       <el-table-column label="Ações" width="120" align="center">
-        <template #default>
+        <template #default="{ row }">
           <div class="flex justify-center gap-2">
-            <el-button circle size="small" title="Visualizar">
+            <el-button circle size="small" title="Visualizar" @click="$router.push(`/ocorrencias/${row.id}`)">
               <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" /><circle cx="12" cy="12" r="3" /></svg>
             </el-button>
             <el-button circle size="small" title="Editar">
