@@ -12,6 +12,8 @@ import ModalVideochamada from '@/components/ocorrencias/modais/ModalVideochamada
 import ModalAnexar from '@/components/ocorrencias/modais/ModalAnexar.vue'
 import ModalCobrarSetor from '@/components/ocorrencias/modais/ModalCobrarSetor.vue'
 import ModalVincular from '@/components/ocorrencias/modais/ModalVincular.vue'
+import FloatingActions from '@/components/ocorrencias/FloatingActions.vue'
+import CopilotButton from '@/components/ocorrencias/CopilotButton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -29,6 +31,8 @@ const showVincular = ref(false)
 
 function onAcao(cmd: string) {
   const map: Record<string, { value: boolean }> = {
+    ligacao: showLigacao,
+    template: showTemplate,
     finalizar: showFinalizar,
     encaminhar: showEncaminhar,
     vincular: showVincular,
@@ -94,39 +98,8 @@ const dados = computed(() =>
             </div>
           </div>
         </div>
-        <!-- Floating actions -->
-        <div class="flex flex-wrap items-center justify-end gap-2">
-          <el-button @click="showLigacao = true">
-            <svg class="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" /></svg>
-            Ligação
-          </el-button>
-          <el-button @click="onAcao('video')">
-            <svg class="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m23 7-7 5 7 5z" /><rect x="1" y="5" width="15" height="14" rx="2" /></svg>
-            Vídeo
-          </el-button>
-          <el-button @click="showTemplate = true">
-            <svg class="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z" /></svg>
-            Template
-          </el-button>
-          <el-button @click="onAcao('anexar')">
-            <svg class="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.4 11.05 12.25 20.2a5 5 0 0 1-7.07-7.07l9.19-9.19a3 3 0 1 1 4.24 4.24l-9.2 9.19a1 1 0 0 1-1.41-1.41l8.49-8.49" /></svg>
-            Anexar
-          </el-button>
-          <el-dropdown trigger="click" @command="onAcao">
-            <el-button type="primary">
-              Ações
-              <svg class="ml-1 h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg>
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="finalizar">Finalizar ocorrência</el-dropdown-item>
-                <el-dropdown-item command="encaminhar">Encaminhar atendimento</el-dropdown-item>
-                <el-dropdown-item command="vincular">Vincular protocolo</el-dropdown-item>
-                <el-dropdown-item command="cobrar">Cobrar setor</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
+        <!-- As floating actions ficam na barra flutuante (abaixo). -->
+        <div class="text-xs text-[#C0C4CC]">Atendimento #{{ oc.id }}</div>
       </div>
 
       <div class="grid gap-5 lg:grid-cols-3">
@@ -188,5 +161,11 @@ const dados = computed(() =>
     <ModalAnexar v-model="showAnexar" />
     <ModalCobrarSetor v-model="showCobrar" />
     <ModalVincular v-model="showVincular" />
+
+    <!-- Floating actions bar + Copilot (fixos, canto inferior central) -->
+    <div v-if="oc" class="fixed bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3">
+      <FloatingActions @action="onAcao" />
+      <CopilotButton />
+    </div>
   </DashboardLayout>
 </template>
