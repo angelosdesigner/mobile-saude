@@ -2,8 +2,17 @@
 import { computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
-import { useOcorrenciasStore } from '@/stores/ocorrencias'
+import { useOcorrenciasStore, type StatTone } from '@/stores/ocorrencias'
 import { columns, columnLabel } from '@/types/ocorrencias'
+
+// Tom semântico → token de cor do número da métrica.
+const statText: Record<StatTone, string> = {
+  secondary: 'text-ms-text-secondary',
+  danger: 'text-ms-danger',
+  warning: 'text-ms-warning',
+  primary: 'text-ms-primary',
+  success: 'text-ms-success',
+}
 
 // Dashboard do gestor: visão agregada sobre os MESMOS dados que os atendentes
 // produzem (reaproveita o store de ocorrências). Ponto de partida real — as
@@ -38,7 +47,7 @@ const maxColuna = computed(() => Math.max(1, ...porColuna.value.map((c) => c.tot
           body-class="!p-4"
           class="!border-ms-border-light"
         >
-          <div class="text-2xl font-bold" :style="{ color: s.color }">{{ s.value }}</div>
+          <div class="text-2xl font-bold" :class="statText[s.tone]">{{ s.value }}</div>
           <div class="mt-1 text-xs text-ms-text-secondary">{{ s.label }}</div>
         </el-card>
       </div>

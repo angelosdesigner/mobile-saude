@@ -49,7 +49,9 @@
 @theme {
   --color-ms-text-primary: #303133;
   --color-ms-text-regular: #606266;
-  --color-ms-text-secondary: #909399;
+  /* Secundário levemente escurecido vs. o #909399 do EP para alcançar contraste
+     WCAG AA (~4.6:1 sobre branco) em textos pequenos. */
+  --color-ms-text-secondary: #73777c;
   --color-ms-text-placeholder: #c0c4cc;
   --color-ms-primary: #409eff;
   --color-ms-primary-light: #ecf5ff;
@@ -85,6 +87,15 @@ body {
   margin: 0;
   background: var(--color-ms-bg);
   font-family: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Foco visível acessível (WCAG 2.4.7) para controles custom — botões nativos,
+   links e elementos focáveis. `:where()` mantém baixa especificidade para não
+   conflitar com o foco próprio do Element Plus. */
+:where(button, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-ms-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 /*

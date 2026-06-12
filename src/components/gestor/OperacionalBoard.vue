@@ -23,8 +23,8 @@ const badgeBg: Record<StageTone, string> = {
 const pillClass: Record<PillTone, string> = {
   primary: 'bg-ms-primary-light text-ms-primary',
   info: 'bg-ms-fill-light text-ms-text-secondary',
-  warning: 'bg-[#FDF6EC] text-ms-warning',
-  success: 'bg-[#F0F9EB] text-ms-success',
+  warning: 'bg-ms-warning/10 text-ms-warning',
+  success: 'bg-ms-success/10 text-ms-success',
 }
 
 const slaClass: Record<SlaState, string> = {
@@ -40,7 +40,9 @@ const slaDot: Record<SlaState, string> = {
   Estourou: 'bg-ms-danger',
 }
 
-const channelColor = (c: string) => (/whats/i.test(c) ? '#25D366' : '#909399')
+// #25D366 é a cor de marca do WhatsApp (exceção legítima); o demais usa token.
+const channelColor = (c: string) =>
+  /whats/i.test(c) ? '#25D366' : 'var(--color-ms-text-secondary)'
 </script>
 
 <template>

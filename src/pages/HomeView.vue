@@ -11,8 +11,10 @@ const flows = routes.filter(
 <template>
   <section class="mx-auto flex max-w-3xl flex-col gap-6 p-8">
     <header class="flex flex-col gap-1">
-      <h1 class="text-3xl font-bold text-slate-800">Mobile Saúde</h1>
-      <p class="text-slate-500">Índice de fluxos. Cada tela do Figma vira uma rota linkada aqui.</p>
+      <h1 class="text-3xl font-bold text-ms-text-primary">Mobile Saúde</h1>
+      <p class="text-ms-text-secondary">
+        Índice de fluxos. Cada tela do Figma vira uma rota linkada aqui.
+      </p>
     </header>
 
     <div class="grid gap-4 sm:grid-cols-2">
@@ -24,12 +26,12 @@ const flows = routes.filter(
       >
         <el-card shadow="hover" class="h-full transition hover:-translate-y-0.5">
           <div class="flex items-center justify-between">
-            <span class="font-medium text-slate-800">
+            <span class="font-medium text-ms-text-primary">
               {{ flow.meta?.title ?? flow.name }}
             </span>
-            <span class="text-slate-400">→</span>
+            <span class="text-ms-text-placeholder">→</span>
           </div>
-          <p class="mt-1 text-sm text-slate-500">{{ flow.path }}</p>
+          <p class="mt-1 text-sm text-ms-text-secondary">{{ flow.path }}</p>
         </el-card>
       </router-link>
     </div>

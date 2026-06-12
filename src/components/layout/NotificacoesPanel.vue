@@ -6,11 +6,12 @@ const store = useOcorrenciasStore()
 const { notifications, unreadCount } = storeToRefs(store)
 const { markAllRead } = store
 
-const tint: Record<string, { bg: string; fg: string }> = {
-  warning: { bg: '#FDF6EC', fg: '#E6A23C' },
-  info: { bg: '#ECF5FF', fg: '#409EFF' },
-  danger: { bg: '#FEF0F0', fg: '#F56C6C' },
-  success: { bg: '#F0F9EB', fg: '#67C23A' },
+// Classes de token (com opacidade) por tipo — adaptam automaticamente ao tema.
+const tintClass: Record<string, string> = {
+  warning: 'bg-ms-warning/10 text-ms-warning',
+  info: 'bg-ms-primary/10 text-ms-primary',
+  danger: 'bg-ms-danger/10 text-ms-danger',
+  success: 'bg-ms-success/10 text-ms-success',
 }
 </script>
 
@@ -41,7 +42,7 @@ const tint: Record<string, { bg: string; fg: string }> = {
       >
         <div
           class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-          :style="{ backgroundColor: tint[n.type].bg, color: tint[n.type].fg }"
+          :class="tintClass[n.type]"
         >
           <svg
             class="h-5 w-5"

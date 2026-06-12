@@ -27,17 +27,20 @@ function onDragEnd() {
   dragOverCol.value = null
 }
 
+// Cor do badge via token (CSS var) para inverter no tema escuro.
 const colMeta: Record<ColumnKey, { icon: 'none' | 'clock' | 'share' | 'check'; badge: string }> = {
-  NOVO: { icon: 'none', badge: '#1F2937' },
-  'EM ATENDIMENTO': { icon: 'none', badge: '#E6A23C' },
-  'EM ESPERA': { icon: 'clock', badge: '#E6A23C' },
-  ENCAMINHAMENTOS: { icon: 'share', badge: '#E6A23C' },
-  'CONCLUÍDOS NO DIA': { icon: 'check', badge: '#E6A23C' },
+  NOVO: { icon: 'none', badge: 'var(--color-ms-text-secondary)' },
+  'EM ATENDIMENTO': { icon: 'none', badge: 'var(--color-ms-warning)' },
+  'EM ESPERA': { icon: 'clock', badge: 'var(--color-ms-warning)' },
+  ENCAMINHAMENTOS: { icon: 'share', badge: 'var(--color-ms-warning)' },
+  'CONCLUÍDOS NO DIA': { icon: 'check', badge: 'var(--color-ms-warning)' },
 }
 
 const channelIcon = (c: string) =>
   /whats/i.test(c) ? 'whatsapp' : /tele|fone/i.test(c) ? 'phone' : 'web'
-const channelColor = (c: string) => (/whats/i.test(c) ? '#25D366' : '#909399')
+// #25D366 é a cor de marca do WhatsApp (exceção legítima); o demais usa token.
+const channelColor = (c: string) =>
+  /whats/i.test(c) ? '#25D366' : 'var(--color-ms-text-secondary)'
 const initials = (name: string) =>
   name
     .split(' ')

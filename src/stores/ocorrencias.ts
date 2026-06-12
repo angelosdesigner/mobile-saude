@@ -11,6 +11,9 @@ import type {
 import { columns, columnLabel } from '@/types/ocorrencias'
 import { fetchOcorrencias, updateOcorrenciaColumn } from '@/services/ocorrenciasService'
 
+// Tom semântico dos chips de estatística (a view mapeia para o token de cor).
+export type StatTone = 'secondary' | 'danger' | 'warning' | 'primary' | 'success'
+
 // Store da feature "Ocorrências". Substitui o antigo composable de estado
 // module-level: o estado agora é explícito, testável (cada teste cria uma
 // instância limpa via `createPinia`) e resetável, e os dados vêm da camada de
@@ -205,31 +208,34 @@ export const useOcorrenciasStore = defineStore('ocorrencias', () => {
       >,
   )
 
-  /** Estatísticas derivadas do conjunto filtrado (não mais hardcoded). */
-  const stats = computed(() => {
+  /**
+   * Estatísticas derivadas do conjunto filtrado. Emite um TOM semântico
+   * (não cor) — a view resolve para o token, mantendo a cor fora do estado.
+   */
+  const stats = computed((): { label: string; value: number; tone: StatTone }[] => {
     const list = filteredList.value
     return [
-      { label: 'Total', value: list.length, color: '#909399' },
+      { label: 'Total', value: list.length, tone: 'secondary' },
       {
         label: 'SLA regulatório',
         value: list.filter((o) => o.sla === 'Crítico').length,
-        color: '#F56C6C',
+        tone: 'danger',
       },
       {
         label: 'SLA interno',
         value: list.filter((o) => o.sla === 'Vencido').length,
-        color: '#F56C6C',
+        tone: 'danger',
       },
-      { label: 'Atenção', value: list.filter((o) => o.sla === 'Atenção').length, color: '#E6A23C' },
+      { label: 'Atenção', value: list.filter((o) => o.sla === 'Atenção').length, tone: 'warning' },
       {
         label: 'Alta prioridade',
         value: list.filter((o) => o.prioridade === 'Alta').length,
-        color: '#F56C6C',
+        tone: 'danger',
       },
       {
         label: 'Não atribuídos',
         value: list.filter((o) => o.atendente === 'Não atribuídos').length,
-        color: '#909399',
+        tone: 'secondary',
       },
     ]
   })

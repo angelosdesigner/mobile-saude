@@ -142,13 +142,13 @@ const kpis = [
   <DashboardLayout>
     <!-- Cabeçalho da página -->
     <div class="mb-6">
-      <h1 class="text-[28px] font-bold leading-tight text-[#111827]">Prioridades de Hoje</h1>
+      <h1 class="text-[28px] font-bold leading-tight text-ms-text-primary">Prioridades de Hoje</h1>
       <p class="mt-1 text-ms-text-regular">Aqui estão os casos que merecem sua atenção agora.</p>
     </div>
 
     <div class="flex flex-col gap-5">
       <!-- ── 1. Contenção de Dano (danger) ───────────────────────────────── -->
-      <section class="rounded-xl border border-[#FDE2E2] bg-[#FEF2F2] p-5">
+      <section class="rounded-xl border border-ms-danger/20 bg-ms-danger/5 p-5">
         <header class="mb-4 flex items-start gap-3">
           <div
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ms-danger text-white"
@@ -169,7 +169,7 @@ const kpis = [
             </svg>
           </div>
           <div>
-            <h2 class="text-lg font-bold text-[#991B1B]">
+            <h2 class="text-lg font-bold text-ms-danger">
               Contenção de Dano — Risco Jurídico Imediato
             </h2>
             <p class="text-sm text-ms-text-regular">
@@ -183,7 +183,7 @@ const kpis = [
             v-for="card in contencaoCards"
             :key="card.title"
             shadow="always"
-            class="!border-[#FDE2E2]"
+            class="!border-ms-danger/20"
           >
             <el-tag type="danger" effect="light" size="small" class="!uppercase">{{
               card.tag
@@ -203,7 +203,7 @@ const kpis = [
       </section>
 
       <!-- ── 2. Risco Jurídico e Financeiro (warning) ────────────────────── -->
-      <section class="rounded-xl border border-[#FAECD8] bg-[#FFFBEB] p-5">
+      <section class="rounded-xl border border-ms-warning/20 bg-ms-warning/5 p-5">
         <header class="mb-4 flex items-start gap-3">
           <div
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ms-warning text-white"
@@ -222,7 +222,7 @@ const kpis = [
             </svg>
           </div>
           <div>
-            <h2 class="text-lg font-bold text-[#92400E]">
+            <h2 class="text-lg font-bold text-ms-warning">
               Risco Jurídico e Financeiro — Prazos Críticos
             </h2>
             <p class="text-sm text-ms-text-regular">
@@ -236,7 +236,7 @@ const kpis = [
             v-for="card in prazosCards"
             :key="card.title"
             shadow="always"
-            class="!border-[#FAECD8]"
+            class="!border-ms-warning/20"
           >
             <el-tag type="warning" effect="light" size="small" class="!uppercase">{{
               card.tag
@@ -256,7 +256,7 @@ const kpis = [
       </section>
 
       <!-- ── 3. Controle Operacional (primary) ───────────────────────────── -->
-      <section class="rounded-xl border border-[#D9ECFF] bg-ms-primary-light p-5">
+      <section class="rounded-xl border border-ms-primary/20 bg-ms-primary-light p-5">
         <header class="mb-4 flex items-start gap-3">
           <div
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ms-primary text-white"
@@ -275,7 +275,7 @@ const kpis = [
             </svg>
           </div>
           <div>
-            <h2 class="text-lg font-bold text-[#1D4ED8]">
+            <h2 class="text-lg font-bold text-ms-primary">
               Controle Operacional — Prevenção de Risco
             </h2>
             <p class="text-sm text-ms-text-regular">
@@ -289,7 +289,7 @@ const kpis = [
             v-for="col in encColumns"
             :key="col.title"
             shadow="always"
-            class="!border-[#D9ECFF]"
+            class="!border-ms-primary/20"
           >
             <h3 class="text-sm font-bold uppercase text-ms-text-primary">{{ col.title }}</h3>
             <div
@@ -310,7 +310,7 @@ const kpis = [
 
         <div class="mt-4 grid gap-4 lg:grid-cols-2">
           <!-- Gestão de SLA Interno -->
-          <el-card shadow="always" class="!border-[#D9ECFF]">
+          <el-card shadow="always" class="!border-ms-primary/20">
             <h3 class="text-sm font-bold uppercase text-ms-text-primary">Gestão de SLA Interno</h3>
             <ul class="mt-3 space-y-1">
               <li
@@ -334,7 +334,7 @@ const kpis = [
               :key="t.label"
               shadow="always"
               body-class="!p-4"
-              class="!border-[#D9ECFF]"
+              class="!border-ms-primary/20"
             >
               <div class="text-xl font-bold text-ms-text-primary">{{ t.value }}</div>
               <div class="text-xs text-ms-text-regular">{{ t.label }}</div>
@@ -345,7 +345,7 @@ const kpis = [
       </section>
 
       <!-- ── 4. Meu Desempenho (success) ─────────────────────────────────── -->
-      <section class="rounded-xl border border-[#E1F3D8] bg-[#F0F9EB] p-5">
+      <section class="rounded-xl border border-ms-success/20 bg-ms-success/5 p-5">
         <header class="mb-4 flex items-start gap-3">
           <div
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ms-success text-white"
@@ -362,11 +362,11 @@ const kpis = [
               <path d="M20 6 9 17l-5-5" />
             </svg>
           </div>
-          <h2 class="text-lg font-bold text-[#15803D]">Meu desempenho</h2>
+          <h2 class="text-lg font-bold text-ms-success">Meu desempenho</h2>
         </header>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <el-card v-for="k in kpis" :key="k.tag" shadow="always" class="!border-[#E1F3D8]">
+          <el-card v-for="k in kpis" :key="k.tag" shadow="always" class="!border-ms-success/20">
             <el-tag type="success" effect="light" size="small">{{ k.tag }}</el-tag>
             <div class="mt-2 text-[28px] font-bold text-ms-success">{{ k.value }}</div>
             <div class="text-sm font-medium text-ms-text-regular">{{ k.label }}</div>

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 // Tema claro/escuro. Persiste a escolha em localStorage e, na primeira visita,
 // segue a preferência do sistema. A classe `dark` é aplicada no <html> — é o
@@ -18,31 +18,39 @@ function stored(): ThemeMode | null {
 }
 
 export const useThemeStore = defineStore('theme', () => {
+  // `true` enquanto o usuário não escolheu manualmente: segue o SO em runtime.
+  const followSystem = ref(stored() === null)
   const mode = ref<ThemeMode>(stored() ?? systemPref())
 
-  const isDark = ref(mode.value === 'dark')
+  const isDark = computed(() => mode.value === 'dark')
 
   function apply(m: ThemeMode) {
     document.documentElement.classList.toggle('dark', m === 'dark')
   }
 
   function setMode(m: ThemeMode) {
+    followSystem.value = false
     mode.value = m
   }
 
   function toggle() {
-    mode.value = mode.value === 'dark' ? 'light' : 'dark'
+    setMode(mode.value === 'dark' ? 'light' : 'dark')
   }
+
+  // Acompanha a preferência do SO em tempo real — só até a 1ª escolha manual.
+  window.matchMedia?.('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (followSystem.value) mode.value = e.matches ? 'dark' : 'light'
+  })
 
   watch(
     mode,
     (m) => {
-      isDark.value = m === 'dark'
       apply(m)
-      localStorage.setItem(STORAGE_KEY, m)
+      // Só persiste a escolha manual; no modo "seguir SO" não grava.
+      if (!followSystem.value) localStorage.setItem(STORAGE_KEY, m)
     },
     { immediate: true },
   )
 
-  return { mode, isDark, setMode, toggle }
+  return { mode, isDark, followSystem, setMode, toggle }
 })

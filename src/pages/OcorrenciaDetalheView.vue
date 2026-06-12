@@ -181,7 +181,7 @@ const dados = computed(() =>
                 :class="
                   m.from === 'atendente'
                     ? 'bg-ms-primary text-white'
-                    : 'bg-[#F0F2F5] text-ms-text-primary'
+                    : 'bg-ms-fill-light text-ms-text-primary'
                 "
               >
                 {{ m.text }}
