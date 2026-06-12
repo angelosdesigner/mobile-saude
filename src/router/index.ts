@@ -45,6 +45,13 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Visão do gestor' },
   },
   {
+    // Ocorrências — Gestão Operacional (Kanban) — Figma 8074:4666.
+    path: '/gestor/ocorrencias',
+    name: 'gestor-ocorrencias',
+    component: () => import('@/pages/gestor/OcorrenciasView.vue'),
+    meta: { title: 'Ocorrências · Gestão Operacional' },
+  },
+  {
     // Página de validação da stack (Element Plus + Tailwind). Pode remover
     // depois que os fluxos reais estiverem prontos.
     path: '/demo',

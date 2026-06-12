@@ -57,6 +57,7 @@ declare module 'vue' {
     NotificacoesPanel: typeof import('./src/components/layout/NotificacoesPanel.vue')['default']
     OcorrenciasBoard: typeof import('./src/components/ocorrencias/OcorrenciasBoard.vue')['default']
     OcorrenciasList: typeof import('./src/components/ocorrencias/OcorrenciasList.vue')['default']
+    OperacionalBoard: typeof import('./src/components/gestor/OperacionalBoard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
