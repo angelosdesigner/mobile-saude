@@ -50,6 +50,7 @@ declare module 'vue' {
     EmptyState: typeof import('./src/components/ui/EmptyState.vue')['default']
     FilaFab: typeof import('./src/components/fila/FilaFab.vue')['default']
     FilaPanel: typeof import('./src/components/fila/FilaPanel.vue')['default']
+    FilasTab: typeof import('./src/components/gestor/tempo-real/FilasTab.vue')['default']
     FiltrosAvancados: typeof import('./src/components/ocorrencias/FiltrosAvancados.vue')['default']
     FloatingActions: typeof import('./src/components/ocorrencias/FloatingActions.vue')['default']
     FloatingDock: typeof import('./src/components/ocorrencias/FloatingDock.vue')['default']

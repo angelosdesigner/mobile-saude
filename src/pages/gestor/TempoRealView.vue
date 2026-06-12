@@ -10,9 +10,11 @@ const InicioTab = defineAsyncComponent(() => import('@/components/gestor/tempo-r
 const AtendimentosTab = defineAsyncComponent(
   () => import('@/components/gestor/tempo-real/AtendimentosTab.vue'),
 )
+const FilasTab = defineAsyncComponent(() => import('@/components/gestor/tempo-real/FilasTab.vue'))
 const tabComponents: Record<string, ReturnType<typeof defineAsyncComponent>> = {
   inicio: InicioTab,
   atendimentos: AtendimentosTab,
+  filas: FilasTab,
 }
 
 const route = useRoute()
@@ -21,7 +23,7 @@ const router = useRouter()
 const tabs = [
   { key: 'inicio', label: 'Início', ready: true },
   { key: 'atendimentos', label: 'Atendimentos', ready: true },
-  { key: 'filas', label: 'Gestão de filas e atendimento humano', ready: false },
+  { key: 'filas', label: 'Gestão de filas e atendimento humano', ready: true },
   { key: 'abandonos', label: 'Abandonos e desistência', ready: false },
   { key: 'performance', label: 'Performance e Workforce', ready: false },
   { key: 'equipe', label: 'Equipe', ready: false },
