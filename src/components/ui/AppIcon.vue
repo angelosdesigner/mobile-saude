@@ -27,6 +27,14 @@ const icons: Record<string, SvgEl[]> = {
     },
   ],
   moon: [{ tag: 'path', d: 'M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z' }],
+  eye: [
+    { tag: 'path', d: 'M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z' },
+    { tag: 'circle', cx: 12, cy: 12, r: 3 },
+  ],
+  edit: [
+    { tag: 'path', d: 'M12 20h9' },
+    { tag: 'path', d: 'M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z' },
+  ],
 }
 
 withDefaults(defineProps<{ name: keyof typeof icons; size?: number | string }>(), { size: 16 })

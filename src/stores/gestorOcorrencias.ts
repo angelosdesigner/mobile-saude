@@ -74,6 +74,7 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     headers,
     search,
     load,
+    filtered,
     board,
     headerByStage,
   }

@@ -1,94 +1,77 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useOcorrenciasStore } from '@/stores/ocorrencias'
+import DataList from '@/components/ui/DataList.vue'
+import type { DataListColumn } from '@/components/ui/dataList'
+import type { Ocorrencia } from '@/types/ocorrencias'
 
-// Mesma fonte filtrada do Quadro.
+// Mesma fonte filtrada do Quadro; mesmo primitivo visual (DataList) da Lista do
+// gestor, com as colunas próprias da visão do ATENDENTE.
+const router = useRouter()
 const { filteredList } = storeToRefs(useOcorrenciasStore())
 
-const page = ref(1)
-const pageSize = ref(100)
+const listColumns: DataListColumn[] = [
+  { key: 'protocol', label: 'Protocolo', width: 170, sortable: true },
+  { key: 'beneficiary', label: 'Beneficiário', minWidth: 220, sortable: true },
+  { key: 'risk', label: 'Classificação de risco', width: 200 },
+  { key: 'tipo', label: 'Tipo de ocorrência', minWidth: 240 },
+  { key: 'status', label: 'Status', width: 180 },
+]
+
+function onVisualizar(o: Ocorrencia) {
+  router.push(`/ocorrencias/${o.id}`)
+}
+function onEditar(o: Ocorrencia) {
+  ElMessage.info(`Editar: ${o.protocol}`)
+}
 </script>
 
 <template>
-  <el-card shadow="never" body-class="!p-0" class="!border-ms-border-light">
-    <el-table
-      :data="filteredList"
-      style="width: 100%"
-      stripe
-      empty-text="Nenhuma ocorrência para os filtros aplicados"
-    >
-      <el-table-column type="selection" width="48" />
-      <el-table-column prop="protocol" label="Protocolo" sortable width="180" />
-      <el-table-column prop="beneficiary" label="Beneficiário" sortable min-width="220" />
-      <el-table-column label="Classificação de risco" sortable width="200">
-        <template #default="{ row }">
-          <el-tag v-if="row.risk" type="danger" effect="plain" size="small" class="!uppercase">
-            Risco Jurídico Configurado
-          </el-tag>
-          <span v-else class="text-ms-text-placeholder">—</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="tipo"
-        label="Tipo de ocorrência"
-        sortable
-        min-width="240"
-        show-overflow-tooltip
-      />
-      <el-table-column label="Status" sortable width="190">
-        <template #default="{ row }">
-          <el-tag :type="row.statusType" effect="light" size="small">{{ row.status }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Ações" width="120" align="center">
-        <template #default="{ row }">
-          <div class="flex justify-center gap-2">
-            <el-button
-              circle
-              size="small"
-              title="Visualizar"
-              @click="$router.push(`/ocorrencias/${row.id}`)"
-            >
-              <svg
-                class="h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
-                <circle cx="12" cy="12" r="3" />
-              </svg>
-            </el-button>
-            <el-button circle size="small" title="Editar">
-              <svg
-                class="h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M12 20h9" />
-                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
-              </svg>
-            </el-button>
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
+  <DataList
+    :columns="listColumns"
+    :rows="filteredList"
+    empty-text="Nenhuma ocorrência para os filtros aplicados"
+    @visualizar="onVisualizar"
+    @editar="onEditar"
+  >
+    <template #cell-risk="{ row }">
+      <el-tag v-if="row.risk" type="danger" effect="plain" size="small" class="!uppercase">
+        Risco Jurídico Configurado
+      </el-tag>
+      <span v-else class="text-ms-text-placeholder">—</span>
+    </template>
+    <template #cell-status="{ row }">
+      <el-tag :type="row.statusType" effect="light" size="small">{{ row.status }}</el-tag>
+    </template>
 
-    <!-- Paginação -->
-    <div class="flex items-center justify-center gap-4 px-4 py-4">
-      <span class="text-sm text-ms-text-secondary">{{ filteredList.length }} ocorrência(s)</span>
-      <el-pagination
-        v-model:current-page="page"
-        v-model:page-size="pageSize"
-        :page-sizes="[50, 100, 200]"
-        :total="filteredList.length"
-        layout="sizes, prev, pager, next, jumper"
-        background
-      />
-    </div>
-  </el-card>
+    <template #expand="{ row }">
+      <dl class="grid grid-cols-2 gap-x-8 gap-y-1 text-xs md:grid-cols-4">
+        <div>
+          <dt class="text-ms-text-secondary">Assunto</dt>
+          <dd class="text-ms-text-primary">{{ row.assunto }}</dd>
+        </div>
+        <div>
+          <dt class="text-ms-text-secondary">Canal</dt>
+          <dd class="text-ms-text-primary">{{ row.channel }}</dd>
+        </div>
+        <div>
+          <dt class="text-ms-text-secondary">SLA</dt>
+          <dd class="text-ms-text-primary">{{ row.sla }}</dd>
+        </div>
+        <div>
+          <dt class="text-ms-text-secondary">Prioridade</dt>
+          <dd class="text-ms-text-primary">{{ row.prioridade }}</dd>
+        </div>
+        <div>
+          <dt class="text-ms-text-secondary">Tempo</dt>
+          <dd class="text-ms-text-primary">{{ row.time }}</dd>
+        </div>
+        <div>
+          <dt class="text-ms-text-secondary">Atendente</dt>
+          <dd class="text-ms-text-primary">{{ row.atendente }}</dd>
+        </div>
+      </dl>
+    </template>
+  </DataList>
 </template>

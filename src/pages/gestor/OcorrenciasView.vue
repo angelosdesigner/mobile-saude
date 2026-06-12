@@ -4,16 +4,54 @@ import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import OperacionalBoard from '@/components/gestor/OperacionalBoard.vue'
+import DataList from '@/components/ui/DataList.vue'
+import type { DataListColumn } from '@/components/ui/dataList'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
-import type { StageTone, GestorStat } from '@/types/gestorOcorrencias'
+import { stages, type StageTone, type GestorStat, type GestorCard } from '@/types/gestorOcorrencias'
 
 const route = useRoute()
 const router = useRouter()
 
 const store = useGestorOcorrenciasStore()
-const { statusPills, stats, loading, search } = storeToRefs(store)
+const { statusPills, stats, loading, search, filtered } = storeToRefs(store)
 
 onMounted(() => store.load())
+
+// ── Modo Lista (mesma fonte do Kanban; colunas próprias da visão do gestor) ──
+const listColumns: DataListColumn[] = [
+  { key: 'beneficiary', label: 'Beneficiário', minWidth: 200, sortable: true },
+  { key: 'stage', label: 'Estágio', width: 180 },
+  { key: 'channel', label: 'Canal', width: 120 },
+  { key: 'atendente', label: 'Atendente', minWidth: 150 },
+  { key: 'situacao', label: 'Situação', minWidth: 170 },
+]
+
+const stageMeta = Object.fromEntries(stages.map((s) => [s.key, s])) as Record<
+  GestorCard['stage'],
+  (typeof stages)[number]
+>
+
+const stageTagClass: Record<StageTone, string> = {
+  primary: 'bg-ms-primary/10 text-ms-primary',
+  warning: 'bg-ms-warning/10 text-ms-warning',
+  teal: 'bg-ms-teal/10 text-ms-teal',
+  success: 'bg-ms-success/10 text-ms-success',
+}
+
+// "Situação" resumida por estágio (mesma informação dos cards do Kanban).
+function situacao(c: GestorCard): string {
+  if (c.stage === 'automatizado') return c.flag ?? c.fluxo ?? '—'
+  if (c.stage === 'fila') return `Posição ${c.posicao}º · ${c.espera}`
+  if (c.stage === 'humano') return `${c.sla} · ${c.tempoAtendimento}`
+  return `Concluído ${c.concluidoHora} · ${c.total}`
+}
+
+function onVisualizar(c: GestorCard) {
+  ElMessage.info(`Visualizar: ${c.beneficiary}`)
+}
+function onEditar(c: GestorCard) {
+  ElMessage.info(`Editar: ${c.beneficiary}`)
+}
 
 const viewMode = computed({
   get: () => (route.query.view === 'lista' ? 'lista' : 'quadro'),
@@ -114,13 +152,101 @@ const statDot: Record<GestorStat['tone'], string> = {
     <!-- Conteúdo -->
     <div v-loading="loading">
       <OperacionalBoard v-if="viewMode === 'quadro'" />
-      <div
+      <DataList
         v-else
-        class="flex flex-col items-center gap-2 rounded-lg border border-dashed border-ms-border py-16 text-center"
+        :columns="listColumns"
+        :rows="filtered"
+        empty-text="Nenhuma ocorrência para os filtros aplicados"
+        @visualizar="onVisualizar"
+        @editar="onEditar"
       >
-        <p class="font-medium text-ms-text-regular">Modo Lista</p>
-        <p class="text-sm text-ms-text-secondary">Em construção — o modo Quadro está disponível.</p>
-      </div>
+        <!-- Estágio (tag) -->
+        <template #cell-stage="{ row }">
+          <span
+            class="rounded-full px-2 py-0.5 text-[11px] font-medium"
+            :class="stageTagClass[stageMeta[row.stage].tone]"
+            >{{ stageMeta[row.stage].label }}</span
+          >
+        </template>
+        <!-- Atendente -->
+        <template #cell-atendente="{ row }">
+          <span :class="row.atendente ? 'text-ms-text-regular' : 'text-ms-text-placeholder'">{{
+            row.atendente ?? '—'
+          }}</span>
+        </template>
+        <!-- Situação -->
+        <template #cell-situacao="{ row }">
+          <span class="text-ms-text-regular">{{ situacao(row) }}</span>
+        </template>
+
+        <!-- Accordion: detalhes completos por estágio -->
+        <template #expand="{ row }">
+          <dl class="grid grid-cols-2 gap-x-8 gap-y-1 text-xs md:grid-cols-4">
+            <div>
+              <dt class="text-ms-text-secondary">Canal</dt>
+              <dd class="text-ms-text-primary">{{ row.channel }}</dd>
+            </div>
+            <template v-if="row.stage === 'automatizado'">
+              <div>
+                <dt class="text-ms-text-secondary">Fluxo</dt>
+                <dd class="text-ms-text-primary">{{ row.fluxo ?? '—' }}</dd>
+              </div>
+              <div>
+                <dt class="text-ms-text-secondary">Sinalização</dt>
+                <dd class="text-ms-text-primary">{{ row.flag ?? '—' }}</dd>
+              </div>
+              <div>
+                <dt class="text-ms-text-secondary">Risco jurídico</dt>
+                <dd :class="row.risco ? 'text-ms-danger' : 'text-ms-text-primary'">
+                  {{ row.risco ? 'Sim' : 'Não' }}
+                </dd>
+              </div>
+            </template>
+            <template v-else-if="row.stage === 'fila'">
+              <div>
+                <dt class="text-ms-text-secondary">Fila</dt>
+                <dd class="text-ms-text-primary">{{ row.filaTipo }}</dd>
+              </div>
+              <div>
+                <dt class="text-ms-text-secondary">Posição</dt>
+                <dd class="text-ms-text-primary">{{ row.posicao }}º</dd>
+              </div>
+              <div>
+                <dt class="text-ms-text-secondary">Espera</dt>
+                <dd class="text-ms-text-primary">{{ row.espera }}</dd>
+              </div>
+            </template>
+            <template v-else-if="row.stage === 'humano'">
+              <div>
+                <dt class="text-ms-text-secondary">Atendente</dt>
+                <dd class="text-ms-text-primary">{{ row.atendente }}</dd>
+              </div>
+              <div>
+                <dt class="text-ms-text-secondary">Tempo</dt>
+                <dd class="text-ms-text-primary">{{ row.tempoAtendimento }}</dd>
+              </div>
+              <div>
+                <dt class="text-ms-text-secondary">SLA</dt>
+                <dd class="text-ms-text-primary">{{ row.sla }}</dd>
+              </div>
+            </template>
+            <template v-else>
+              <div>
+                <dt class="text-ms-text-secondary">Concluído</dt>
+                <dd class="text-ms-text-primary">{{ row.concluidoHora }}</dd>
+              </div>
+              <div>
+                <dt class="text-ms-text-secondary">Atendente</dt>
+                <dd class="text-ms-text-primary">{{ row.atendente }}</dd>
+              </div>
+              <div>
+                <dt class="text-ms-text-secondary">Tempo total</dt>
+                <dd class="text-ms-text-primary">{{ row.total }}</dd>
+              </div>
+            </template>
+          </dl>
+        </template>
+      </DataList>
     </div>
   </DashboardLayout>
 </template>
