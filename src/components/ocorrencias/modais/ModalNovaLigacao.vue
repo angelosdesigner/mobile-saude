@@ -27,14 +27,14 @@ function ligar() {
     width="448"
     align-center
     :show-close="false"
-    class="ligacao-dialog !bg-[#2b2b2e]"
+    class="ligacao-dialog"
     @update:model-value="emit('update:modelValue', $event)"
   >
     <template #header>
       <div class="flex items-center justify-between">
-        <h3 class="text-xl font-bold text-white">Nova ligação</h3>
+        <h3 class="text-xl font-bold text-ms-text-primary">Nova ligação</h3>
         <button
-          class="flex h-8 w-8 items-center justify-center rounded-full bg-ms-surface/90 text-ms-text-primary"
+          class="flex h-8 w-8 items-center justify-center rounded-full bg-ms-fill-light text-ms-text-primary transition hover:bg-ms-border-lighter"
           aria-label="Fechar"
           @click="emit('update:modelValue', false)"
         >
@@ -45,21 +45,21 @@ function ligar() {
 
     <div class="space-y-4">
       <div>
-        <label class="mb-2 block font-medium text-white">Número de telefone</label>
+        <label class="mb-2 block font-medium text-ms-text-primary">Número de telefone</label>
         <input
           value="+55 61 9 9999-9999"
-          class="w-full rounded-lg border border-white/15 bg-ms-surface/5 px-4 py-2.5 text-white placeholder-white/40 outline-none focus:border-ms-primary"
+          class="w-full rounded-lg border border-ms-border bg-ms-fill-light px-4 py-2.5 text-ms-text-primary placeholder-ms-text-placeholder outline-none focus:border-ms-primary"
         />
       </div>
 
-      <div class="flex flex-col items-center gap-2 rounded-xl bg-ms-surface/5 py-6">
+      <div class="flex flex-col items-center gap-2 rounded-xl bg-ms-fill-light py-6">
         <div
           class="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#7C6CF2] to-[#5B4BD6] text-2xl font-semibold text-white"
         >
           {{ initials }}
         </div>
-        <div class="text-lg font-semibold text-white">{{ name }}</div>
-        <div class="text-sm text-white/60">31 anos • Beneficiária</div>
+        <div class="text-lg font-semibold text-ms-text-primary">{{ name }}</div>
+        <div class="text-sm text-ms-text-secondary">31 anos • Beneficiária</div>
       </div>
 
       <button
@@ -86,7 +86,7 @@ function ligar() {
 </template>
 
 <style>
-/* Modal escuro: corpo e header sem fundo branco. */
+/* Header e body herdam o fundo do dialog (que segue o tema via Element Plus). */
 .ligacao-dialog .el-dialog__header,
 .ligacao-dialog .el-dialog__body {
   background: transparent;
