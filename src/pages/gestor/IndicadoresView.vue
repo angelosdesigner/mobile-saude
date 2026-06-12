@@ -174,19 +174,19 @@ function tendTone(t: string): string {
 
 <template>
   <DashboardLayout>
-    <!-- Breadcrumb -->
-    <div class="mb-2 flex items-center gap-1 text-xs text-ms-text-secondary">
-      <span>Dashboard</span><span>/</span><span>Indicadores Gerais</span><span>/</span>
-      <span class="text-ms-text-regular">Centro de Indicadores Operacionais</span>
-    </div>
+    <!-- Breadcrumb (interativo) -->
+    <el-breadcrumb separator="/" class="mb-2">
+      <el-breadcrumb-item :to="{ path: '/gestor/tempo-real' }">Dashboard</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/gestor/indicadores' }"
+        >Indicadores Gerais</el-breadcrumb-item
+      >
+      <el-breadcrumb-item>Centro de Indicadores Operacionais</el-breadcrumb-item>
+    </el-breadcrumb>
 
     <!-- Cabeçalho -->
     <div class="mb-4 flex flex-wrap items-start justify-between gap-4">
       <div>
-        <div class="text-xs text-ms-text-secondary">Visão consolidada · Atualizado há 2min</div>
-        <h1 class="mt-0.5 text-2xl font-bold text-ms-text-primary">
-          Centro de Indicadores Operacionais
-        </h1>
+        <h1 class="text-2xl font-bold text-ms-text-primary">Centro de Indicadores Operacionais</h1>
         <p class="mt-1 text-sm text-ms-text-secondary">
           Análise temporal, comparativa e por segmento dos 5 KPIs estratégicos da operação.
         </p>
