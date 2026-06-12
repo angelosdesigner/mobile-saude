@@ -72,8 +72,8 @@ const slaColor = (sla: number) => (sla >= 90 ? C.success : sla >= 70 ? C.warning
 const filaScatterOption = computed(() => ({
   tooltip: {
     trigger: 'item',
-    formatter: (p: { data: [number, number, number, string] }) =>
-      `${p.data[3]}<br/>Aguardando: ${p.data[0]} · TME ${p.data[1]}min · SLA ${p.data[2]}%`,
+    formatter: (p: { value: [number, number, number, string] }) =>
+      `${p.value[3]}<br/>Aguardando: ${p.value[0]} · TME ${p.value[1]}min · SLA ${p.value[2]}%`,
   },
   grid: { left: 40, right: 16, top: 16, bottom: 36 },
   xAxis: {
@@ -98,8 +98,8 @@ const filaScatterOption = computed(() => ({
       symbolSize: (d: number[]) => 16 + d[2] / 3,
       label: {
         show: true,
-        formatter: (p: { data: [number, number, number, string] }) =>
-          `${p.data[3]} (SLA ${p.data[2]}%)`,
+        formatter: (p: { value: [number, number, number, string] }) =>
+          `${p.value[3]} (SLA ${p.value[2]}%)`,
         position: 'right',
         fontSize: 10,
         color: C.axis,

@@ -98,8 +98,8 @@ const tmeColor = (tme: number) => (tme >= 10 ? C.danger : tme >= 7 ? C.warning :
 const scatterOption = computed(() => ({
   tooltip: {
     trigger: 'item',
-    formatter: (p: { data: [number, number, string] }) =>
-      `${p.data[2]}<br/>Demanda ${p.data[0]} chamados/h · TME ${p.data[1]}min`,
+    formatter: (p: { value: [number, number, string] }) =>
+      `${p.value[2]}<br/>Demanda ${p.value[0]} chamados/h · TME ${p.value[1]}min`,
   },
   grid: { left: 44, right: 16, top: 16, bottom: 36 },
   xAxis: {
@@ -124,7 +124,7 @@ const scatterOption = computed(() => ({
       symbolSize: 16,
       label: {
         show: true,
-        formatter: (p: { data: [number, number, string] }) => p.data[2],
+        formatter: (p: { value: [number, number, string] }) => p.value[2],
         position: 'right',
         fontSize: 10,
         color: C.axis,

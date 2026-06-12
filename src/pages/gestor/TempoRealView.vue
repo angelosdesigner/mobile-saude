@@ -17,12 +17,16 @@ const AbandonosTab = defineAsyncComponent(
 const PerformanceTab = defineAsyncComponent(
   () => import('@/components/gestor/tempo-real/PerformanceTab.vue'),
 )
+const EquipeTab = defineAsyncComponent(
+  () => import('@/components/gestor/tempo-real/EquipeTab.vue'),
+)
 const tabComponents: Record<string, ReturnType<typeof defineAsyncComponent>> = {
   inicio: InicioTab,
   atendimentos: AtendimentosTab,
   filas: FilasTab,
   abandonos: AbandonosTab,
   performance: PerformanceTab,
+  equipe: EquipeTab,
 }
 
 const route = useRoute()
@@ -34,7 +38,7 @@ const tabs = [
   { key: 'filas', label: 'Gestão de filas e atendimento humano', ready: true },
   { key: 'abandonos', label: 'Abandonos e desistência', ready: true },
   { key: 'performance', label: 'Performance e Workforce', ready: true },
-  { key: 'equipe', label: 'Equipe', ready: false },
+  { key: 'equipe', label: 'Equipe', ready: true },
 ] as const
 
 const activeTab = computed({

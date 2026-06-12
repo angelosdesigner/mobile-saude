@@ -71,8 +71,8 @@ const abandonoFluxoOption = computed(() => ({
 const abandonoScatterOption = computed(() => ({
   tooltip: {
     trigger: 'item',
-    formatter: (p: { data: [number, number, number, string] }) =>
-      `${p.data[3]}<br/>BOT ${p.data[0]}% · Humana ${p.data[1]}% · vol ${p.data[2]}`,
+    formatter: (p: { value: [number, number, number, string] }) =>
+      `${p.value[3]}<br/>BOT ${p.value[0]}% · Humana ${p.value[1]}% · vol ${p.value[2]}`,
   },
   grid: { left: 44, right: 16, top: 16, bottom: 36 },
   xAxis: {
@@ -97,7 +97,8 @@ const abandonoScatterOption = computed(() => ({
       symbolSize: (d: number[]) => 14 + d[2] / 3,
       label: {
         show: true,
-        formatter: (p: { data: [number, number, number, string] }) => `${p.data[3]} (${p.data[2]})`,
+        formatter: (p: { value: [number, number, number, string] }) =>
+          `${p.value[3]} (${p.value[2]})`,
         position: 'right',
         fontSize: 10,
         color: C.axis,
