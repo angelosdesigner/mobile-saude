@@ -9,15 +9,17 @@ import {
   detalhePorIndicador,
   dias,
   segmentacao,
+  segmentacaoLegenda,
   segmentosCriticos,
   diagnostico,
   recomendacoes,
   type IndicadorKey,
+  type FilaCor,
 } from '@/data/gestorIndicadores'
 
 // Centro de Indicadores Operacionais (Figma 7651:87503). O indicador ativo vem
-// de ?ind= — aceita as chaves canônicas (fcr/resolucao/tme/tmef/nps) e os apelidos
-// vindos dos cards do Início.
+// de ?ind= — aceita as chaves canônicas (fcr/resolucao/tme/tmef/nps/abandono) e os
+// apelidos vindos dos cards do Início.
 const route = useRoute()
 const router = useRouter()
 
@@ -27,6 +29,7 @@ const indAlias: Record<string, IndicadorKey> = {
   tme: 'tme',
   tmef: 'tmef',
   nps: 'nps',
+  abandono: 'abandono',
   'fix-call-resolution': 'fcr',
   'resolucao-chamados': 'resolucao',
   tma: 'tme',
@@ -50,15 +53,27 @@ const C = {
   split: 'rgba(144,147,153,0.15)',
 }
 
-const statusColor: Record<'ok' | 'warning' | 'danger', string> = {
-  ok: C.success,
-  warning: C.warning,
-  danger: C.danger,
-}
 const statusDot: Record<'ok' | 'warning' | 'danger', string> = {
   ok: 'bg-ms-success',
   warning: 'bg-ms-warning',
   danger: 'bg-ms-danger',
+}
+
+// COR da bolha = fila (legenda do Figma).
+const filaColor: Record<FilaCor, string> = {
+  duvidas: C.primary,
+  reembolso: C.warning,
+  autoriz: C.success,
+}
+const filaDot: Record<FilaCor, string> = {
+  duvidas: 'bg-ms-primary',
+  reembolso: 'bg-ms-warning',
+  autoriz: 'bg-ms-success',
+}
+const statusLinha: Record<'Crítico' | 'Atenção' | 'OK', string> = {
+  Crítico: 'text-ms-danger',
+  Atenção: 'text-ms-warning',
+  OK: 'text-ms-success',
 }
 
 const evolucaoOption = computed(() => ({
@@ -114,8 +129,8 @@ const evolucaoOption = computed(() => ({
 const segmentacaoOption = computed(() => ({
   tooltip: {
     trigger: 'item',
-    formatter: (p: { data: [number, number, number, string] }) =>
-      `${p.data[3]}<br/>Volume: ${p.data[0]} · ${p.data[1]}`,
+    formatter: (p: { data: [number, number, number, string, string] }) =>
+      `${p.data[3]}<br/>Volume: ${p.data[0]} · TME ${p.data[1]}min<br/>${p.data[4]}`,
   },
   grid: { left: 40, right: 16, top: 16, bottom: 40 },
   xAxis: {
@@ -137,8 +152,8 @@ const segmentacaoOption = computed(() => ({
       type: 'scatter',
       symbolSize: (d: number[]) => d[2],
       data: segmentacao.map((s) => ({
-        value: [s.volume, s.valor, s.size, s.nome],
-        itemStyle: { color: statusColor[s.status], opacity: 0.7 },
+        value: [s.volume, s.tme, s.size, s.nome, s.caption],
+        itemStyle: { color: filaColor[s.fila], opacity: 0.75 },
       })),
       markLine: {
         silent: true,
@@ -150,10 +165,10 @@ const segmentacaoOption = computed(() => ({
   ],
 }))
 
-const tendenciaTone: Record<string, string> = {
-  Piorando: 'text-ms-danger',
-  Estável: 'text-ms-text-secondary',
-  Melhorando: 'text-ms-success',
+function tendTone(t: string): string {
+  if (t.startsWith('Piorando')) return 'text-ms-danger'
+  if (t.startsWith('Melhorando')) return 'text-ms-success'
+  return 'text-ms-text-secondary'
 }
 </script>
 
@@ -186,9 +201,9 @@ const tendenciaTone: Record<string, string> = {
       Indicadores estratégicos
     </div>
     <p class="mb-3 text-xs text-ms-text-secondary">
-      Clique em um indicador para o detalhamento completo.
+      Clique em um indicador para ver detalhamento completo
     </p>
-    <div class="mb-5 grid gap-3 sm:grid-cols-3 xl:grid-cols-5">
+    <div class="mb-5 grid gap-3 sm:grid-cols-3 xl:grid-cols-6">
       <button
         v-for="k in indicadorKpis"
         :key="k.key"
@@ -210,18 +225,15 @@ const tendenciaTone: Record<string, string> = {
 
     <!-- Evolução temporal + comparações -->
     <div class="mb-5 grid gap-4 lg:grid-cols-3">
-      <ChartCard
-        :title="detalhe.titulo"
-        subtitle="7 dias com comparativo vs período anterior e vs meta"
-        class="lg:col-span-2"
-      >
+      <ChartCard :title="detalhe.titulo" :subtitle="detalhe.subtitulo" class="lg:col-span-2">
         <div class="mb-1 flex items-baseline gap-2">
           <span class="text-2xl font-bold text-ms-text-primary">{{ detalhe.valor }}</span>
           <span
-            class="text-xs"
+            class="text-sm font-medium"
             :class="detalhe.deltaTone === 'down' ? 'text-ms-danger' : 'text-ms-success'"
             >{{ detalhe.delta }}</span
           >
+          <span class="text-xs text-ms-text-secondary">{{ detalhe.deltaSub }}</span>
         </div>
         <div class="h-64 w-full">
           <VChart class="h-full w-full" :option="evolucaoOption" autoresize />
@@ -263,18 +275,31 @@ const tendenciaTone: Record<string, string> = {
     <!-- Segmentação -->
     <ChartCard
       title="Segmentação"
-      subtitle="Volume × indicador por canal, fila, equipe e supervisor — identifique gargalos"
+      subtitle="Volume × TME por canal, fila, equipe e supervisor — identifique gargalos em 1 view"
       class="mb-5"
     >
       <div class="h-72 w-full">
         <VChart class="h-full w-full" :option="segmentacaoOption" autoresize />
+      </div>
+      <!-- Legenda -->
+      <div
+        class="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] text-ms-text-secondary"
+      >
+        <div class="flex items-center gap-2">
+          <span class="font-medium">COR = Fila:</span>
+          <span v-for="l in segmentacaoLegenda.cor" :key="l.fila" class="flex items-center gap-1">
+            <span class="h-2 w-2 rounded-full" :class="filaDot[l.fila]" />{{ l.label }}
+          </span>
+        </div>
+        <span>TAMANHO = Equipe (volume): menor → maior</span>
+        <span>RÓTULO = Equipe</span>
       </div>
     </ChartCard>
 
     <!-- Segmentos críticos -->
     <ChartCard
       title="Segmentos críticos · Canal × Fila × Turno"
-      subtitle="Combinações ordenadas por desvio vs meta — ferramenta de drill-down"
+      subtitle="5 piores combinações ordenadas por desvio vs meta · ferramenta de drill-down"
       class="mb-5"
     >
       <el-table :data="segmentosCriticos" stripe size="small" style="width: 100%">
@@ -293,19 +318,33 @@ const tendenciaTone: Record<string, string> = {
         <el-table-column prop="csat" label="CSAT" align="center" />
         <el-table-column label="Tendência">
           <template #default="{ row }">
-            <span class="text-xs font-medium" :class="tendenciaTone[row.tendencia]">{{
+            <span class="text-xs font-medium" :class="tendTone(row.tendencia)">{{
               row.tendencia
             }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="Status">
+          <template #default="{ row }">
+            <span
+              class="text-xs font-semibold"
+              :class="statusLinha[row.status as 'Crítico' | 'Atenção' | 'OK']"
+              >{{ row.status }}</span
+            >
+          </template>
+        </el-table-column>
+        <el-table-column label="Ação" width="110">
+          <template #default="{ row }">
+            <el-button v-if="row.acao !== '—'" text type="primary" size="small">{{
+              row.acao
+            }}</el-button>
+            <span v-else class="text-ms-text-placeholder">—</span>
           </template>
         </el-table-column>
       </el-table>
     </ChartCard>
 
     <!-- Recomendações IA -->
-    <ChartCard
-      title="Recomendações IA"
-      subtitle="Ações priorizadas para recuperar o SLA consolidado"
-    >
+    <ChartCard title="Recomendações IA" subtitle="Ações priorizadas para recuperar SLA consolidado">
       <div class="mb-3 rounded-lg border border-ms-primary/20 bg-ms-primary/5 p-3">
         <div class="mb-1 flex items-center gap-2">
           <span
@@ -350,8 +389,8 @@ const tendenciaTone: Record<string, string> = {
       >
       <span class="text-ms-text-secondary">
         Explorar outro indicador:
-        <button class="font-medium text-ms-danger hover:underline" @click="selecionar('tme')">
-          Abandonos está em 6,4% (crítico)
+        <button class="font-medium text-ms-danger hover:underline" @click="selecionar('abandono')">
+          Abandono está em 6,4% (crítico) →
         </button>
       </span>
     </div>
