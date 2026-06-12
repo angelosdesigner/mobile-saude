@@ -45,6 +45,13 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Visão do gestor' },
   },
   {
+    // Gestão em tempo real (dashboard de abas) — Figma seção "Gestão tempo real".
+    path: '/gestor/tempo-real',
+    name: 'gestor-tempo-real',
+    component: () => import('@/pages/gestor/TempoRealView.vue'),
+    meta: { title: 'Gestão em tempo real' },
+  },
+  {
     // Ocorrências — Gestão Operacional (Kanban) — Figma 8074:4666.
     path: '/gestor/ocorrencias',
     name: 'gestor-ocorrencias',
