@@ -51,6 +51,7 @@ declare module 'vue' {
     FloatingActions: typeof import('./src/components/ocorrencias/FloatingActions.vue')['default']
     FloatingDock: typeof import('./src/components/ocorrencias/FloatingDock.vue')['default']
     InicioTab: typeof import('./src/components/gestor/tempo-real/InicioTab.vue')['default']
+    KanbanBoard: typeof import('./src/components/ui/KanbanBoard.vue')['default']
     MetricCard: typeof import('./src/components/gestor/MetricCard.vue')['default']
     ModalAnexar: typeof import('./src/components/ocorrencias/modais/ModalAnexar.vue')['default']
     ModalCobrarSetor: typeof import('./src/components/ocorrencias/modais/ModalCobrarSetor.vue')['default']
