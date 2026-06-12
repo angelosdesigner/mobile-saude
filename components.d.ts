@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AbandonosTab: typeof import('./src/components/gestor/tempo-real/AbandonosTab.vue')['default']
     AppIcon: typeof import('./src/components/ui/AppIcon.vue')['default']
     AppSidebar: typeof import('./src/components/layout/AppSidebar.vue')['default']
     AppTopbar: typeof import('./src/components/layout/AppTopbar.vue')['default']
