@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import KanbanBoard from '@/components/ui/KanbanBoard.vue'
 import KanbanCard from '@/components/ui/KanbanCard.vue'
+import ChannelTag from '@/components/ui/ChannelTag.vue'
 import type { KanbanColumn } from '@/components/ui/kanbanBoard'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
 import { stages, type PillTone, type SlaState } from '@/types/gestorOcorrencias'
@@ -44,9 +45,6 @@ const slaDot: Record<SlaState, string> = {
   Limite: 'bg-ms-warning',
   Estourou: 'bg-ms-danger',
 }
-// #25D366 é a cor de marca do WhatsApp (exceção legítima); o demais usa token.
-const channelColor = (c: string) =>
-  /whats/i.test(c) ? '#25D366' : 'var(--color-ms-text-secondary)'
 </script>
 
 <template>
@@ -131,13 +129,7 @@ const channelColor = (c: string) =>
 
         <!-- Rodapé: canal -->
         <template #footer>
-          <span class="flex items-center gap-1.5">
-            <span
-              class="h-2 w-2 rounded-full"
-              :style="{ backgroundColor: channelColor(item.channel) }"
-            />
-            <span class="text-ms-text-secondary">{{ item.channel }}</span>
-          </span>
+          <ChannelTag :channel="item.channel" />
         </template>
       </KanbanCard>
     </template>

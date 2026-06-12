@@ -18,6 +18,7 @@ declare module 'vue' {
     AtendimentosTab: typeof import('./src/components/gestor/tempo-real/AtendimentosTab.vue')['default']
     BarList: typeof import('./src/components/gestor/BarList.vue')['default']
     BrandLogo: typeof import('./src/components/layout/BrandLogo.vue')['default']
+    ChannelTag: typeof import('./src/components/ui/ChannelTag.vue')['default']
     ChartCard: typeof import('./src/components/gestor/ChartCard.vue')['default']
     ColumnManager: typeof import('./src/components/ui/ColumnManager.vue')['default']
     ConfigurarColunas: typeof import('./src/components/ocorrencias/ConfigurarColunas.vue')['default']
