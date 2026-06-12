@@ -17,6 +17,7 @@ declare module 'vue' {
     BarList: typeof import('./src/components/gestor/BarList.vue')['default']
     BrandLogo: typeof import('./src/components/layout/BrandLogo.vue')['default']
     ChartCard: typeof import('./src/components/gestor/ChartCard.vue')['default']
+    ColumnManager: typeof import('./src/components/ui/ColumnManager.vue')['default']
     ConfigurarColunas: typeof import('./src/components/ocorrencias/ConfigurarColunas.vue')['default']
     CopilotButton: typeof import('./src/components/ocorrencias/CopilotButton.vue')['default']
     DataList: typeof import('./src/components/ui/DataList.vue')['default']

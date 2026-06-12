@@ -249,7 +249,7 @@ export const segmentacaoLegenda = {
   ],
 }
 
-export interface SegmentoLinha {
+export type SegmentoLinha = {
   segmento: string
   volume: number
   atendidos: number

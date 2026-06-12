@@ -4,6 +4,8 @@ import { useRoute, useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import ChartCard from '@/components/gestor/ChartCard.vue'
+import DataList from '@/components/ui/DataList.vue'
+import type { DataListColumn } from '@/components/ui/dataList'
 import {
   indicadorKpis,
   detalhePorIndicador,
@@ -170,6 +172,22 @@ function tendTone(t: string): string {
   if (t.startsWith('Melhorando')) return 'text-ms-success'
   return 'text-ms-text-secondary'
 }
+
+// Colunas da tabela de segmentos críticos (DataList compartilhado).
+const segmentoColumns: DataListColumn[] = [
+  { key: 'segmento', label: 'Segmento', minWidth: 220, sortable: true },
+  { key: 'volume', label: 'Volume', align: 'right', sortable: true },
+  { key: 'atendidos', label: 'Atendidos', align: 'right' },
+  { key: 'abandonados', label: 'Abandonados', align: 'right' },
+  { key: 'disponiveis', label: 'Disponíveis', align: 'right' },
+  { key: 'tme', label: 'TME', align: 'right' },
+  { key: 'metaTme', label: 'Meta do TME', align: 'right' },
+  { key: 'tma', label: 'TMA', align: 'right' },
+  { key: 'csat', label: 'CSAT', align: 'center' },
+  { key: 'tendencia', label: 'Tendência' },
+  { key: 'status', label: 'Status' },
+  { key: 'acao', label: 'Ação', width: 110 },
+]
 </script>
 
 <template>
@@ -302,45 +320,35 @@ function tendTone(t: string): string {
       subtitle="5 piores combinações ordenadas por desvio vs meta · ferramenta de drill-down"
       class="mb-5"
     >
-      <el-table :data="segmentosCriticos" stripe size="small" style="width: 100%">
-        <el-table-column prop="segmento" label="Segmento" min-width="220" />
-        <el-table-column prop="volume" label="Volume" align="right" />
-        <el-table-column prop="atendidos" label="Atendidos" align="right" />
-        <el-table-column label="Abandonados" align="right">
-          <template #default="{ row }"
-            ><span class="text-ms-danger">{{ row.abandonados }}</span></template
-          >
-        </el-table-column>
-        <el-table-column prop="disponiveis" label="Disponíveis" align="right" />
-        <el-table-column prop="tme" label="TME" align="right" />
-        <el-table-column prop="metaTme" label="Meta do TME" align="right" />
-        <el-table-column prop="tma" label="TMA" align="right" />
-        <el-table-column prop="csat" label="CSAT" align="center" />
-        <el-table-column label="Tendência">
-          <template #default="{ row }">
-            <span class="text-xs font-medium" :class="tendTone(row.tendencia)">{{
-              row.tendencia
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Status">
-          <template #default="{ row }">
-            <span
-              class="text-xs font-semibold"
-              :class="statusLinha[row.status as 'Crítico' | 'Atenção' | 'OK']"
-              >{{ row.status }}</span
-            >
-          </template>
-        </el-table-column>
-        <el-table-column label="Ação" width="110">
-          <template #default="{ row }">
-            <el-button v-if="row.acao !== '—'" text type="primary" size="small">{{
-              row.acao
-            }}</el-button>
-            <span v-else class="text-ms-text-placeholder">—</span>
-          </template>
-        </el-table-column>
-      </el-table>
+      <DataList
+        :columns="segmentoColumns"
+        :rows="segmentosCriticos"
+        row-key="segmento"
+        :selectable="false"
+        :expandable="false"
+        :actions="false"
+        count-label="segmentos"
+      >
+        <template #cell-abandonados="{ row }">
+          <span class="text-ms-danger">{{ row.abandonados }}</span>
+        </template>
+        <template #cell-tendencia="{ row }">
+          <span class="text-xs font-medium" :class="tendTone(row.tendencia)">{{
+            row.tendencia
+          }}</span>
+        </template>
+        <template #cell-status="{ row }">
+          <span class="text-xs font-semibold" :class="statusLinha[row.status]">{{
+            row.status
+          }}</span>
+        </template>
+        <template #cell-acao="{ row }">
+          <el-button v-if="row.acao !== '—'" text type="primary" size="small">{{
+            row.acao
+          }}</el-button>
+          <span v-else class="text-ms-text-placeholder">—</span>
+        </template>
+      </DataList>
     </ChartCard>
 
     <!-- Recomendações IA -->

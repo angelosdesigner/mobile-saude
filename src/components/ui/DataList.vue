@@ -9,6 +9,7 @@
 //  - expand: conteúdo do accordion (recebe { row })
 //  - footer-actions: área opcional no rodapé (ex.: "Criar")
 import { ref, computed } from 'vue'
+import ColumnManager from './ColumnManager.vue'
 import type { DataListColumn } from './dataList'
 
 const props = withDefaults(
@@ -18,6 +19,7 @@ const props = withDefaults(
     rowKey?: string
     expandable?: boolean
     selectable?: boolean
+    actions?: boolean
     emptyText?: string
     countLabel?: string
   }>(),
@@ -25,6 +27,7 @@ const props = withDefaults(
     rowKey: 'id',
     expandable: true,
     selectable: true,
+    actions: true,
     emptyText: 'Nenhum registro',
     countLabel: 'registros',
   },
@@ -43,13 +46,8 @@ defineSlots<
 const visible = ref<Record<string, boolean>>(
   Object.fromEntries(props.columns.map((c) => [c.key, !c.defaultHidden])),
 )
-const colSearch = ref('')
 
 const visibleColumns = computed(() => props.columns.filter((c) => visible.value[c.key]))
-const colOptions = computed(() =>
-  props.columns.filter((c) => c.label.toLowerCase().includes(colSearch.value.trim().toLowerCase())),
-)
-const visibleCount = computed(() => props.columns.filter((c) => visible.value[c.key]).length)
 
 const headerCellStyle = {
   background: 'var(--color-ms-fill-light)',
@@ -99,8 +97,15 @@ const headerCellStyle = {
         </template>
       </el-table-column>
 
+      <!-- "+" adicionar coluna (inline, após as colunas) -->
+      <el-table-column width="44" align="center">
+        <template #header>
+          <ColumnManager v-model="visible" :columns="columns" variant="plus" />
+        </template>
+      </el-table-column>
+
       <!-- Ações (fixa à direita) -->
-      <el-table-column label="Ações" fixed="right" width="96" align="center">
+      <el-table-column v-if="actions" label="Ações" fixed="right" width="96" align="center">
         <template #default="{ row }">
           <div class="flex justify-center gap-1">
             <el-button text circle size="small" title="Visualizar" @click="emit('visualizar', row)">
@@ -113,64 +118,10 @@ const headerCellStyle = {
         </template>
       </el-table-column>
 
-      <!-- Gerenciador de colunas (▥ fixo à direita) -->
+      <!-- Configurar colunas (▥ fixo à direita) -->
       <el-table-column fixed="right" width="48" align="center">
         <template #header>
-          <el-popover :width="260" trigger="click" placement="bottom-end" popper-class="!p-0">
-            <template #reference>
-              <button
-                class="flex h-7 w-7 items-center justify-center rounded text-ms-text-secondary transition hover:bg-ms-fill-light hover:text-ms-primary"
-                title="Configurar colunas"
-                aria-label="Configurar colunas"
-              >
-                <svg
-                  class="h-4 w-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <rect x="3" y="4" width="18" height="16" rx="2" />
-                  <path d="M9 4v16M15 4v16" />
-                </svg>
-              </button>
-            </template>
-
-            <div class="px-3 pb-1 pt-3 text-sm font-semibold text-ms-primary">Colunas</div>
-            <div class="px-3 pb-2">
-              <el-input v-model="colSearch" placeholder="Pesquisar colunas" size="small" clearable>
-                <template #prefix>
-                  <AppIcon name="search" class="h-3.5 w-3.5 text-ms-text-placeholder" />
-                </template>
-              </el-input>
-            </div>
-            <div class="max-h-64 overflow-y-auto px-3 pb-2">
-              <label
-                v-for="c in colOptions"
-                :key="c.key"
-                class="flex cursor-pointer items-center gap-2 rounded px-1 py-1.5 hover:bg-ms-fill-light"
-              >
-                <el-checkbox
-                  v-model="visible[c.key]"
-                  :disabled="c.locked"
-                  size="small"
-                  @click.stop
-                />
-                <span class="text-sm text-ms-text-primary">{{ c.label }}</span>
-              </label>
-              <p
-                v-if="!colOptions.length"
-                class="py-2 text-center text-xs text-ms-text-placeholder"
-              >
-                Nenhuma coluna
-              </p>
-            </div>
-            <div
-              class="border-t border-ms-border-light px-3 py-2 text-right text-[11px] text-ms-text-secondary"
-            >
-              {{ visibleCount }} de {{ columns.length }}
-            </div>
-          </el-popover>
+          <ColumnManager v-model="visible" :columns="columns" variant="config" />
         </template>
       </el-table-column>
     </el-table>
