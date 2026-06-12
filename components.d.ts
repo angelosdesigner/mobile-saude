@@ -70,6 +70,7 @@ declare module 'vue' {
     OcorrenciasBoard: typeof import('./src/components/ocorrencias/OcorrenciasBoard.vue')['default']
     OcorrenciasList: typeof import('./src/components/ocorrencias/OcorrenciasList.vue')['default']
     OperacionalBoard: typeof import('./src/components/gestor/OperacionalBoard.vue')['default']
+    PerformanceTab: typeof import('./src/components/gestor/tempo-real/PerformanceTab.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
