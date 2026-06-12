@@ -4,7 +4,14 @@ import { useRoute, useRouter } from 'vue-router'
 import NotificacoesPanel from './NotificacoesPanel.vue'
 import { storeToRefs } from 'pinia'
 import { useOcorrenciasStore } from '@/stores/ocorrencias'
-import { useProfileStore, profileLabel, profileHint, type Profile } from '@/stores/profile'
+import {
+  useProfileStore,
+  profileLabel,
+  profileHint,
+  roleLabel,
+  type Profile,
+  type Role,
+} from '@/stores/profile'
 
 const route = useRoute()
 const router = useRouter()
@@ -12,9 +19,22 @@ const router = useRouter()
 const { unreadCount } = storeToRefs(useOcorrenciasStore())
 
 const profileStore = useProfileStore()
-const { profile } = storeToRefs(profileStore)
-const { setProfile } = profileStore
+const { profile, role, isGestor } = storeToRefs(profileStore)
+const { setProfile, setRole } = profileStore
 const profileOptions: Profile[] = ['quente', 'frio', 'ambos']
+const roleOptions: Role[] = ['atendente', 'gestor']
+
+// Comandos do menu são namespaced (`role:gestor`, `perfil:quente`) para um único
+// handler distinguir troca de papel de troca de perfil de atendimento.
+function onCommand(cmd: string) {
+  if (cmd.startsWith('role:')) {
+    const r = cmd.slice(5) as Role
+    setRole(r)
+    router.push(r === 'gestor' ? '/gestor' : '/inicio')
+  } else if (cmd.startsWith('perfil:')) {
+    setProfile(cmd.slice(7) as Profile)
+  }
+}
 
 const activeTitle = computed(() => (route.meta.title as string) ?? 'Início')
 
@@ -97,7 +117,7 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
         </template>
       </el-dropdown>
 
-      <el-dropdown trigger="click" @command="setProfile">
+      <el-dropdown trigger="click" @command="onCommand">
         <div class="flex cursor-pointer items-center gap-2">
           <el-avatar :size="30" class="!bg-ms-primary-light !text-ms-primary">
             <svg
@@ -115,18 +135,54 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
           </el-avatar>
           <div class="hidden leading-tight sm:block">
             <div class="text-xs font-medium text-ms-text-primary">Juliana Santos</div>
-            <div class="text-[10px] text-ms-text-secondary">{{ profileLabel[profile] }}</div>
+            <div class="text-[10px] text-ms-text-secondary">
+              {{ isGestor ? roleLabel.gestor : profileLabel[profile] }}
+            </div>
           </div>
           <AppIcon name="chevron-down" class="h-3 w-3 text-ms-text-secondary" />
         </div>
         <template #dropdown>
           <el-dropdown-menu>
+            <!-- Visão (papel) -->
             <div
               class="px-4 pb-1 pt-2 text-[11px] font-medium uppercase tracking-wide text-ms-text-secondary"
             >
+              Visão
+            </div>
+            <el-dropdown-item v-for="r in roleOptions" :key="r" :command="`role:${r}`">
+              <div class="flex items-center gap-2 py-0.5">
+                <span class="flex h-4 w-4 items-center justify-center">
+                  <svg
+                    v-if="role === r"
+                    class="h-4 w-4 text-ms-primary"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                  >
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                </span>
+                <span
+                  class="text-sm font-medium"
+                  :class="role === r ? 'text-ms-primary' : 'text-ms-text-primary'"
+                  >{{ roleLabel[r] }}</span
+                >
+              </div>
+            </el-dropdown-item>
+
+            <!-- Perfil de atendimento (só relevante para a visão do atendente) -->
+            <div
+              v-if="!isGestor"
+              class="border-t border-ms-border-lighter px-4 pb-1 pt-2 text-[11px] font-medium uppercase tracking-wide text-ms-text-secondary"
+            >
               Perfil de atendimento
             </div>
-            <el-dropdown-item v-for="p in profileOptions" :key="p" :command="p">
+            <el-dropdown-item
+              v-for="p in isGestor ? [] : profileOptions"
+              :key="p"
+              :command="`perfil:${p}`"
+            >
               <div class="flex items-center gap-2 py-0.5">
                 <span class="flex h-4 w-4 items-center justify-center">
                   <svg

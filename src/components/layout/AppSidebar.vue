@@ -6,7 +6,7 @@ import { useProfileStore } from '@/stores/profile'
 import { storeToRefs } from 'pinia'
 
 const route = useRoute()
-const { hasQueue } = storeToRefs(useProfileStore())
+const { hasQueue, isGestor } = storeToRefs(useProfileStore())
 
 // Estado de expansão (colapsada = rail de ícones, expandida = ícones + rótulos).
 const expanded = ref(false)
@@ -22,7 +22,8 @@ interface NavItem {
   comingSoon?: boolean
 }
 
-const items = computed<NavItem[]>(() =>
+// A navegação muda conforme o papel (mesmo layout, itens diferentes).
+const atendenteItems = computed<NavItem[]>(() =>
   (
     [
       { to: '/inicio', label: 'Início', icon: 'home' },
@@ -40,6 +41,14 @@ const items = computed<NavItem[]>(() =>
     ] satisfies NavItem[]
   ).filter((i) => !i.requiresQueue || hasQueue.value),
 )
+
+const gestorItems: NavItem[] = [
+  { to: '/gestor', label: 'Dashboard', icon: 'home' },
+  { to: '/gestor/jornadas', label: 'Jornadas', icon: 'users', comingSoon: true },
+  { to: '/gestor/relatorios', label: 'Relatórios', icon: 'grid', comingSoon: true },
+]
+
+const items = computed<NavItem[]>(() => (isGestor.value ? gestorItems : atendenteItems.value))
 
 const isActive = (to: string) => route.path === to || route.path.startsWith(to + '/')
 </script>

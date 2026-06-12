@@ -37,6 +37,14 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Detalhe da ocorrência' },
   },
   {
+    // Visão do gestor — dashboard agregado (mesmo produto, outro papel).
+    // Telas adicionais (Jornadas, Relatórios) entram como rotas filhas aqui.
+    path: '/gestor',
+    name: 'gestor-dashboard',
+    component: () => import('@/pages/gestor/DashboardView.vue'),
+    meta: { title: 'Visão do gestor' },
+  },
+  {
     // Página de validação da stack (Element Plus + Tailwind). Pode remover
     // depois que os fluxos reais estiverem prontos.
     path: '/demo',
