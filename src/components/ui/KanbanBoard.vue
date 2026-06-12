@@ -52,7 +52,7 @@ function onDragEnd() {
     <div
       v-for="col in columns"
       :key="col.key"
-      class="flex w-72 shrink-0 flex-col overflow-hidden rounded-xl border border-ms-border-light bg-ms-bg transition-colors"
+      class="flex w-72 shrink-0 flex-col overflow-hidden rounded-xl border border-ms-border-lighter bg-ms-surface/60 transition-colors"
       :class="dragOver === col.key ? 'ring-2 ring-ms-primary ring-offset-1' : ''"
     >
       <!-- Acento de cor no topo -->
