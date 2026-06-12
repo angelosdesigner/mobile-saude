@@ -31,10 +31,16 @@ function onEditar(o: Ocorrencia) {
   <DataList
     :columns="listColumns"
     :rows="filteredList"
+    count-label="ocorrências"
     empty-text="Nenhuma ocorrência para os filtros aplicados"
     @visualizar="onVisualizar"
     @editar="onEditar"
   >
+    <template #footer-actions>
+      <el-button text type="primary" size="small">
+        <AppIcon name="plus" class="mr-1 h-3.5 w-3.5" />Criar
+      </el-button>
+    </template>
     <template #cell-risk="{ row }">
       <el-tag v-if="row.risk" type="danger" effect="plain" size="small" class="!uppercase">
         Risco Jurídico Configurado

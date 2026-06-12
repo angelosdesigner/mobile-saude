@@ -1,13 +1,14 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
-// Lista de dados compartilhada (estilo Jira/Zendesk): linha densa, colunas
-// configuráveis, linha expansível (accordion) e coluna "Ações" fixa à direita
-// com Visualizar/Editar. Usada por atendente e gestor — só muda a config de
-// colunas/conteúdo, garantindo linha visual única nas duas visões.
+// Lista de dados compartilhada — alinhada visualmente ao padrão Jira (lista):
+// header cinza discreto, seleção por checkbox, linhas densas, linha expansível
+// (accordion), coluna "Ações" fixa à direita (Visualizar/Editar) e rodapé com
+// contagem. Usada por atendente e gestor — só muda a config de colunas/conteúdo,
+// garantindo linha visual única nas duas visões.
 //
 // Slots:
 //  - cell-<key>: conteúdo custom de uma célula (recebe { row })
 //  - expand: conteúdo do accordion (recebe { row })
-//  - empty: estado vazio
+//  - toolbar / footer-actions: áreas opcionais (ex.: "Criar")
 import type { DataListColumn } from './dataList'
 
 withDefaults(
@@ -16,25 +17,49 @@ withDefaults(
     rows: T[]
     rowKey?: string
     expandable?: boolean
+    selectable?: boolean
     emptyText?: string
+    countLabel?: string
   }>(),
-  { rowKey: 'id', expandable: true, emptyText: 'Nenhum registro' },
+  {
+    rowKey: 'id',
+    expandable: true,
+    selectable: true,
+    emptyText: 'Nenhum registro',
+    countLabel: 'registros',
+  },
 )
 
 const emit = defineEmits<{ visualizar: [row: T]; editar: [row: T] }>()
 
-// Slots tipados com o genérico para os consumidores receberem `row: T`.
 defineSlots<
   {
     expand?: (props: { row: T }) => unknown
-    empty?: () => unknown
+    'footer-actions'?: () => unknown
   } & Record<`cell-${string}`, (props: { row: T }) => unknown>
 >()
+
+// Header cinza no estilo Jira.
+const headerCellStyle = {
+  background: 'var(--color-ms-fill-light)',
+  color: 'var(--color-ms-text-secondary)',
+  fontWeight: '600',
+  fontSize: '12px',
+}
 </script>
 
 <template>
   <el-card shadow="never" body-class="!p-0" class="!border-ms-border-light">
-    <el-table :data="rows" :row-key="rowKey" stripe :empty-text="emptyText" style="width: 100%">
+    <el-table
+      :data="rows"
+      :row-key="rowKey"
+      :header-cell-style="headerCellStyle"
+      :empty-text="emptyText"
+      style="width: 100%"
+    >
+      <!-- Seleção -->
+      <el-table-column v-if="selectable" type="selection" width="44" />
+
       <!-- Accordion -->
       <el-table-column v-if="expandable" type="expand" width="40">
         <template #default="{ row }">
@@ -64,7 +89,7 @@ defineSlots<
       </el-table-column>
 
       <!-- Ações fixas -->
-      <el-table-column label="Ações" fixed="right" width="110" align="center">
+      <el-table-column label="Ações" fixed="right" width="100" align="center">
         <template #default="{ row }">
           <div class="flex justify-center gap-1">
             <el-button text circle size="small" title="Visualizar" @click="emit('visualizar', row)">
@@ -77,5 +102,13 @@ defineSlots<
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- Rodapé: ações + contagem (estilo Jira) -->
+    <div
+      class="flex items-center justify-between border-t border-ms-border-light px-4 py-2.5 text-sm text-ms-text-secondary"
+    >
+      <slot name="footer-actions"><span /></slot>
+      <span>{{ rows.length }} {{ countLabel }}</span>
+    </div>
   </el-card>
 </template>

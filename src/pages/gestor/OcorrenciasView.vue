@@ -156,10 +156,16 @@ const statDot: Record<GestorStat['tone'], string> = {
         v-else
         :columns="listColumns"
         :rows="filtered"
+        count-label="ocorrências"
         empty-text="Nenhuma ocorrência para os filtros aplicados"
         @visualizar="onVisualizar"
         @editar="onEditar"
       >
+        <template #footer-actions>
+          <el-button text type="primary" size="small">
+            <AppIcon name="plus" class="mr-1 h-3.5 w-3.5" />Criar
+          </el-button>
+        </template>
         <!-- Estágio (tag) -->
         <template #cell-stage="{ row }">
           <span
