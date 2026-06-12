@@ -1,61 +1,359 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import VChart from 'vue-echarts'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
+import ChartCard from '@/components/gestor/ChartCard.vue'
+import {
+  indicadorKpis,
+  detalhePorIndicador,
+  dias,
+  segmentacao,
+  segmentosCriticos,
+  diagnostico,
+  recomendacoes,
+  type IndicadorKey,
+} from '@/data/gestorIndicadores'
 
-// Tela de indicadores do gestor. Recebe o indicador pré-selecionado via ?ind=.
-// Layout/conteúdo detalhado entram quando a tela do Figma for convertida; por ora
-// lista os indicadores destacando o selecionado, com a navegação já cabeada.
+// Centro de Indicadores Operacionais (Figma 7651:87503). O indicador ativo vem
+// de ?ind= — aceita as chaves canônicas (fcr/resolucao/tme/tmef/nps) e os apelidos
+// vindos dos cards do Início.
 const route = useRoute()
+const router = useRouter()
 
-const indicadores = [
-  { key: 'fix-call-resolution', label: 'Fix Call Resolution', value: '78%' },
-  { key: 'resolucao-chamados', label: 'Resolução de Chamados', value: '92%' },
-  { key: 'nps', label: 'NPS / Satisfação', value: '4.6' },
-  { key: 'tma', label: 'TMA — Tempo Médio de Atendimento', value: '14min' },
-  { key: 'tmef', label: 'TMEF — Tempo Médio na Fila', value: '4,2min' },
-  { key: 'tme', label: 'TME — Tempo Médio de Espera', value: '12min' },
-]
+const indAlias: Record<string, IndicadorKey> = {
+  fcr: 'fcr',
+  resolucao: 'resolucao',
+  tme: 'tme',
+  tmef: 'tmef',
+  nps: 'nps',
+  'fix-call-resolution': 'fcr',
+  'resolucao-chamados': 'resolucao',
+  tma: 'tme',
+}
 
-const selected = computed(() => (route.query.ind as string) || '')
+const active = computed<IndicadorKey>(() => indAlias[route.query.ind as string] ?? 'tme')
+const detalhe = computed(() => detalhePorIndicador[active.value])
+
+function selecionar(key: IndicadorKey) {
+  router.replace({ query: { ...route.query, ind: key } })
+}
+
+const periodos = ['Hoje', '7d', '30d', 'Trimestre']
+
+const C = {
+  primary: '#409eff',
+  success: '#67c23a',
+  warning: '#e6a23c',
+  danger: '#f56c6c',
+  axis: '#909399',
+  split: 'rgba(144,147,153,0.15)',
+}
+
+const statusColor: Record<'ok' | 'warning' | 'danger', string> = {
+  ok: C.success,
+  warning: C.warning,
+  danger: C.danger,
+}
+const statusDot: Record<'ok' | 'warning' | 'danger', string> = {
+  ok: 'bg-ms-success',
+  warning: 'bg-ms-warning',
+  danger: 'bg-ms-danger',
+}
+
+const evolucaoOption = computed(() => ({
+  tooltip: { trigger: 'axis' },
+  legend: {
+    bottom: 0,
+    itemWidth: 14,
+    textStyle: { color: C.axis, fontSize: 11 },
+    data: ['Período atual', 'Período anterior', 'Meta'],
+  },
+  grid: { left: 36, right: 12, top: 16, bottom: 36 },
+  xAxis: {
+    type: 'category',
+    data: dias,
+    axisLabel: { color: C.axis, fontSize: 10 },
+    axisLine: { lineStyle: { color: C.split } },
+  },
+  yAxis: {
+    type: 'value',
+    axisLabel: { color: C.axis },
+    splitLine: { lineStyle: { color: C.split } },
+  },
+  series: [
+    {
+      name: 'Período atual',
+      type: 'line',
+      smooth: true,
+      symbol: 'circle',
+      data: detalhe.value.serieAtual,
+      lineStyle: { color: C.primary, width: 2 },
+      itemStyle: { color: C.primary },
+    },
+    {
+      name: 'Período anterior',
+      type: 'line',
+      smooth: true,
+      symbol: 'none',
+      data: detalhe.value.serieAnterior,
+      lineStyle: { color: C.axis, type: 'dashed' },
+      itemStyle: { color: C.axis },
+    },
+    {
+      name: 'Meta',
+      type: 'line',
+      symbol: 'none',
+      data: dias.map(() => detalhe.value.meta),
+      lineStyle: { color: C.success, type: 'dashed' },
+      itemStyle: { color: C.success },
+    },
+  ],
+}))
+
+const segmentacaoOption = computed(() => ({
+  tooltip: {
+    trigger: 'item',
+    formatter: (p: { data: [number, number, number, string] }) =>
+      `${p.data[3]}<br/>Volume: ${p.data[0]} · ${p.data[1]}`,
+  },
+  grid: { left: 40, right: 16, top: 16, bottom: 40 },
+  xAxis: {
+    type: 'value',
+    name: 'Volume de Atendimentos',
+    nameLocation: 'middle',
+    nameGap: 26,
+    nameTextStyle: { color: C.axis, fontSize: 10 },
+    axisLabel: { color: C.axis, fontSize: 10 },
+    splitLine: { lineStyle: { color: C.split } },
+  },
+  yAxis: {
+    type: 'value',
+    axisLabel: { color: C.axis, fontSize: 10 },
+    splitLine: { lineStyle: { color: C.split } },
+  },
+  series: [
+    {
+      type: 'scatter',
+      symbolSize: (d: number[]) => d[2],
+      data: segmentacao.map((s) => ({
+        value: [s.volume, s.valor, s.size, s.nome],
+        itemStyle: { color: statusColor[s.status], opacity: 0.7 },
+      })),
+      markLine: {
+        silent: true,
+        symbol: 'none',
+        lineStyle: { color: C.success, type: 'dashed' },
+        data: [{ yAxis: detalhe.value.meta, label: { formatter: 'Meta', color: C.success } }],
+      },
+    },
+  ],
+}))
+
+const tendenciaTone: Record<string, string> = {
+  Piorando: 'text-ms-danger',
+  Estável: 'text-ms-text-secondary',
+  Melhorando: 'text-ms-success',
+}
 </script>
 
 <template>
   <DashboardLayout>
-    <div class="mb-4">
-      <h1 class="text-2xl font-bold text-ms-text-primary">Indicadores</h1>
-      <p class="mt-1 text-sm text-ms-text-secondary">
-        Acompanhamento detalhado dos indicadores da operação.
-      </p>
+    <!-- Breadcrumb -->
+    <div class="mb-2 flex items-center gap-1 text-xs text-ms-text-secondary">
+      <span>Dashboard</span><span>/</span><span>Indicadores Gerais</span><span>/</span>
+      <span class="text-ms-text-regular">Centro de Indicadores Operacionais</span>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <el-card
-        v-for="i in indicadores"
-        :key="i.key"
-        shadow="never"
-        body-class="!p-4"
+    <!-- Cabeçalho -->
+    <div class="mb-4 flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <div class="text-xs text-ms-text-secondary">Visão consolidada · Atualizado há 2min</div>
+        <h1 class="mt-0.5 text-2xl font-bold text-ms-text-primary">
+          Centro de Indicadores Operacionais
+        </h1>
+        <p class="mt-1 text-sm text-ms-text-secondary">
+          Análise temporal, comparativa e por segmento dos 5 KPIs estratégicos da operação.
+        </p>
+      </div>
+      <el-radio-group :model-value="'7d'" size="small">
+        <el-radio-button v-for="p in periodos" :key="p" :value="p">{{ p }}</el-radio-button>
+      </el-radio-group>
+    </div>
+
+    <!-- Seletor de indicadores -->
+    <div class="mb-2 text-xs font-bold uppercase tracking-wide text-ms-text-secondary">
+      Indicadores estratégicos
+    </div>
+    <p class="mb-3 text-xs text-ms-text-secondary">
+      Clique em um indicador para o detalhamento completo.
+    </p>
+    <div class="mb-5 grid gap-3 sm:grid-cols-3 xl:grid-cols-5">
+      <button
+        v-for="k in indicadorKpis"
+        :key="k.key"
+        class="rounded-lg border bg-ms-surface px-4 py-3 text-left transition hover:shadow-md"
         :class="
-          i.key === selected
-            ? '!border-ms-primary ring-1 ring-ms-primary'
-            : '!border-ms-border-light'
+          active === k.key ? '!border-ms-primary ring-1 ring-ms-primary' : 'border-ms-border-light'
         "
+        @click="selecionar(k.key)"
       >
-        <div class="flex items-center justify-between">
-          <span class="text-sm font-semibold text-ms-text-primary">{{ i.label }}</span>
+        <div class="flex items-center gap-2">
+          <span class="h-2 w-2 rounded-full" :class="statusDot[k.status]" />
+          <span class="text-[11px] font-semibold uppercase tracking-wide text-ms-text-secondary">{{
+            k.label
+          }}</span>
+        </div>
+        <div class="mt-1 text-xl font-bold text-ms-text-primary">{{ k.value }}</div>
+      </button>
+    </div>
+
+    <!-- Evolução temporal + comparações -->
+    <div class="mb-5 grid gap-4 lg:grid-cols-3">
+      <ChartCard
+        :title="detalhe.titulo"
+        subtitle="7 dias com comparativo vs período anterior e vs meta"
+        class="lg:col-span-2"
+      >
+        <div class="mb-1 flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-ms-text-primary">{{ detalhe.valor }}</span>
           <span
-            v-if="i.key === selected"
-            class="rounded-full bg-ms-primary/10 px-2 py-0.5 text-[11px] font-medium text-ms-primary"
-            >Selecionado</span
+            class="text-xs"
+            :class="detalhe.deltaTone === 'down' ? 'text-ms-danger' : 'text-ms-success'"
+            >{{ detalhe.delta }}</span
           >
         </div>
-        <div class="mt-2 text-2xl font-bold text-ms-text-primary">{{ i.value }}</div>
-      </el-card>
+        <div class="h-64 w-full">
+          <VChart class="h-full w-full" :option="evolucaoOption" autoresize />
+        </div>
+      </ChartCard>
+
+      <div class="space-y-4">
+        <ChartCard title="Comparações">
+          <div class="space-y-2">
+            <div
+              v-for="c in detalhe.comparacoes"
+              :key="c.label"
+              class="flex items-center justify-between text-sm"
+            >
+              <span class="text-ms-text-regular">{{ c.label }}</span>
+              <span
+                class="font-semibold"
+                :class="c.tone === 'down' ? 'text-ms-danger' : 'text-ms-success'"
+                >{{ c.value }}</span
+              >
+            </div>
+          </div>
+        </ChartCard>
+        <ChartCard title="Piores segmentos">
+          <div class="space-y-2">
+            <div
+              v-for="s in detalhe.pioresSegmentos"
+              :key="s.label"
+              class="flex items-center justify-between text-sm"
+            >
+              <span class="text-ms-text-regular">{{ s.label }}</span>
+              <span class="font-semibold text-ms-danger">{{ s.value }}</span>
+            </div>
+          </div>
+        </ChartCard>
+      </div>
     </div>
 
-    <p class="mt-4 rounded-lg bg-ms-fill-light p-3 text-xs text-ms-text-secondary">
-      Detalhamento de cada indicador (séries históricas, metas, drill-down) entra na próxima etapa,
-      a partir da tela do Figma.
-    </p>
+    <!-- Segmentação -->
+    <ChartCard
+      title="Segmentação"
+      subtitle="Volume × indicador por canal, fila, equipe e supervisor — identifique gargalos"
+      class="mb-5"
+    >
+      <div class="h-72 w-full">
+        <VChart class="h-full w-full" :option="segmentacaoOption" autoresize />
+      </div>
+    </ChartCard>
+
+    <!-- Segmentos críticos -->
+    <ChartCard
+      title="Segmentos críticos · Canal × Fila × Turno"
+      subtitle="Combinações ordenadas por desvio vs meta — ferramenta de drill-down"
+      class="mb-5"
+    >
+      <el-table :data="segmentosCriticos" stripe size="small" style="width: 100%">
+        <el-table-column prop="segmento" label="Segmento" min-width="220" />
+        <el-table-column prop="volume" label="Volume" align="right" />
+        <el-table-column prop="atendidos" label="Atendidos" align="right" />
+        <el-table-column label="Abandonados" align="right">
+          <template #default="{ row }"
+            ><span class="text-ms-danger">{{ row.abandonados }}</span></template
+          >
+        </el-table-column>
+        <el-table-column prop="disponiveis" label="Disponíveis" align="right" />
+        <el-table-column prop="tme" label="TME" align="right" />
+        <el-table-column prop="metaTme" label="Meta do TME" align="right" />
+        <el-table-column prop="tma" label="TMA" align="right" />
+        <el-table-column prop="csat" label="CSAT" align="center" />
+        <el-table-column label="Tendência">
+          <template #default="{ row }">
+            <span class="text-xs font-medium" :class="tendenciaTone[row.tendencia]">{{
+              row.tendencia
+            }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+    </ChartCard>
+
+    <!-- Recomendações IA -->
+    <ChartCard
+      title="Recomendações IA"
+      subtitle="Ações priorizadas para recuperar o SLA consolidado"
+    >
+      <div class="mb-3 rounded-lg border border-ms-primary/20 bg-ms-primary/5 p-3">
+        <div class="mb-1 flex items-center gap-2">
+          <span
+            class="rounded bg-ms-primary px-1.5 py-0.5 text-[10px] font-bold uppercase text-white"
+            >IA</span
+          >
+          <span class="text-sm font-bold text-ms-text-primary">Diagnóstico Consolidado</span>
+          <span class="text-[11px] text-ms-text-secondary"
+            >confiança 84% · 612 padrões similares</span
+          >
+        </div>
+        <p class="text-xs leading-relaxed text-ms-text-regular">{{ diagnostico }}</p>
+      </div>
+
+      <div class="grid gap-3 lg:grid-cols-3">
+        <div
+          v-for="r in recomendacoes"
+          :key="r.titulo"
+          class="flex flex-col rounded-lg border p-3"
+          :class="r.destaque ? 'border-ms-primary/40 bg-ms-primary/5' : 'border-ms-border-light'"
+        >
+          <div class="text-sm font-semibold text-ms-text-primary">{{ r.titulo }}</div>
+          <p class="mt-1 flex-1 text-xs text-ms-text-secondary">{{ r.descricao }}</p>
+          <div class="mt-2 text-[11px] font-medium text-ms-text-regular">
+            Impacto: {{ r.impacto }}
+          </div>
+          <el-button
+            :type="r.destaque ? 'primary' : 'default'"
+            size="small"
+            class="mt-2 self-start"
+          >
+            {{ r.acao }}
+          </el-button>
+        </div>
+      </div>
+    </ChartCard>
+
+    <!-- Rodapé -->
+    <div class="mt-4 flex items-center justify-between text-xs">
+      <router-link to="/gestor/tempo-real" class="text-ms-primary no-underline hover:underline"
+        >← Voltar ao Dashboard</router-link
+      >
+      <span class="text-ms-text-secondary">
+        Explorar outro indicador:
+        <button class="font-medium text-ms-danger hover:underline" @click="selecionar('tme')">
+          Abandonos está em 6,4% (crítico)
+        </button>
+      </span>
+    </div>
   </DashboardLayout>
 </template>
