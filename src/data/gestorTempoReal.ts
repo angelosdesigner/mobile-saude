@@ -1,6 +1,12 @@
 // Fixtures da aba "Início" (Visão Geral do Atendimento) do dashboard de gestão
 // em tempo real do gestor — Figma 7728:98915. Valores fiéis ao frame.
 
+// Alvo de navegação de um card: a tela de indicadores (com indicador) ou a tela
+// de atendimentos (com um filtro). A UI usa isso para redirecionar pré-selecionado.
+export type CardTarget =
+  | { type: 'indicador'; ind: string }
+  | { type: 'atendimentos'; filtro: string }
+
 export interface KpiGauge {
   label: string
   value: number // valor exibido (0–100 para %, ou nota)
@@ -9,6 +15,7 @@ export interface KpiGauge {
   deltaTone: 'up' | 'down' | 'neutral'
   meta: string
   tone: 'primary' | 'success' | 'purple'
+  target: CardTarget
 }
 
 export const kpiGauges: KpiGauge[] = [
@@ -20,6 +27,7 @@ export const kpiGauges: KpiGauge[] = [
     deltaTone: 'up',
     meta: 'Meta: 80%',
     tone: 'primary',
+    target: { type: 'indicador', ind: 'fix-call-resolution' },
   },
   {
     label: 'Resolução de Chamados',
@@ -29,6 +37,7 @@ export const kpiGauges: KpiGauge[] = [
     deltaTone: 'up',
     meta: 'Meta: 90%',
     tone: 'success',
+    target: { type: 'indicador', ind: 'resolucao-chamados' },
   },
   {
     label: 'NPS / Satisfação',
@@ -38,6 +47,7 @@ export const kpiGauges: KpiGauge[] = [
     deltaTone: 'down',
     meta: 'Meta: 5.0',
     tone: 'purple',
+    target: { type: 'indicador', ind: 'nps' },
   },
 ]
 
@@ -46,19 +56,44 @@ export interface MetricTile {
   value: string
   delta: string
   deltaTone: 'up' | 'down' | 'neutral'
+  target: CardTarget
 }
 
 export const metricTiles: MetricTile[] = [
-  { label: 'Atendimentos', value: '31', delta: '+4 hoje', deltaTone: 'up' },
-  { label: 'TMA', value: '14min', delta: '↓ 1.2min hoje', deltaTone: 'up' },
-  { label: 'Tempo médio na fila', value: '4,2min', delta: '↓ 1.2min hoje', deltaTone: 'up' },
-  { label: 'TME', value: '12min', delta: '↓ 1min hoje', deltaTone: 'up' },
+  {
+    label: 'Atendimentos',
+    value: '31',
+    delta: '+4 hoje',
+    deltaTone: 'up',
+    target: { type: 'atendimentos', filtro: 'todos' },
+  },
+  {
+    label: 'TMA',
+    value: '14min',
+    delta: '↓ 1.2min hoje',
+    deltaTone: 'up',
+    target: { type: 'indicador', ind: 'tma' },
+  },
+  {
+    label: 'Tempo médio na fila',
+    value: '4,2min',
+    delta: '↓ 1.2min hoje',
+    deltaTone: 'up',
+    target: { type: 'indicador', ind: 'tmef' },
+  },
+  {
+    label: 'TME',
+    value: '12min',
+    delta: '↓ 1min hoje',
+    deltaTone: 'up',
+    target: { type: 'indicador', ind: 'tme' },
+  },
 ]
 
 export const andamento = [
-  { label: 'Automatizado', value: 84, tone: 'primary' as const },
-  { label: 'Aguardando fila', value: 23, tone: 'warning' as const },
-  { label: 'Atendimento humano', value: 56, tone: 'teal' as const },
+  { label: 'Automatizado', value: 84, tone: 'primary' as const, filtro: 'automatizado' },
+  { label: 'Aguardando fila', value: 23, tone: 'warning' as const, filtro: 'fila' },
+  { label: 'Atendimento humano', value: 56, tone: 'teal' as const, filtro: 'humano' },
 ]
 
 export const ocupacaoFila = [

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
 import MetricCard from '@/components/gestor/MetricCard.vue'
 import ChartCard from '@/components/gestor/ChartCard.vue'
@@ -15,7 +16,20 @@ import {
   demandaCapacidade,
   segmentosCriticos,
   type SegmentoCritico,
+  type CardTarget,
 } from '@/data/gestorTempoReal'
+
+const router = useRouter()
+
+// Redireciona o usuário conforme o alvo do card (indicador ou atendimentos).
+function goTarget(t: CardTarget) {
+  if (t.type === 'indicador') router.push({ path: '/gestor/indicadores', query: { ind: t.ind } })
+  else router.push({ path: '/gestor/tempo-real', query: { tab: 'atendimentos', filtro: t.filtro } })
+}
+
+function goAtendimentos(filtro: string) {
+  router.push({ path: '/gestor/tempo-real', query: { tab: 'atendimentos', filtro } })
+}
 
 // Paleta para os gráficos (hex de marca — neutra entre temas; eixos em cinza).
 const C = {
@@ -159,7 +173,8 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
         :key="k.label"
         shadow="never"
         body-class="!p-4"
-        class="!border-ms-border-light"
+        class="cursor-pointer !border-ms-border-light transition hover:shadow-md"
+        @click="goTarget(k.target)"
       >
         <div class="flex items-center gap-4">
           <div
@@ -189,9 +204,14 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
         </div>
       </el-card>
 
-      <el-card shadow="never" body-class="!p-4" class="!border-ms-border-light">
+      <el-card
+        shadow="never"
+        body-class="!p-4"
+        class="cursor-pointer !border-ms-border-light transition hover:shadow-md"
+        @click="goAtendimentos('fila')"
+      >
         <div class="text-[11px] font-semibold uppercase tracking-wide text-ms-text-secondary">
-          Status atual das equipes
+          Chamadas na fila · status das equipes
         </div>
         <div class="mt-3 space-y-1.5 text-xs">
           <div class="flex items-center justify-between">
@@ -225,6 +245,8 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
         :value="m.value"
         :delta="m.delta"
         :delta-tone="m.deltaTone"
+        class="cursor-pointer transition hover:shadow-md"
+        @click="goTarget(m.target)"
       />
     </div>
 
@@ -235,8 +257,9 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
           <div
             v-for="a in andamento"
             :key="a.label"
-            class="flex items-center justify-between rounded-lg border px-3 py-2"
+            class="flex cursor-pointer items-center justify-between rounded-lg border px-3 py-2 transition hover:brightness-95"
             :class="andamentoTone[a.tone]"
+            @click="goAtendimentos(a.filtro)"
           >
             <span class="text-xs font-semibold uppercase">{{ a.label }}</span>
             <span class="text-xl font-bold">{{ a.value }}</span>

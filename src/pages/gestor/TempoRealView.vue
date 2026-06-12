@@ -73,6 +73,12 @@ const current = computed(() => tabs.find((t) => t.key === activeTab.value) ?? ta
       class="flex flex-col items-center gap-2 rounded-lg border border-dashed border-ms-border py-20 text-center"
     >
       <p class="font-medium text-ms-text-regular">{{ current.label }}</p>
+      <p
+        v-if="route.query.filtro"
+        class="rounded-full bg-ms-primary/10 px-3 py-1 text-sm text-ms-primary"
+      >
+        Filtro pré-selecionado: <b>{{ route.query.filtro }}</b>
+      </p>
       <p class="text-sm text-ms-text-secondary">Em construção — chega na próxima etapa do fluxo.</p>
     </div>
   </DashboardLayout>

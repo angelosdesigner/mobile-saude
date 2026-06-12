@@ -14,7 +14,8 @@ const { hasQueue } = storeToRefs(useProfileStore())
     <div class="flex min-w-0 flex-1 flex-col">
       <AppTopbar />
       <main v-drag-scroll class="flex-1 overflow-y-auto">
-        <div class="mx-auto max-w-[1200px] px-6 py-6">
+        <!-- Full width: ocupa todo o espaço horizontal disponível (sem max-w). -->
+        <div class="px-6 py-6">
           <slot />
         </div>
       </main>

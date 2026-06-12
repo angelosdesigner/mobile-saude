@@ -52,6 +52,13 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Gestão em tempo real' },
   },
   {
+    // Indicadores do gestor — recebe ?ind= para pré-selecionar.
+    path: '/gestor/indicadores',
+    name: 'gestor-indicadores',
+    component: () => import('@/pages/gestor/IndicadoresView.vue'),
+    meta: { title: 'Indicadores' },
+  },
+  {
     // Ocorrências — Gestão Operacional (Kanban) — Figma 8074:4666.
     path: '/gestor/ocorrencias',
     name: 'gestor-ocorrencias',
