@@ -7,6 +7,8 @@ import OcorrenciasBoard from '@/components/ocorrencias/OcorrenciasBoard.vue'
 import OcorrenciasList from '@/components/ocorrencias/OcorrenciasList.vue'
 import ConfigurarColunas from '@/components/ocorrencias/ConfigurarColunas.vue'
 import FiltrosAvancados from '@/components/ocorrencias/FiltrosAvancados.vue'
+import FilterChips from '@/components/ui/FilterChips.vue'
+import type { ChipTone, FilterChip } from '@/components/ui/filterChips'
 import { useOcorrenciasStore, type StatTone } from '@/stores/ocorrencias'
 import {
   prioridadeOptions,
@@ -20,9 +22,27 @@ const route = useRoute()
 const router = useRouter()
 
 const store = useOcorrenciasStore()
-const { activeFilterCount, stats } = storeToRefs(store)
+const { activeFilterCount, stats, quickFilters } = storeToRefs(store)
 const { filters, savedFilters } = store
 const { clearFilters, applyPreset } = store
+
+// Tom semântico do store → tom dos chips (cor fica fora do estado).
+const statToneToChip: Record<StatTone, ChipTone> = {
+  secondary: 'neutral',
+  danger: 'danger',
+  warning: 'warning',
+  primary: 'primary',
+  success: 'success',
+}
+const chips = computed<FilterChip[]>(() =>
+  stats.value.map((s) => ({
+    key: s.key,
+    label: s.label,
+    value: s.value,
+    tone: statToneToChip[s.tone],
+    filterable: s.filterable,
+  })),
+)
 
 onMounted(() => store.load())
 
@@ -53,16 +73,6 @@ const filterDefs: { key: FilterKey; label: string; options: readonly string[]; w
 
 const showColumns = ref(false)
 const showAvancados = ref(false)
-
-// `stats` vem do store (derivado do conjunto filtrado) com tom semântico;
-// aqui mapeamos o tom para o token de cor do dot.
-const statDot: Record<StatTone, string> = {
-  secondary: 'bg-ms-text-secondary',
-  danger: 'bg-ms-danger',
-  warning: 'bg-ms-warning',
-  primary: 'bg-ms-primary',
-  success: 'bg-ms-success',
-}
 </script>
 
 <template>
@@ -157,17 +167,9 @@ const statDot: Record<StatTone, string> = {
       </div>
     </div>
 
-    <!-- Chips de estatísticas -->
-    <div class="mb-5 flex flex-wrap items-center gap-2">
-      <div
-        v-for="s in stats"
-        :key="s.label"
-        class="flex items-center gap-2 rounded-full border border-ms-border-light bg-ms-surface px-3 py-1"
-      >
-        <span class="inline-block h-2 w-2 rounded-full" :class="statDot[s.tone]" />
-        <span class="text-xs text-ms-text-regular">{{ s.label }}:</span>
-        <span class="text-xs font-semibold text-ms-text-primary">{{ s.value }}</span>
-      </div>
+    <!-- Chips de estatísticas (clicáveis, multi-seleção como filtros rápidos) -->
+    <div class="mb-5">
+      <FilterChips v-model="quickFilters" :chips="chips" />
     </div>
 
     <!-- Conteúdo: Quadro (kanban, drag-and-drop) ou Lista -->

@@ -6,14 +6,15 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import OperacionalBoard from '@/components/gestor/OperacionalBoard.vue'
 import DataList from '@/components/ui/DataList.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
+import FilterChips from '@/components/ui/FilterChips.vue'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
-import { stages, type StageTone, type GestorStat, type GestorCard } from '@/types/gestorOcorrencias'
+import { stages, type StageTone, type GestorCard } from '@/types/gestorOcorrencias'
 
 const route = useRoute()
 const router = useRouter()
 
 const store = useGestorOcorrenciasStore()
-const { statusPills, stats, loading, search, filtered } = storeToRefs(store)
+const { statusPills, stats, loading, search, filtered, quickFilters } = storeToRefs(store)
 
 onMounted(() => store.load())
 
@@ -75,13 +76,6 @@ const pillDot: Record<StageTone | 'info', string> = {
   success: 'bg-ms-success',
 }
 
-const statDot: Record<GestorStat['tone'], string> = {
-  default: 'bg-ms-text-placeholder',
-  danger: 'bg-ms-danger',
-  warning: 'bg-ms-warning',
-  success: 'bg-ms-success',
-  primary: 'bg-ms-primary',
-}
 </script>
 
 <template>
@@ -120,16 +114,9 @@ const statDot: Record<GestorStat['tone'], string> = {
       </div>
     </div>
 
-    <!-- Linha de métricas -->
-    <div class="mb-4 flex flex-wrap items-center gap-2">
-      <span
-        v-for="s in stats"
-        :key="s.label"
-        class="flex items-center gap-1.5 rounded-full border border-ms-border-light bg-ms-surface px-3 py-1 text-xs text-ms-text-regular"
-      >
-        <span class="h-1.5 w-1.5 rounded-full" :class="statDot[s.tone]" />
-        {{ s.label }}: <b class="text-ms-text-primary">{{ s.value }}</b>
-      </span>
+    <!-- Linha de métricas (chips clicáveis, multi-seleção como filtros rápidos) -->
+    <div class="mb-4">
+      <FilterChips v-model="quickFilters" :chips="stats" />
     </div>
 
     <!-- Filtros -->

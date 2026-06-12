@@ -1,14 +1,56 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type {
-  GestorCard,
-  GestorStage,
-  StatusPill,
-  GestorStat,
-  StageHeader,
-} from '@/types/gestorOcorrencias'
+import type { GestorCard, GestorStage, StatusPill, StageHeader } from '@/types/gestorOcorrencias'
 import { stages } from '@/types/gestorOcorrencias'
 import { fetchGestorBoard } from '@/services/gestorService'
+import type { ChipTone } from '@/components/ui/filterChips'
+
+// Chip de estatística do gestor (clicável, multi-seleção como filtro rápido).
+interface GestorChipStat {
+  key: string
+  label: string
+  value: number
+  tone: ChipTone
+  filterable: boolean
+}
+
+// "12min" → 12; sem valor → 0. Usado nos predicados de TME.
+function minutes(s?: string): number {
+  return s ? (parseInt(s, 10) || 0) : 0
+}
+
+// Predicados dos chips, derivados dos campos REAIS dos cards (não dos números
+// agregados do Figma) — assim a contagem do chip bate com o que o filtro mostra.
+// `total` não filtra: limpa a seleção.
+const chipDefs: { key: string; label: string; tone: ChipTone; pred: (c: GestorCard) => boolean }[] =
+  [
+    { key: 'pendentes', label: 'Pendentes do setor', tone: 'warning', pred: (c) => c.stage === 'fila' },
+    {
+      key: 'tme10',
+      label: 'TME acima de 10min',
+      tone: 'warning',
+      pred: (c) => minutes(c.espera ?? c.tempoAtendimento) > 10,
+    },
+    {
+      key: 'ocup70',
+      label: 'Ocupação acima de 70%',
+      tone: 'warning',
+      pred: (c) => c.stage === 'humano',
+    },
+    { key: 'alta', label: 'Alta prioridade', tone: 'danger', pred: (c) => c.risco === true },
+    {
+      key: 'aguardando',
+      label: 'Aguardando resposta',
+      tone: 'primary',
+      pred: (c) => c.stage === 'automatizado',
+    },
+    {
+      key: 'concluido',
+      label: 'Concluídos no dia',
+      tone: 'success',
+      pred: (c) => c.stage === 'concluido',
+    },
+  ]
 
 // Store da tela operacional do gestor (Ocorrências · modo Quadro).
 export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => {
@@ -18,9 +60,10 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
 
   const cards = ref<GestorCard[]>([])
   const statusPills = ref<StatusPill[]>([])
-  const stats = ref<GestorStat[]>([])
   const headers = ref<StageHeader[]>([])
   const search = ref('')
+  // Filtros rápidos (chips) — combinam em OR entre si, em AND com a busca.
+  const quickFilters = ref<string[]>([])
 
   async function load(force = false) {
     if (loaded.value && !force) return
@@ -30,7 +73,6 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
       const data = await fetchGestorBoard()
       cards.value = data.cards
       statusPills.value = data.statusPills
-      stats.value = data.stats
       headers.value = data.headers
       loaded.value = true
     } catch (e) {
@@ -40,7 +82,8 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     }
   }
 
-  const filtered = computed(() => {
+  /** Cards após a busca textual (base para as contagens dos chips). */
+  const searched = computed(() => {
     const q = search.value.trim().toLowerCase()
     if (!q) return cards.value
     return cards.value.filter(
@@ -51,7 +94,15 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     )
   })
 
-  /** Cards agrupados por estágio (respeitando a busca). */
+  function passesQuick(c: GestorCard): boolean {
+    if (!quickFilters.value.length) return true
+    return quickFilters.value.some((k) => chipDefs.find((d) => d.key === k)?.pred(c))
+  }
+
+  /** Busca + chips rápidos — usado na lista e no board. */
+  const filtered = computed(() => searched.value.filter(passesQuick))
+
+  /** Cards agrupados por estágio (busca + chips). */
   const board = computed(
     () =>
       Object.fromEntries(
@@ -64,18 +115,35 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
       Object.fromEntries(headers.value.map((h) => [h.key, h])) as Record<GestorStage, StageHeader>,
   )
 
+  /** Chips: "Total" (limpa) + um por predicado, com contagem sobre `searched`. */
+  const stats = computed<GestorChipStat[]>(() => {
+    const list = searched.value
+    return [
+      { key: 'total', label: 'Total', value: list.length, tone: 'neutral', filterable: false },
+      ...chipDefs.map((d) => ({
+        key: d.key,
+        label: d.label,
+        value: list.filter(d.pred).length,
+        tone: d.tone,
+        filterable: true,
+      })),
+    ]
+  })
+
   return {
     loading,
     error,
     loaded,
     cards,
     statusPills,
-    stats,
     headers,
     search,
+    quickFilters,
     load,
+    passesQuick,
     filtered,
     board,
     headerByStage,
+    stats,
   }
 })

@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import KanbanBoard from '@/components/ui/KanbanBoard.vue'
+import KanbanCard from '@/components/ui/KanbanCard.vue'
 import type { KanbanColumn, KanbanTone } from '@/components/ui/kanbanBoard'
 import type { ColumnKey } from '@/types/ocorrencias'
 import { columnLabel } from '@/types/ocorrencias'
@@ -46,17 +47,10 @@ const initials = (name: string) =>
 <template>
   <KanbanBoard :columns="columns" :groups="filteredBoard" draggable @move="onMove">
     <template #card="{ item }">
-      <el-card
-        shadow="hover"
-        body-class="!p-4"
-        class="!border-ms-border-light"
-        @click="router.push(`/ocorrencias/${item.id}`)"
-      >
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-1.5 text-xs text-ms-text-secondary">
-            <AppIcon name="chevron-down" class="h-3.5 w-3.5" />
-            {{ item.protocol }}
-          </div>
+      <KanbanCard :highlight="item.risk" clickable @click="router.push(`/ocorrencias/${item.id}`)">
+        <!-- Protocolo + tempo -->
+        <div class="flex items-start justify-between gap-2">
+          <span class="text-[11px] text-ms-text-secondary">{{ item.protocol }}</span>
           <el-tag
             :type="item.timeType"
             :effect="item.timeType === 'danger' ? 'dark' : 'light'"
@@ -66,34 +60,35 @@ const initials = (name: string) =>
           >
         </div>
 
-        <h4 class="mt-2 text-sm font-semibold leading-snug text-ms-text-primary">
+        <!-- Beneficiário -->
+        <h4 class="mt-1.5 text-sm font-semibold leading-snug text-ms-text-primary">
           {{ item.beneficiary }}
         </h4>
 
-        <el-tag v-if="item.risk" type="danger" effect="plain" size="small" class="mt-2 !uppercase">
-          Risco Jurídico Configurado
-        </el-tag>
-
-        <div class="mt-3 space-y-2">
+        <!-- Corpo: tipo · assunto (linha visual compacta, como o board do gestor) -->
+        <div class="mt-2 space-y-0.5 text-xs text-ms-text-regular">
           <div>
-            <div class="text-[11px] text-ms-text-secondary">Tipo de ocorrência</div>
-            <div class="text-xs text-ms-text-regular">{{ item.tipo }}</div>
+            Tipo: <span class="text-ms-text-secondary">{{ item.tipo }}</span>
           </div>
           <div>
-            <div class="text-[11px] text-ms-text-secondary">Assunto</div>
-            <div class="text-xs text-ms-text-regular">{{ item.assunto }}</div>
+            Assunto: <span class="text-ms-text-secondary">{{ item.assunto }}</span>
           </div>
         </div>
 
-        <div class="mt-3">
+        <!-- Status + risco -->
+        <div class="mt-2 flex flex-wrap items-center gap-1.5">
           <el-tag :type="item.statusType" effect="light" size="small">{{ item.status }}</el-tag>
+          <span
+            v-if="item.risk"
+            class="inline-flex items-center rounded border border-ms-danger px-1.5 py-0.5 text-[10px] font-medium uppercase text-ms-danger"
+            >Risco jurídico</span
+          >
         </div>
 
-        <div
-          class="mt-3 flex items-center justify-between border-t border-ms-border-lighter pt-2.5"
-        >
+        <!-- Rodapé: canal + responsável -->
+        <template #footer>
           <span
-            class="flex items-center gap-1.5 text-xs"
+            class="flex items-center gap-1.5"
             :style="{ color: channelColor(item.channel) }"
           >
             <svg
@@ -129,8 +124,8 @@ const initials = (name: string) =>
             >
             <span class="text-xs font-medium text-ms-success">{{ item.assignee }}</span>
           </span>
-        </div>
-      </el-card>
+        </template>
+      </KanbanCard>
     </template>
   </KanbanBoard>
 </template>

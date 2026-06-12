@@ -43,6 +43,18 @@ export const useOcorrenciasStore = defineStore('ocorrencias', () => {
     assunto: '',
   })
 
+  // ── Filtros rápidos (chips de estatística clicáveis, multi-seleção) ─────────
+  // Camada independente dos dropdowns: combinam em OR entre si e em AND com os
+  // dropdowns. As chaves são as dos chips (ver getter `stats`).
+  const quickFilters = ref<string[]>([])
+  const quickPredicates: Record<string, (o: Ocorrencia) => boolean> = {
+    'sla-reg': (o) => o.sla === 'Crítico',
+    'sla-int': (o) => o.sla === 'Vencido',
+    atencao: (o) => o.sla === 'Atenção',
+    alta: (o) => o.prioridade === 'Alta',
+    'nao-atrib': (o) => o.atendente === 'Não atribuídos',
+  }
+
   // ── Notificações ───────────────────────────────────────────────────────────
   const notifications = ref<NotificacaoItem[]>([
     {
@@ -132,6 +144,12 @@ export const useOcorrenciasStore = defineStore('ocorrencias', () => {
     )
   }
 
+  /** OR entre os chips ativos; sem chips ativos, não restringe. */
+  function passesQuick(o: Ocorrencia): boolean {
+    if (!quickFilters.value.length) return true
+    return quickFilters.value.some((k) => quickPredicates[k]?.(o))
+  }
+
   function applyPreset(p: SavedFilter) {
     clearFilters()
     Object.assign(filters, p.apply)
@@ -145,6 +163,7 @@ export const useOcorrenciasStore = defineStore('ocorrencias', () => {
     filters.atendente = []
     filters.status = []
     filters.assunto = ''
+    quickFilters.value = []
   }
 
   function markAllRead() {
@@ -191,54 +210,74 @@ export const useOcorrenciasStore = defineStore('ocorrencias', () => {
       filters.tipoAtendimento.length +
       filters.atendente.length +
       filters.status.length +
-      (filters.assunto ? 1 : 0),
+      (filters.assunto ? 1 : 0) +
+      quickFilters.value.length,
   )
 
   const unreadCount = computed(() => notifications.value.filter((n) => n.unread).length)
   const visibleColumns = computed(() => columnConfig.value.filter((c) => c.visible))
   const allItems = computed(() => columnConfig.value.flatMap((c) => board[c.key]))
-  const filteredList = computed(() => allItems.value.filter(passesFilter))
 
-  /** Board já filtrado por coluna — usado no template em vez de `v-show`. */
+  /** Conjunto após dropdowns/busca (antes dos chips) — base para as contagens. */
+  const baseList = computed(() => allItems.value.filter(passesFilter))
+  const filteredList = computed(() => baseList.value.filter(passesQuick))
+
+  /** Board já filtrado por coluna — dropdowns/busca + chips rápidos. */
   const filteredBoard = computed(
     () =>
-      Object.fromEntries(columns.map((c) => [c, board[c].filter(passesFilter)])) as Record<
-        ColumnKey,
-        Ocorrencia[]
-      >,
+      Object.fromEntries(
+        columns.map((c) => [c, board[c].filter((o) => passesFilter(o) && passesQuick(o))]),
+      ) as Record<ColumnKey, Ocorrencia[]>,
   )
 
   /**
-   * Estatísticas derivadas do conjunto filtrado. Emite um TOM semântico
-   * (não cor) — a view resolve para o token, mantendo a cor fora do estado.
+   * Estatísticas (chips). As contagens derivam do conjunto pós-dropdowns
+   * (`baseList`), portanto NÃO mudam ao (des)marcar chips — o que dá segmentos
+   * estáveis. Emite um TOM semântico (não cor) + a `key` usada como filtro.
    */
-  const stats = computed((): { label: string; value: number; tone: StatTone }[] => {
-    const list = filteredList.value
-    return [
-      { label: 'Total', value: list.length, tone: 'secondary' },
-      {
-        label: 'SLA regulatório',
-        value: list.filter((o) => o.sla === 'Crítico').length,
-        tone: 'danger',
-      },
-      {
-        label: 'SLA interno',
-        value: list.filter((o) => o.sla === 'Vencido').length,
-        tone: 'danger',
-      },
-      { label: 'Atenção', value: list.filter((o) => o.sla === 'Atenção').length, tone: 'warning' },
-      {
-        label: 'Alta prioridade',
-        value: list.filter((o) => o.prioridade === 'Alta').length,
-        tone: 'danger',
-      },
-      {
-        label: 'Não atribuídos',
-        value: list.filter((o) => o.atendente === 'Não atribuídos').length,
-        tone: 'secondary',
-      },
-    ]
-  })
+  const stats = computed(
+    (): { key: string; label: string; value: number; tone: StatTone; filterable: boolean }[] => {
+      const list = baseList.value
+      return [
+        { key: 'total', label: 'Total', value: list.length, tone: 'secondary', filterable: false },
+        {
+          key: 'sla-reg',
+          label: 'SLA regulatório',
+          value: list.filter((o) => o.sla === 'Crítico').length,
+          tone: 'danger',
+          filterable: true,
+        },
+        {
+          key: 'sla-int',
+          label: 'SLA interno',
+          value: list.filter((o) => o.sla === 'Vencido').length,
+          tone: 'danger',
+          filterable: true,
+        },
+        {
+          key: 'atencao',
+          label: 'Atenção',
+          value: list.filter((o) => o.sla === 'Atenção').length,
+          tone: 'warning',
+          filterable: true,
+        },
+        {
+          key: 'alta',
+          label: 'Alta prioridade',
+          value: list.filter((o) => o.prioridade === 'Alta').length,
+          tone: 'danger',
+          filterable: true,
+        },
+        {
+          key: 'nao-atrib',
+          label: 'Não atribuídos',
+          value: list.filter((o) => o.atendente === 'Não atribuídos').length,
+          tone: 'secondary',
+          filterable: true,
+        },
+      ]
+    },
+  )
 
   return {
     // estado
@@ -247,12 +286,14 @@ export const useOcorrenciasStore = defineStore('ocorrencias', () => {
     loaded,
     board,
     filters,
+    quickFilters,
     notifications,
     columnConfig,
     savedFilters,
     // ações
     load,
     passesFilter,
+    passesQuick,
     applyPreset,
     clearFilters,
     markAllRead,

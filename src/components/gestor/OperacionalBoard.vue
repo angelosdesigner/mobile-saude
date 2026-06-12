@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import KanbanBoard from '@/components/ui/KanbanBoard.vue'
+import KanbanCard from '@/components/ui/KanbanCard.vue'
 import type { KanbanColumn } from '@/components/ui/kanbanBoard'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
 import { stages, type PillTone, type SlaState } from '@/types/gestorOcorrencias'
@@ -51,10 +52,7 @@ const channelColor = (c: string) =>
 <template>
   <KanbanBoard :columns="columns" :groups="board">
     <template #card="{ item }">
-      <div
-        class="rounded-lg border bg-ms-surface p-3 shadow-sm transition hover:shadow-md"
-        :class="item.destaque ? 'border-ms-danger' : 'border-ms-border-light'"
-      >
+      <KanbanCard :highlight="item.destaque || item.risco">
         <!-- Título + indicador por estágio -->
         <div class="flex items-start justify-between gap-2">
           <span class="text-sm font-semibold leading-snug text-ms-text-primary">{{
@@ -132,14 +130,16 @@ const channelColor = (c: string) =>
         </div>
 
         <!-- Rodapé: canal -->
-        <div class="mt-2 flex items-center gap-1.5 border-t border-ms-border-lighter pt-2 text-xs">
-          <span
-            class="h-2 w-2 rounded-full"
-            :style="{ backgroundColor: channelColor(item.channel) }"
-          />
-          <span class="text-ms-text-secondary">{{ item.channel }}</span>
-        </div>
-      </div>
+        <template #footer>
+          <span class="flex items-center gap-1.5">
+            <span
+              class="h-2 w-2 rounded-full"
+              :style="{ backgroundColor: channelColor(item.channel) }"
+            />
+            <span class="text-ms-text-secondary">{{ item.channel }}</span>
+          </span>
+        </template>
+      </KanbanCard>
     </template>
   </KanbanBoard>
 </template>
