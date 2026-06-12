@@ -14,6 +14,7 @@ declare module 'vue' {
     AppIcon: typeof import('./src/components/ui/AppIcon.vue')['default']
     AppSidebar: typeof import('./src/components/layout/AppSidebar.vue')['default']
     AppTopbar: typeof import('./src/components/layout/AppTopbar.vue')['default']
+    AtendimentosTab: typeof import('./src/components/gestor/tempo-real/AtendimentosTab.vue')['default']
     BarList: typeof import('./src/components/gestor/BarList.vue')['default']
     BrandLogo: typeof import('./src/components/layout/BrandLogo.vue')['default']
     ChartCard: typeof import('./src/components/gestor/ChartCard.vue')['default']

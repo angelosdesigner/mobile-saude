@@ -5,15 +5,22 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 
 // Dashboard de gestão em tempo real (Figma seção "Gestão tempo real"). Estrutura
 // de duas camadas: grupo (Tempo Real | Performance) + abas. Cada aba é um
-// componente próprio; só "Início" está implementada — as demais entram a seguir.
+// componente próprio (lazy). As demais abas entram nas próximas etapas.
 const InicioTab = defineAsyncComponent(() => import('@/components/gestor/tempo-real/InicioTab.vue'))
+const AtendimentosTab = defineAsyncComponent(
+  () => import('@/components/gestor/tempo-real/AtendimentosTab.vue'),
+)
+const tabComponents: Record<string, ReturnType<typeof defineAsyncComponent>> = {
+  inicio: InicioTab,
+  atendimentos: AtendimentosTab,
+}
 
 const route = useRoute()
 const router = useRouter()
 
 const tabs = [
   { key: 'inicio', label: 'Início', ready: true },
-  { key: 'atendimentos', label: 'Atendimentos', ready: false },
+  { key: 'atendimentos', label: 'Atendimentos', ready: true },
   { key: 'filas', label: 'Gestão de filas e atendimento humano', ready: false },
   { key: 'abandonos', label: 'Abandonos e desistência', ready: false },
   { key: 'performance', label: 'Performance e Workforce', ready: false },
@@ -67,7 +74,7 @@ const current = computed(() => tabs.find((t) => t.key === activeTab.value) ?? ta
     </div>
 
     <!-- Conteúdo da aba -->
-    <InicioTab v-if="current.ready" />
+    <component :is="tabComponents[current.key]" v-if="current.ready" />
     <div
       v-else
       class="flex flex-col items-center gap-2 rounded-lg border border-dashed border-ms-border py-20 text-center"
