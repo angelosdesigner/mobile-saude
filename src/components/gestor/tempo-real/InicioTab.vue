@@ -259,8 +259,8 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
         title="Distribuição de atendimentos por canal"
         subtitle="Total: 118 atendimentos ativos"
       >
-        <div class="relative">
-          <VChart class="h-44" :option="canalOption" autoresize />
+        <div class="relative h-44 w-full">
+          <VChart class="h-full w-full" :option="canalOption" autoresize />
           <div
             class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
           >
@@ -280,14 +280,18 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
         title="Abandono por fluxo — BOT vs Humano"
         subtitle="% de abandono em cada canal por fluxo"
       >
-        <VChart class="h-52" :option="abandonoOption" autoresize />
+        <div class="h-52 w-full">
+          <VChart class="h-full w-full" :option="abandonoOption" autoresize />
+        </div>
       </ChartCard>
 
       <ChartCard
         title="Demanda × Capacidade"
         subtitle="Distribuição ao longo do dia · pico 14h-16h"
       >
-        <VChart class="h-52" :option="demandaOption" autoresize />
+        <div class="h-52 w-full">
+          <VChart class="h-full w-full" :option="demandaOption" autoresize />
+        </div>
       </ChartCard>
     </div>
 
