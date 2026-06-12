@@ -8,7 +8,7 @@
 //  - cell-<key>: conteúdo custom de uma célula (recebe { row })
 //  - expand: conteúdo do accordion (recebe { row })
 //  - footer-actions: área opcional no rodapé (ex.: "Criar")
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import ColumnManager from './ColumnManager.vue'
 import type { DataListColumn } from './dataList'
 
@@ -22,6 +22,9 @@ const props = withDefaults(
     actions?: boolean
     emptyText?: string
     countLabel?: string
+    paginated?: boolean
+    pageSizes?: number[]
+    defaultPageSize?: number
   }>(),
   {
     rowKey: 'id',
@@ -30,6 +33,9 @@ const props = withDefaults(
     actions: true,
     emptyText: 'Nenhum registro',
     countLabel: 'registros',
+    paginated: true,
+    pageSizes: () => [10, 20, 50, 100],
+    defaultPageSize: 10,
   },
 )
 
@@ -49,6 +55,22 @@ const visible = ref<Record<string, boolean>>(
 
 const visibleColumns = computed(() => props.columns.filter((c) => visible.value[c.key]))
 
+// ── Paginação (1–10, 1–20, …) ───────────────────────────────────────────────
+const page = ref(1)
+const pageSize = ref(props.defaultPageSize)
+const pagedRows = computed(() =>
+  props.paginated
+    ? props.rows.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
+    : props.rows,
+)
+// Volta à 1ª página quando o conjunto muda (filtro/busca).
+watch(
+  () => props.rows.length,
+  () => {
+    page.value = 1
+  },
+)
+
 const headerCellStyle = {
   background: 'var(--color-ms-fill-light)',
   color: 'var(--color-ms-text-secondary)',
@@ -60,10 +82,11 @@ const headerCellStyle = {
 <template>
   <el-card shadow="never" body-class="!p-0" class="!border-ms-border-light">
     <el-table
-      :data="rows"
+      :data="pagedRows"
       :row-key="rowKey"
       :header-cell-style="headerCellStyle"
       :empty-text="emptyText"
+      border
       style="width: 100%"
     >
       <!-- Seleção (fixa à esquerda) -->
@@ -126,12 +149,24 @@ const headerCellStyle = {
       </el-table-column>
     </el-table>
 
-    <!-- Rodapé: ações + contagem (estilo Jira) -->
+    <!-- Rodapé: ações + paginação (estilo Jira) -->
     <div
-      class="flex items-center justify-between border-t border-ms-border-light px-4 py-2.5 text-sm text-ms-text-secondary"
+      class="flex flex-wrap items-center justify-between gap-2 border-t border-ms-border-light px-4 py-2.5 text-sm text-ms-text-secondary"
     >
-      <slot name="footer-actions"><span /></slot>
-      <span>{{ rows.length }} {{ countLabel }}</span>
+      <div class="flex items-center gap-3">
+        <slot name="footer-actions"><span /></slot>
+        <span>{{ rows.length }} {{ countLabel }}</span>
+      </div>
+      <el-pagination
+        v-if="paginated"
+        v-model:current-page="page"
+        v-model:page-size="pageSize"
+        :page-sizes="pageSizes"
+        :total="rows.length"
+        size="small"
+        background
+        layout="sizes, prev, pager, next, jumper"
+      />
     </div>
   </el-card>
 </template>
