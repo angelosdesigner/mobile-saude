@@ -42,8 +42,9 @@ function onCommand(cmd: string) {
 
 const activeTitle = computed(() => (route.meta.title as string) ?? 'Início')
 
-// Status de disponibilidade do atendente.
-const status = ref<'Disponível' | 'Indisponível'>('Disponível')
+// Status de disponibilidade (padrão de central de atendimento): Disponível
+// (verde, pronto para receber) ou Ocupado (vermelho, em atendimento).
+const status = ref<'Disponível' | 'Ocupado'>('Disponível')
 
 // "Abas" de protocolos abertos (mock, fiel ao design).
 const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
@@ -118,7 +119,7 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
         >
           <span
             class="inline-block h-2 w-2 rounded-full"
-            :class="status === 'Disponível' ? 'bg-ms-success' : 'bg-ms-text-placeholder'"
+            :class="status === 'Disponível' ? 'bg-ms-success' : 'bg-ms-danger'"
           />
           <span class="font-medium text-ms-text-regular">{{ status }}</span>
           <AppIcon name="chevron-down" class="h-3 w-3 text-ms-text-secondary" />
@@ -126,7 +127,7 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item @click="status = 'Disponível'">Disponível</el-dropdown-item>
-            <el-dropdown-item @click="status = 'Indisponível'">Indisponível</el-dropdown-item>
+            <el-dropdown-item @click="status = 'Ocupado'">Ocupado</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
