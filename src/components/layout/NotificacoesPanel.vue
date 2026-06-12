@@ -38,7 +38,7 @@ const tintClass: Record<string, string> = {
         v-for="n in notifications"
         :key="n.id"
         class="flex gap-3 border-t border-ms-border-lighter px-4 py-3"
-        :class="n.unread ? 'bg-[#FAFCFF]' : ''"
+        :class="n.unread ? 'bg-ms-primary/5' : ''"
       >
         <div
           class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
