@@ -43,8 +43,7 @@ const atendenteItems = computed<NavItem[]>(() =>
 )
 
 const gestorItems: NavItem[] = [
-  { to: '/gestor', label: 'Dashboard', icon: 'home' },
-  { to: '/gestor/tempo-real', label: 'Tempo real', icon: 'chat' },
+  { to: '/gestor/tempo-real', label: 'Início', icon: 'home' },
   { to: '/gestor/ocorrencias', label: 'Ocorrências', icon: 'alert' },
   { to: '/gestor/relatorios', label: 'Relatórios', icon: 'grid', comingSoon: true },
 ]

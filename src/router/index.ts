@@ -37,15 +37,13 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Detalhe da ocorrência' },
   },
   {
-    // Visão do gestor — dashboard agregado (mesmo produto, outro papel).
-    // Telas adicionais (Jornadas, Relatórios) entram como rotas filhas aqui.
+    // A "Início" do gestor É o dashboard de Gestão em tempo real.
     path: '/gestor',
-    name: 'gestor-dashboard',
-    component: () => import('@/pages/gestor/DashboardView.vue'),
-    meta: { title: 'Visão do gestor' },
+    redirect: '/gestor/tempo-real',
   },
   {
     // Gestão em tempo real (dashboard de abas) — Figma seção "Gestão tempo real".
+    // É a tela inicial do gestor.
     path: '/gestor/tempo-real',
     name: 'gestor-tempo-real',
     component: () => import('@/pages/gestor/TempoRealView.vue'),
