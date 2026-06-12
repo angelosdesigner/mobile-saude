@@ -14,9 +14,9 @@ const { filteredList } = storeToRefs(useOcorrenciasStore())
 const listColumns: DataListColumn[] = [
   { key: 'protocol', label: 'Protocolo', width: 170, sortable: true },
   { key: 'beneficiary', label: 'Beneficiário', minWidth: 220, sortable: true },
-  { key: 'risk', label: 'Classificação de risco', width: 200 },
+  { key: 'risk', label: 'Classificação de risco', minWidth: 200 },
   { key: 'tipo', label: 'Tipo de ocorrência', minWidth: 240 },
-  { key: 'status', label: 'Status', width: 180 },
+  { key: 'status', label: 'Status', width: 160 },
 ]
 
 function onVisualizar(o: Ocorrencia) {

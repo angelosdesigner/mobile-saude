@@ -19,11 +19,11 @@ onMounted(() => store.load())
 
 // ── Modo Lista (mesma fonte do Kanban; colunas próprias da visão do gestor) ──
 const listColumns: DataListColumn[] = [
-  { key: 'beneficiary', label: 'Beneficiário', minWidth: 200, sortable: true },
-  { key: 'stage', label: 'Estágio', width: 180 },
+  { key: 'beneficiary', label: 'Beneficiário', minWidth: 220, sortable: true },
+  { key: 'stage', label: 'Estágio', width: 160 },
   { key: 'channel', label: 'Canal', width: 120 },
-  { key: 'atendente', label: 'Atendente', minWidth: 150 },
-  { key: 'situacao', label: 'Situação', minWidth: 170 },
+  { key: 'atendente', label: 'Atendente', minWidth: 160 },
+  { key: 'situacao', label: 'Situação', minWidth: 180 },
 ]
 
 const stageMeta = Object.fromEntries(stages.map((s) => [s.key, s])) as Record<

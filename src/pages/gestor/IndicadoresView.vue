@@ -174,18 +174,19 @@ function tendTone(t: string): string {
 }
 
 // Colunas da tabela de segmentos críticos (DataList compartilhado).
+// Larguras padronizadas: numéricas ~110 à direita; texto com min-width.
 const segmentoColumns: DataListColumn[] = [
   { key: 'segmento', label: 'Segmento', minWidth: 220, sortable: true },
-  { key: 'volume', label: 'Volume', align: 'right', sortable: true },
-  { key: 'atendidos', label: 'Atendidos', align: 'right' },
-  { key: 'abandonados', label: 'Abandonados', align: 'right' },
-  { key: 'disponiveis', label: 'Disponíveis', align: 'right' },
-  { key: 'tme', label: 'TME', align: 'right' },
-  { key: 'metaTme', label: 'Meta do TME', align: 'right' },
-  { key: 'tma', label: 'TMA', align: 'right' },
-  { key: 'csat', label: 'CSAT', align: 'center' },
-  { key: 'tendencia', label: 'Tendência' },
-  { key: 'status', label: 'Status' },
+  { key: 'volume', label: 'Volume', align: 'right', width: 110, sortable: true },
+  { key: 'atendidos', label: 'Atendidos', align: 'right', width: 110 },
+  { key: 'abandonados', label: 'Abandonados', align: 'right', width: 120 },
+  { key: 'disponiveis', label: 'Disponíveis', align: 'right', width: 120 },
+  { key: 'tme', label: 'TME', align: 'right', width: 100 },
+  { key: 'metaTme', label: 'Meta do TME', align: 'right', width: 120 },
+  { key: 'tma', label: 'TMA', align: 'right', width: 100 },
+  { key: 'csat', label: 'CSAT', align: 'center', width: 90 },
+  { key: 'tendencia', label: 'Tendência', width: 130 },
+  { key: 'status', label: 'Status', width: 110 },
   { key: 'acao', label: 'Ação', width: 110 },
 ]
 </script>
