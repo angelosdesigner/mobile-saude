@@ -69,7 +69,7 @@ onBeforeUnmount(() => {
   >
     <!-- Alça de arrastar -->
     <button
-      class="flex h-12 w-6 cursor-grab items-center justify-center rounded-xl bg-white text-ms-text-placeholder shadow-lg transition hover:text-ms-text-secondary active:cursor-grabbing"
+      class="flex h-12 w-6 cursor-grab items-center justify-center rounded-xl bg-ms-surface text-ms-text-placeholder shadow-lg transition hover:text-ms-text-secondary active:cursor-grabbing"
       style="touch-action: none"
       title="Arraste para mover"
       @pointerdown="onDown"

@@ -72,7 +72,7 @@ const statDot: Record<GestorStat['tone'], string> = {
       <div
         v-for="p in statusPills"
         :key="p.label"
-        class="flex items-center gap-2 rounded-lg border border-ms-border-light bg-white px-3 py-2"
+        class="flex items-center gap-2 rounded-lg border border-ms-border-light bg-ms-surface px-3 py-2"
       >
         <span class="h-2.5 w-2.5 rounded-full" :class="pillDot[p.tone]" />
         <span class="text-[11px] font-semibold uppercase tracking-wide text-ms-text-secondary">{{
@@ -87,7 +87,7 @@ const statDot: Record<GestorStat['tone'], string> = {
       <span
         v-for="s in stats"
         :key="s.label"
-        class="flex items-center gap-1.5 rounded-full border border-ms-border-light bg-white px-3 py-1 text-xs text-ms-text-regular"
+        class="flex items-center gap-1.5 rounded-full border border-ms-border-light bg-ms-surface px-3 py-1 text-xs text-ms-text-regular"
       >
         <span class="h-1.5 w-1.5 rounded-full" :class="statDot[s.tone]" />
         {{ s.label }}: <b class="text-ms-text-primary">{{ s.value }}</b>

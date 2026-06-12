@@ -34,7 +34,7 @@ function ligar() {
       <div class="flex items-center justify-between">
         <h3 class="text-xl font-bold text-white">Nova ligação</h3>
         <button
-          class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-ms-text-primary"
+          class="flex h-8 w-8 items-center justify-center rounded-full bg-ms-surface/90 text-ms-text-primary"
           aria-label="Fechar"
           @click="emit('update:modelValue', false)"
         >
@@ -48,11 +48,11 @@ function ligar() {
         <label class="mb-2 block font-medium text-white">Número de telefone</label>
         <input
           value="+55 61 9 9999-9999"
-          class="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder-white/40 outline-none focus:border-ms-primary"
+          class="w-full rounded-lg border border-white/15 bg-ms-surface/5 px-4 py-2.5 text-white placeholder-white/40 outline-none focus:border-ms-primary"
         />
       </div>
 
-      <div class="flex flex-col items-center gap-2 rounded-xl bg-white/5 py-6">
+      <div class="flex flex-col items-center gap-2 rounded-xl bg-ms-surface/5 py-6">
         <div
           class="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#7C6CF2] to-[#5B4BD6] text-2xl font-semibold text-white"
         >

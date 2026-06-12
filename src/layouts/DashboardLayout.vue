@@ -9,7 +9,7 @@ const { hasQueue } = storeToRefs(useProfileStore())
 </script>
 
 <template>
-  <div class="flex h-screen w-full overflow-hidden bg-ms-fill-light">
+  <div class="flex h-screen w-full overflow-hidden bg-ms-bg">
     <AppSidebar />
     <div class="flex min-w-0 flex-1 flex-col">
       <AppTopbar />

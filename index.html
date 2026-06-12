@@ -11,6 +11,17 @@
       rel="stylesheet"
     />
     <title>Mobile Saúde</title>
+    <script>
+      // Anti-flash: aplica o tema salvo (ou a preferência do sistema) antes da
+      // primeira pintura, evitando "flash" de tema claro ao carregar no escuro.
+      (function () {
+        try {
+          var v = localStorage.getItem('ms-theme')
+          var dark = v ? v === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
+          if (dark) document.documentElement.classList.add('dark')
+        } catch (e) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="app"></div>

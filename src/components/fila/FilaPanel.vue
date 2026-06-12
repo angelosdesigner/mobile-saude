@@ -58,7 +58,9 @@ const channelIcon = (c: string) => {
         v-for="i in items"
         :key="i.id"
         class="block w-full rounded-lg border p-3 text-left transition hover:border-[#C6E2FF]"
-        :class="i.active ? 'border-ms-success bg-[#F0F9EB]' : 'border-ms-border-light bg-white'"
+        :class="
+          i.active ? 'border-ms-success bg-[#F0F9EB]' : 'border-ms-border-light bg-ms-surface'
+        "
       >
         <div class="flex items-start justify-between gap-2">
           <span class="text-sm font-semibold leading-snug text-ms-text-primary">{{ i.name }}</span>

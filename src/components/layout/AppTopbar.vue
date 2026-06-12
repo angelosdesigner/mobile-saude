@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import NotificacoesPanel from './NotificacoesPanel.vue'
 import { storeToRefs } from 'pinia'
 import { useOcorrenciasStore } from '@/stores/ocorrencias'
+import { useThemeStore } from '@/stores/theme'
 import {
   useProfileStore,
   profileLabel,
@@ -17,6 +18,9 @@ const route = useRoute()
 const router = useRouter()
 
 const { unreadCount } = storeToRefs(useOcorrenciasStore())
+
+const themeStore = useThemeStore()
+const { isDark } = storeToRefs(themeStore)
 
 const profileStore = useProfileStore()
 const { profile, role, isGestor } = storeToRefs(profileStore)
@@ -47,7 +51,7 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
 
 <template>
   <header
-    class="flex h-14 shrink-0 items-center justify-between gap-4 border-b border-ms-border bg-white px-4"
+    class="flex h-14 shrink-0 items-center justify-between gap-4 border-b border-ms-border bg-ms-surface px-4"
   >
     <!-- Esquerda: navegação em abas -->
     <div class="flex min-w-0 items-center gap-2">
@@ -78,8 +82,18 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
       </el-button>
     </div>
 
-    <!-- Direita: notificações + status + usuário -->
+    <!-- Direita: tema + notificações + status + usuário -->
     <div class="flex shrink-0 items-center gap-4">
+      <el-tooltip :content="isDark ? 'Modo claro' : 'Modo escuro'" placement="bottom">
+        <button
+          class="flex h-8 w-8 items-center justify-center rounded-full text-ms-text-regular transition hover:bg-ms-fill-light hover:text-ms-primary"
+          :aria-label="isDark ? 'Ativar modo claro' : 'Ativar modo escuro'"
+          @click="themeStore.toggle()"
+        >
+          <AppIcon :name="isDark ? 'sun' : 'moon'" class="h-5 w-5" />
+        </button>
+      </el-tooltip>
+
       <el-popover trigger="click" :width="382" placement="bottom-end" popper-class="!p-0">
         <template #reference>
           <el-badge is-dot type="danger" :hidden="!unreadCount" class="cursor-pointer">

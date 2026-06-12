@@ -154,7 +154,7 @@ const showAvancados = ref(false)
       <div
         v-for="s in stats"
         :key="s.label"
-        class="flex items-center gap-2 rounded-full border border-ms-border-light bg-white px-3 py-1"
+        class="flex items-center gap-2 rounded-full border border-ms-border-light bg-ms-surface px-3 py-1"
       >
         <span class="inline-block h-2 w-2 rounded-full" :style="{ backgroundColor: s.color }" />
         <span class="text-xs text-ms-text-regular">{{ s.label }}:</span>

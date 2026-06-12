@@ -19,7 +19,7 @@ const actions: { key: string; icon: Icon; tip: string; green?: boolean }[] = [
   <!-- Recolhido: botão quadrado com » -->
   <button
     v-if="!expanded"
-    class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-ms-text-regular shadow-lg transition hover:text-ms-primary"
+    class="flex h-12 w-12 items-center justify-center rounded-2xl bg-ms-surface text-ms-text-regular shadow-lg transition hover:text-ms-primary"
     title="Expandir ações"
     @click="expanded = true"
   >
@@ -37,7 +37,7 @@ const actions: { key: string; icon: Icon; tip: string; green?: boolean }[] = [
   </button>
 
   <!-- Expandido: pílula com ações -->
-  <div v-else class="flex items-center gap-1 rounded-2xl bg-white px-2 py-2 shadow-lg">
+  <div v-else class="flex items-center gap-1 rounded-2xl bg-ms-surface px-2 py-2 shadow-lg">
     <button
       class="flex h-9 w-9 items-center justify-center rounded-xl text-ms-text-regular transition hover:bg-ms-fill-light"
       title="Recolher"

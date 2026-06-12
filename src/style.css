@@ -32,6 +32,14 @@
    preflight reset, below Tailwind utilities). */
 @import 'element-plus/dist/index.css' layer(element-plus);
 
+/* Tema escuro do Element Plus (define os --el-* sob `html.dark`). Mesma layer,
+   para todos os componentes EP (botões, inputs, tabelas, dropdowns…) adaptarem. */
+@import 'element-plus/theme-chalk/dark/css-vars.css' layer(element-plus);
+
+/* Dark mode baseado em CLASSE (.dark no <html>), não em prefers-color-scheme —
+   o toggle controla manualmente. Habilita também as variantes `dark:` do Tailwind. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
  * Design tokens (Tailwind v4 @theme) — paleta semântica do projeto, alinhada
  * ao Element Plus. Gera utilitárias `text-ms-*`, `bg-ms-*`, `border-ms-*` etc.,
@@ -54,6 +62,10 @@
   --color-ms-border-light: #ebeef5;
   --color-ms-border-lighter: #f2f6fc;
   --color-ms-fill-light: #f5f7fa;
+  /* Superfícies semânticas (invertem no escuro): `surface` = cards/sidebar/topbar
+     (branco no claro), `bg` = fundo da página. Substituem `bg-white` fixo. */
+  --color-ms-surface: #ffffff;
+  --color-ms-bg: #f5f7fa;
 }
 
 :root {
@@ -71,8 +83,30 @@
 
 body {
   margin: 0;
-  background: #f5f7fa;
+  background: var(--color-ms-bg);
   font-family: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+/*
+ * Overrides do tema ESCURO. Ficam fora de @layer (sem layer) para vencer os
+ * tokens de :root do @theme por ordem de cascata. Redefinem apenas os valores
+ * dos tokens `ms-*`; todas as utilitárias `text-ms-*`/`bg-ms-*`/`border-ms-*`
+ * passam a resolver para o valor escuro automaticamente. Alinhado à paleta dark
+ * do Element Plus para consistência com os componentes EP.
+ */
+html.dark {
+  color-scheme: dark;
+  --color-ms-text-primary: #e5eaf3;
+  --color-ms-text-regular: #cfd3dc;
+  --color-ms-text-secondary: #a3a6ad;
+  --color-ms-text-placeholder: #8d9095;
+  --color-ms-primary-light: #18222c; /* fundo de item ativo / avatar no escuro */
+  --color-ms-border: #4c4d4f;
+  --color-ms-border-light: #414243;
+  --color-ms-border-lighter: #363637;
+  --color-ms-fill-light: #262727;
+  --color-ms-surface: #1d1e1f;
+  --color-ms-bg: #141414;
 }
 
 /* Customizações de componentes na layer `components`: ficam ACIMA do
@@ -81,6 +115,9 @@ body {
 @layer components {
   .el-card {
     --el-card-border-radius: 12px; /* containers/cards do Figma */
-    --el-card-border-color: #ebeef5;
+    --el-card-border-color: var(--color-ms-border-light);
+    /* Ancora o fundo do card no token de superfície (alterna claro/escuro de
+       forma confiável no toggle ao vivo, evitando o lag do --el-* do card). */
+    background-color: var(--color-ms-surface);
   }
 }

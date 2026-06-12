@@ -6,7 +6,7 @@
   <el-popover trigger="click" placement="top-end" :width="300">
     <template #reference>
       <button
-        class="flex h-13 w-13 items-center justify-center rounded-full border border-ms-border-light bg-white shadow-lg transition hover:shadow-xl"
+        class="flex h-13 w-13 items-center justify-center rounded-full border border-ms-border-light bg-ms-surface shadow-lg transition hover:shadow-xl"
         style="height: 52px; width: 52px"
         title="Copilot"
       >

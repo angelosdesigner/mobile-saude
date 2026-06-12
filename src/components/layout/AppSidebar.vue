@@ -56,7 +56,7 @@ const isActive = (to: string) => route.path === to || route.path.startsWith(to +
 
 <template>
   <aside
-    class="relative flex shrink-0 flex-col border-r border-ms-border bg-white transition-[width] duration-200"
+    class="relative flex shrink-0 flex-col border-r border-ms-border bg-ms-surface transition-[width] duration-200"
     :class="expanded ? 'w-[200px]' : 'w-16'"
   >
     <!-- Cabeçalho: logo + botão de colapsar/expandir -->
@@ -66,7 +66,7 @@ const isActive = (to: string) => route.path === to || route.path.startsWith(to +
     >
       <BrandLogo :size="32" />
       <button
-        class="absolute -right-3 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-ms-border bg-white text-ms-text-secondary shadow-sm transition hover:text-ms-primary"
+        class="absolute -right-3 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-ms-border bg-ms-surface text-ms-text-secondary shadow-sm transition hover:text-ms-primary"
         :title="expanded ? 'Colapsar' : 'Expandir'"
         :aria-label="expanded ? 'Colapsar menu' : 'Expandir menu'"
         @click="expanded = !expanded"

@@ -50,7 +50,7 @@ const channelColor = (c: string) => (/whats/i.test(c) ? '#25D366' : '#909399')
       <div class="overflow-hidden rounded-t-lg">
         <div class="h-1" :class="accentBar[s.tone]" />
       </div>
-      <div class="rounded-b-lg border border-t-0 border-ms-border-light bg-white px-3 py-2.5">
+      <div class="rounded-b-lg border border-t-0 border-ms-border-light bg-ms-surface px-3 py-2.5">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-sm font-bold text-ms-text-primary">{{ s.label }}</span>
@@ -78,7 +78,7 @@ const channelColor = (c: string) => (/whats/i.test(c) ? '#25D366' : '#909399')
         <div
           v-for="c in board[s.key]"
           :key="c.id"
-          class="rounded-lg border bg-white p-3 shadow-sm transition hover:shadow-md"
+          class="rounded-lg border bg-ms-surface p-3 shadow-sm transition hover:shadow-md"
           :class="c.destaque ? 'border-ms-danger' : 'border-ms-border-light'"
         >
           <!-- Linha do título -->

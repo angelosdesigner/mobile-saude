@@ -71,7 +71,7 @@ const preview = computed(() => templates.find((t) => t.value === template.value)
       <div class="rounded-xl bg-ms-fill-light p-4">
         <div class="mb-3 text-sm text-ms-text-regular">Preview da mensagem</div>
         <div
-          class="flex min-h-[180px] items-center justify-center rounded-lg bg-white p-4 text-center"
+          class="flex min-h-[180px] items-center justify-center rounded-lg bg-ms-surface p-4 text-center"
         >
           <p v-if="preview" class="text-sm text-ms-text-primary">{{ preview }}</p>
           <div v-else class="flex flex-col items-center gap-2 text-ms-text-placeholder">
