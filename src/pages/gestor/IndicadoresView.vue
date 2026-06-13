@@ -18,6 +18,7 @@ import {
   type IndicadorKey,
   type FilaCor,
 } from '@/data/gestorIndicadores'
+import { chartColors as C } from '@/plugins/echarts'
 import { useActionFeedback } from '@/composables/useActionFeedback'
 
 const { comingSoon } = useActionFeedback()
@@ -48,15 +49,6 @@ function selecionar(key: IndicadorKey) {
 }
 
 const periodos = ['Hoje', '7d', '30d', 'Trimestre']
-
-const C = {
-  primary: '#409eff',
-  success: '#67c23a',
-  warning: '#e6a23c',
-  danger: '#f56c6c',
-  axis: '#909399',
-  split: 'rgba(144,147,153,0.15)',
-}
 
 const statusDot: Record<'ok' | 'warning' | 'danger', string> = {
   ok: 'bg-ms-success',

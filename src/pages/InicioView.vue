@@ -145,7 +145,7 @@ const kpis = [
   <DashboardLayout>
     <!-- Cabeçalho da página -->
     <div class="mb-6">
-      <h1 class="text-[28px] font-bold leading-tight text-ms-text-primary">Prioridades de Hoje</h1>
+      <h1 class="text-2xl font-bold leading-tight text-ms-text-primary">Prioridades de Hoje</h1>
       <p class="mt-1 text-ms-text-regular">Aqui estão os casos que merecem sua atenção agora.</p>
     </div>
 
@@ -245,7 +245,7 @@ const kpis = [
               card.tag
             }}</el-tag>
             <div class="mt-2 flex items-baseline gap-2">
-              <span class="text-[22px] font-bold text-ms-warning">{{ card.number }}</span>
+              <span class="text-2xl font-bold text-ms-warning">{{ card.number }}</span>
               <span class="font-semibold text-ms-text-primary">{{ card.title }}</span>
             </div>
             <ul class="mt-2 space-y-0.5">
@@ -375,7 +375,7 @@ const kpis = [
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <el-card v-for="k in kpis" :key="k.tag" shadow="always" class="!border-ms-success/20">
             <el-tag type="success" effect="light" size="small">{{ k.tag }}</el-tag>
-            <div class="mt-2 text-[28px] font-bold text-ms-success">{{ k.value }}</div>
+            <div class="mt-2 text-3xl font-bold text-ms-success">{{ k.value }}</div>
             <div class="text-sm font-medium text-ms-text-regular">{{ k.label }}</div>
             <p v-if="k.note" class="mt-1 text-xs text-ms-text-secondary">{{ k.note }}</p>
           </el-card>

@@ -64,7 +64,7 @@ function salvar() {
       draggable="true"
       class="mb-2 flex items-center gap-3 rounded-lg border px-3 py-3 transition"
       :class="[
-        c.visible ? 'border-ms-primary bg-[#F5FAFF]' : 'border-ms-border-light',
+        c.visible ? 'border-ms-primary bg-ms-primary/5' : 'border-ms-border-light',
         dragIdx === i ? 'opacity-40' : '',
       ]"
       @dragstart="dragIdx = i"

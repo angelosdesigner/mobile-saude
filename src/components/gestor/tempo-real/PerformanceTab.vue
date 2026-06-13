@@ -17,17 +17,9 @@ import {
   bannerPerfInfo,
   type TurnoStatus,
 } from '@/data/gestorPerformance'
+import { chartColors as C } from '@/plugins/echarts'
 
 const { comingSoon } = useActionFeedback()
-
-const C = {
-  primary: '#409eff',
-  success: '#67c23a',
-  warning: '#e6a23c',
-  danger: '#f56c6c',
-  axis: '#909399',
-  split: 'rgba(144,147,153,0.15)',
-}
 
 // Cor da barra conforme a relação volume × capacidade.
 const barColor = (v: number) => {
@@ -62,7 +54,7 @@ const demandaOption = computed(() => ({
       step: 'middle',
       symbol: 'none',
       data: demandaHora.horas.map(() => demandaHora.capacidade),
-      lineStyle: { color: '#303133', width: 2 },
+      lineStyle: { color: C.ink, width: 2 },
       z: 5,
     },
   ],
@@ -181,7 +173,7 @@ const scatterOption = computed(() => ({
               ><span class="h-2 w-2 rounded-sm bg-ms-danger" />Saturado (&gt; cap.)</span
             >
             <span class="flex items-center gap-1"
-              ><span class="h-0.5 w-3 bg-[#303133]" />Capacidade</span
+              ><span class="h-0.5 w-3" :style="{ backgroundColor: C.ink }" />Capacidade</span
             >
           </div>
         </ChartCard>

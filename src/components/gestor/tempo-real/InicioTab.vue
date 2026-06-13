@@ -18,6 +18,7 @@ import {
   type SegmentoCritico,
   type CardTarget,
 } from '@/data/gestorTempoReal'
+import { chartColors as C } from '@/plugins/echarts'
 
 const router = useRouter()
 
@@ -29,17 +30,6 @@ function goTarget(t: CardTarget) {
 
 function goAtendimentos(filtro: string) {
   router.push({ path: '/gestor/tempo-real', query: { tab: 'atendimentos', filtro } })
-}
-
-// Paleta para os gráficos (hex de marca — neutra entre temas; eixos em cinza).
-const C = {
-  primary: '#409eff',
-  success: '#67c23a',
-  warning: '#e6a23c',
-  danger: '#f56c6c',
-  teal: '#13c2c2',
-  axis: '#909399',
-  split: 'rgba(144,147,153,0.15)',
 }
 
 const ringColor: Record<KpiTone, string> = {

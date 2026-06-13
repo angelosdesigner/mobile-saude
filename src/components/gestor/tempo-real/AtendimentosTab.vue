@@ -10,15 +10,7 @@ import {
   automatizado,
   bannerAutomatizado,
 } from '@/data/gestorAtendimentos'
-
-const C = {
-  primary: '#409eff',
-  success: '#67c23a',
-  warning: '#e6a23c',
-  danger: '#f56c6c',
-  axis: '#909399',
-  split: 'rgba(144,147,153,0.15)',
-}
+import { chartColors as C } from '@/plugins/echarts'
 
 const canalOption = computed(() => ({
   tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },

@@ -14,15 +14,7 @@ import {
   bannerFilaInfo,
   type MetricTone,
 } from '@/data/gestorFilas'
-
-const C = {
-  primary: '#409eff',
-  success: '#67c23a',
-  warning: '#e6a23c',
-  danger: '#f56c6c',
-  axis: '#909399',
-  split: 'rgba(144,147,153,0.15)',
-}
+import { chartColors as C } from '@/plugins/echarts'
 
 const metricTone: Record<MetricTone, string> = {
   default: 'text-ms-text-primary',
@@ -59,7 +51,7 @@ const capacidadeOption = computed(() => ({
         offsetCenter: [0, '-8%'],
         formatter: `{v|${capacidade.value}}{t|/${capacidade.max}}`,
         rich: {
-          v: { fontSize: 28, fontWeight: 'bold', color: '#303133' },
+          v: { fontSize: 28, fontWeight: 'bold', color: C.ink },
           t: { fontSize: 14, color: C.axis },
         },
       },

@@ -11,16 +11,7 @@ import {
   bannerEquipe,
   type EquipeTone,
 } from '@/data/gestorEquipe'
-
-const C = {
-  primary: '#409eff',
-  success: '#67c23a',
-  warning: '#e6a23c',
-  danger: '#f56c6c',
-  neutral: '#909399',
-  axis: '#909399',
-  split: 'rgba(144,147,153,0.15)',
-}
+import { chartColors as C } from '@/plugins/echarts'
 
 const metricTone: Record<EquipeTone, string> = {
   success: 'text-ms-success',

@@ -24,3 +24,19 @@ use([
   GraphicComponent,
   MarkLineComponent,
 ])
+
+// Paleta única dos gráficos (antes duplicada como `const C = {…}` em cada aba).
+// ECharts exige cores literais (não lê CSS vars), então estes hex espelham os
+// tokens `--color-ms-*`. `axis`/`neutral` = cinza dos eixos; `ink` = linha de
+// referência (capacidade) / textos fortes; `split` = linhas de grade.
+export const chartColors = {
+  primary: '#409eff',
+  success: '#67c23a',
+  warning: '#e6a23c',
+  danger: '#f56c6c',
+  teal: '#13c2c2',
+  neutral: '#909399',
+  axis: '#909399',
+  ink: '#303133',
+  split: 'rgba(144,147,153,0.15)',
+}
