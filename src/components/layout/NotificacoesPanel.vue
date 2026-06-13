@@ -40,7 +40,7 @@ function verTodas() {
         <span class="font-bold text-ms-text-primary">Notificações</span>
         <span
           v-if="unreadCount"
-          class="flex h-5 min-w-5 items-center justify-center rounded-full bg-ms-danger px-1.5 text-[11px] font-semibold text-white"
+          class="flex h-5 min-w-5 items-center justify-center rounded-full bg-ms-danger px-1.5 text-2xs font-semibold text-white"
           >{{ unreadCount }}</span
         >
       </div>

@@ -60,7 +60,7 @@ const count = computed(() => props.columns.filter((c) => visible.value[c.key]).l
       </p>
     </div>
     <div
-      class="border-t border-ms-border-light px-3 py-2 text-right text-[11px] text-ms-text-secondary"
+      class="border-t border-ms-border-light px-3 py-2 text-right text-2xs text-ms-text-secondary"
     >
       {{ count }} de {{ columns.length }}
     </div>

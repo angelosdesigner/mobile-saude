@@ -132,7 +132,7 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
             class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
           >
             <span class="text-2xl font-bold text-ms-text-primary">118</span>
-            <span class="text-[11px] text-ms-text-secondary">ativos</span>
+            <span class="text-2xs text-ms-text-secondary">ativos</span>
           </div>
         </div>
         <div class="mt-2 space-y-1 text-xs">
@@ -158,7 +158,7 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
         <div class="h-44 w-full">
           <VChart class="h-full w-full" :option="ocupacaoOption" autoresize />
         </div>
-        <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-ms-text-secondary">
+        <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-2xs text-ms-text-secondary">
           <span class="flex items-center gap-1"
             ><span class="h-2 w-2 rounded-full bg-ms-success" />&lt; 70% saudável</span
           >
@@ -207,7 +207,7 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
       >
         <div class="text-xs text-ms-text-secondary">{{ m.label }}</div>
         <div class="mt-1 text-2xl font-bold" :class="autoValue[m.tone]">{{ m.value }}</div>
-        <div v-if="m.delta" class="text-[11px] text-ms-success">{{ m.delta }}</div>
+        <div v-if="m.delta" class="text-2xs text-ms-success">{{ m.delta }}</div>
         <div v-if="m.pct !== null" class="mt-2 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
           <div
             class="h-full rounded-full"

@@ -128,7 +128,7 @@ const ringStyle = (pct: number, color: string) => ({
             class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
           >
             <span class="text-xl font-bold text-ms-text-primary">{{ porCanal.taxa }}</span>
-            <span class="text-[11px] text-ms-text-secondary">{{ porCanal.total }}</span>
+            <span class="text-2xs text-ms-text-secondary">{{ porCanal.total }}</span>
           </div>
         </div>
         <div class="mt-2 space-y-1 text-xs">
@@ -190,7 +190,7 @@ const ringStyle = (pct: number, color: string) => ({
               <div
                 class="absolute inset-[6px] flex flex-col items-center justify-center rounded-full bg-ms-surface"
               >
-                <span class="text-[11px] font-semibold uppercase text-ms-text-secondary"
+                <span class="text-2xs font-semibold uppercase text-ms-text-secondary"
                   >BOT {{ comparativo.bot.pct }}%</span
                 >
                 <span class="text-xl font-bold text-ms-warning">{{ comparativo.bot.casos }}</span>
@@ -206,7 +206,7 @@ const ringStyle = (pct: number, color: string) => ({
               <div
                 class="absolute inset-[6px] flex flex-col items-center justify-center rounded-full bg-ms-surface"
               >
-                <span class="text-[11px] font-semibold uppercase text-ms-text-secondary"
+                <span class="text-2xs font-semibold uppercase text-ms-text-secondary"
                   >Humano {{ comparativo.humano.pct }}%</span
                 >
                 <span class="text-xl font-bold text-ms-danger">{{ comparativo.humano.casos }}</span>

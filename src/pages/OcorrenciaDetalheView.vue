@@ -186,7 +186,7 @@ const dados = computed(() =>
               >
                 {{ m.text }}
                 <div
-                  class="mt-1 text-[11px]"
+                  class="mt-1 text-2xs"
                   :class="m.from === 'atendente' ? 'text-white/80' : 'text-ms-text-secondary'"
                 >
                   {{ m.time }}
@@ -213,7 +213,7 @@ const dados = computed(() =>
           </div>
           <dl class="space-y-3">
             <div v-for="d in dados" :key="d.label">
-              <dt class="text-[11px] text-ms-text-secondary">{{ d.label }}</dt>
+              <dt class="text-2xs text-ms-text-secondary">{{ d.label }}</dt>
               <dd class="text-sm font-medium text-ms-text-primary">{{ d.value }}</dd>
             </div>
           </dl>

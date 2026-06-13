@@ -48,7 +48,17 @@ const surfaceTokens = [
 ]
 const chartSwatches = Object.entries(chartColors).map(([name, hex]) => ({ name, hex }))
 
+// "On-color": cor de texto sobre cada preenchimento (contraste AA).
+const onColors = [
+  { name: 'on-primary', fill: 'bg-ms-primary', text: 'text-ms-on-primary' },
+  { name: 'on-success', fill: 'bg-ms-success', text: 'text-ms-on-success' },
+  { name: 'on-warning', fill: 'bg-ms-warning', text: 'text-ms-on-warning' },
+  { name: 'on-danger', fill: 'bg-ms-danger', text: 'text-ms-on-danger' },
+  { name: 'on-teal', fill: 'bg-ms-teal', text: 'text-ms-on-teal' },
+]
+
 const typeScale = [
+  { cls: 'text-2xs', label: 'text-2xs · 11px (piso)' },
   { cls: 'text-xs', label: 'text-xs · 12px' },
   { cls: 'text-sm', label: 'text-sm · 14px' },
   { cls: 'text-base', label: 'text-base · 16px' },
@@ -162,7 +172,7 @@ const listRows = [
         <div class="mb-5 flex flex-wrap gap-4">
           <div v-for="t in textTokens" :key="t.name" class="rounded-lg border border-ms-border-light bg-ms-surface px-4 py-3">
             <span class="text-lg font-semibold" :class="t.cls">Aa</span>
-            <div class="mt-1 text-[11px] text-ms-text-secondary">{{ t.name }}</div>
+            <div class="mt-1 text-2xs text-ms-text-secondary">{{ t.name }}</div>
           </div>
         </div>
 
@@ -170,7 +180,7 @@ const listRows = [
         <div class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           <div v-for="c in fillTokens" :key="c.name" class="overflow-hidden rounded-lg border border-ms-border-light">
             <div class="h-12" :class="c.cls" />
-            <div class="bg-ms-surface px-2 py-1.5 text-[11px] text-ms-text-secondary">{{ c.name }}</div>
+            <div class="bg-ms-surface px-2 py-1.5 text-2xs text-ms-text-secondary">{{ c.name }}</div>
           </div>
         </div>
 
@@ -178,7 +188,7 @@ const listRows = [
         <div class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           <div v-for="c in surfaceTokens" :key="c.name" class="overflow-hidden rounded-lg border border-ms-border-light">
             <div class="h-12 border-b border-ms-border-light" :class="c.cls" />
-            <div class="bg-ms-surface px-2 py-1.5 text-[11px] text-ms-text-secondary">{{ c.name }}</div>
+            <div class="bg-ms-surface px-2 py-1.5 text-2xs text-ms-text-secondary">{{ c.name }}</div>
           </div>
         </div>
 
@@ -189,7 +199,25 @@ const listRows = [
         <div class="grid grid-cols-3 gap-3 sm:grid-cols-5 lg:grid-cols-9">
           <div v-for="c in chartSwatches" :key="c.name" class="overflow-hidden rounded-lg border border-ms-border-light">
             <div class="h-12" :style="{ backgroundColor: c.hex }" />
-            <div class="bg-ms-surface px-2 py-1.5 text-[11px] text-ms-text-secondary">{{ c.name }}</div>
+            <div class="bg-ms-surface px-2 py-1.5 text-2xs text-ms-text-secondary">{{ c.name }}</div>
+          </div>
+        </div>
+
+        <h3 class="mb-2 mt-5 text-sm font-semibold text-ms-text-regular">
+          On-color
+          <span class="font-normal text-ms-text-placeholder"
+            >· texto sobre preenchimento (no âmbar é escuro, p/ contraste AA)</span
+          >
+        </h3>
+        <div class="flex flex-wrap gap-3">
+          <div
+            v-for="o in onColors"
+            :key="o.name"
+            class="flex h-12 w-28 flex-col items-center justify-center rounded-lg"
+            :class="o.fill"
+          >
+            <span class="text-sm font-bold" :class="o.text">Aa 24</span>
+            <span class="text-2xs" :class="o.text">{{ o.name }}</span>
           </div>
         </div>
       </section>
@@ -201,7 +229,7 @@ const listRows = [
         </h2>
         <div class="space-y-2 rounded-lg border border-ms-border-light bg-ms-surface p-5">
           <div v-for="t in typeScale" :key="t.cls" class="flex items-baseline gap-4">
-            <span class="w-32 shrink-0 text-[11px] text-ms-text-placeholder">{{ t.label }}</span>
+            <span class="w-32 shrink-0 text-2xs text-ms-text-placeholder">{{ t.label }}</span>
             <span :class="t.cls" class="font-semibold text-ms-text-primary">Mobile Saúde</span>
           </div>
         </div>
@@ -219,7 +247,7 @@ const listRows = [
             <div class="space-y-2">
               <div v-for="s in spacingScale" :key="s.cls" class="flex items-center gap-3">
                 <div class="h-3 rounded-sm bg-ms-primary" :class="s.cls" />
-                <span class="text-[11px] text-ms-text-secondary">{{ s.label }}</span>
+                <span class="text-2xs text-ms-text-secondary">{{ s.label }}</span>
               </div>
             </div>
           </div>
@@ -229,7 +257,7 @@ const listRows = [
             <div class="flex flex-wrap gap-3">
               <div v-for="r in radiusScale" :key="r.cls" class="text-center">
                 <div class="h-12 w-12 border-2 border-ms-primary bg-ms-primary-light" :class="r.cls" />
-                <span class="mt-1 block text-[11px] text-ms-text-secondary">{{ r.label }}</span>
+                <span class="mt-1 block text-2xs text-ms-text-secondary">{{ r.label }}</span>
               </div>
             </div>
           </div>
@@ -239,7 +267,7 @@ const listRows = [
             <div class="flex flex-wrap gap-4">
               <div v-for="s in shadowScale" :key="s.cls" class="text-center">
                 <div class="h-12 w-12 rounded-lg bg-ms-surface" :class="s.cls" />
-                <span class="mt-2 block text-[11px] text-ms-text-secondary">{{ s.label }}</span>
+                <span class="mt-2 block text-2xs text-ms-text-secondary">{{ s.label }}</span>
               </div>
             </div>
           </div>
@@ -344,7 +372,7 @@ const listRows = [
             <div class="flex flex-wrap gap-4">
               <div v-for="n in iconNames" :key="n" class="flex flex-col items-center gap-1 text-ms-text-regular">
                 <AppIcon :name="n" class="h-5 w-5" />
-                <span class="text-[11px] text-ms-text-placeholder">{{ n }}</span>
+                <span class="text-2xs text-ms-text-placeholder">{{ n }}</span>
               </div>
             </div>
           </div>

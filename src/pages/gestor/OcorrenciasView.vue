@@ -110,7 +110,7 @@ const pillDot: Record<StageTone | 'info', string> = {
         class="flex items-center gap-2 rounded-lg border border-ms-border-light bg-ms-surface px-3 py-2"
       >
         <span class="h-2.5 w-2.5 rounded-full" :class="pillDot[p.tone]" />
-        <span class="text-[11px] font-semibold uppercase tracking-wide text-ms-text-secondary">{{
+        <span class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">{{
           p.label
         }}</span>
         <span class="text-base font-bold text-ms-text-primary">{{ p.value }}</span>
@@ -159,7 +159,7 @@ const pillDot: Record<StageTone | 'info', string> = {
         <!-- Estágio (tag) -->
         <template #cell-stage="{ row }">
           <span
-            class="rounded-full px-2 py-0.5 text-[11px] font-medium"
+            class="rounded-full px-2 py-0.5 text-2xs font-medium"
             :class="stageTagClass[stageMeta[row.stage].tone]"
             >{{ stageMeta[row.stage].label }}</span
           >

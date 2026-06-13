@@ -24,7 +24,7 @@ void props
     <div v-for="it in items" :key="it.label" class="flex items-center gap-3">
       <span
         v-if="it.avatar"
-        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ms-primary-light text-[11px] font-semibold text-ms-primary"
+        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ms-primary-light text-2xs font-semibold text-ms-primary"
         >{{ it.avatar }}</span
       >
       <span class="w-28 shrink-0 truncate text-xs text-ms-text-regular">{{ it.label }}</span>

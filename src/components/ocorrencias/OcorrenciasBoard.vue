@@ -47,7 +47,7 @@ const initials = (name: string) =>
       <KanbanCard :highlight="item.risk" clickable @click="router.push(`/ocorrencias/${item.id}`)">
         <!-- Protocolo + tempo -->
         <div class="flex items-start justify-between gap-2">
-          <span class="text-[11px] text-ms-text-secondary">{{ item.protocol }}</span>
+          <span class="text-2xs text-ms-text-secondary">{{ item.protocol }}</span>
           <el-tag
             :type="item.timeType"
             :effect="item.timeType === 'danger' ? 'dark' : 'light'"
@@ -77,7 +77,7 @@ const initials = (name: string) =>
           <el-tag :type="item.statusType" effect="light" size="small">{{ item.status }}</el-tag>
           <span
             v-if="item.risk"
-            class="inline-flex items-center rounded border border-ms-danger px-1.5 py-0.5 text-[11px] font-medium uppercase text-ms-danger"
+            class="inline-flex items-center rounded border border-ms-danger px-1.5 py-0.5 text-2xs font-medium uppercase text-ms-danger"
             >Risco jurídico</span
           >
         </div>

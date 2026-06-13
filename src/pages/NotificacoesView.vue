@@ -121,7 +121,7 @@ const grupos = computed(() =>
     <div v-loading="loading" class="space-y-5">
       <section v-for="g in grupos" :key="g.bucket">
         <h2
-          class="mb-2 text-[11px] font-semibold uppercase tracking-wide text-ms-text-secondary"
+          class="mb-2 text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary"
         >
           {{ g.label }}
         </h2>

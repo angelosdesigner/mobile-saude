@@ -19,7 +19,7 @@ const deltaClass: Record<'up' | 'down' | 'neutral', string> = {
 
 <template>
   <el-card shadow="never" body-class="!p-4" class="!border-ms-border-light">
-    <div class="text-[11px] font-semibold uppercase tracking-wide text-ms-text-secondary">
+    <div class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">
       {{ label }}
     </div>
     <div class="mt-1 text-2xl font-bold text-ms-text-primary">{{ value }}</div>

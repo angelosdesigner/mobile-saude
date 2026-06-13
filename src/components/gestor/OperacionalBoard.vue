@@ -58,20 +58,20 @@ const slaDot: Record<SlaState, string> = {
           }}</span>
           <span
             v-if="item.stage === 'fila' && item.pill"
-            class="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium"
+            class="shrink-0 rounded-full px-2 py-0.5 text-2xs font-medium"
             :class="pillClass[item.pill.tone]"
             >{{ item.pill.label }}</span
           >
           <span
             v-else-if="item.stage === 'humano' && item.sla"
-            class="flex shrink-0 items-center gap-1 text-[11px] font-medium"
+            class="flex shrink-0 items-center gap-1 text-2xs font-medium"
             :class="slaClass[item.sla]"
           >
             <span class="h-1.5 w-1.5 rounded-full" :class="slaDot[item.sla]" />{{ item.sla }}
           </span>
           <span
             v-else-if="item.stage === 'concluido'"
-            class="shrink-0 text-[11px] text-ms-text-secondary"
+            class="shrink-0 text-2xs text-ms-text-secondary"
             >Concluído {{ item.concluidoHora }}</span
           >
         </div>
@@ -84,7 +84,7 @@ const slaDot: Record<SlaState, string> = {
             </div>
             <div
               v-if="item.flag"
-              class="mt-1 inline-block rounded bg-ms-fill-light px-1.5 py-0.5 text-[11px] text-ms-text-secondary"
+              class="mt-1 inline-block rounded bg-ms-fill-light px-1.5 py-0.5 text-2xs text-ms-text-secondary"
             >
               {{ item.flag }}
             </div>
@@ -122,7 +122,7 @@ const slaDot: Record<SlaState, string> = {
         <!-- Risco -->
         <div
           v-if="item.risco"
-          class="mt-2 inline-flex items-center rounded border border-ms-danger px-1.5 py-0.5 text-[11px] font-medium uppercase text-ms-danger"
+          class="mt-2 inline-flex items-center rounded border border-ms-danger px-1.5 py-0.5 text-2xs font-medium uppercase text-ms-danger"
         >
           Risco jurídico
         </div>

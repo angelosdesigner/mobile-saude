@@ -173,7 +173,7 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
           </el-avatar>
           <div class="hidden leading-tight sm:block">
             <div class="text-xs font-medium text-ms-text-primary">Juliana Santos</div>
-            <div class="text-[11px] text-ms-text-secondary">
+            <div class="text-2xs text-ms-text-secondary">
               {{ isGestor ? roleLabel.gestor : profileLabel[profile] }}
             </div>
           </div>
@@ -183,7 +183,7 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
           <el-dropdown-menu>
             <!-- Visão (papel) -->
             <div
-              class="px-4 pb-1 pt-2 text-[11px] font-medium uppercase tracking-wide text-ms-text-secondary"
+              class="px-4 pb-1 pt-2 text-2xs font-medium uppercase tracking-wide text-ms-text-secondary"
             >
               Visão
             </div>
@@ -212,7 +212,7 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
             <!-- Perfil de atendimento (só relevante para a visão do atendente) -->
             <div
               v-if="!isGestor"
-              class="border-t border-ms-border-lighter px-4 pb-1 pt-2 text-[11px] font-medium uppercase tracking-wide text-ms-text-secondary"
+              class="border-t border-ms-border-lighter px-4 pb-1 pt-2 text-2xs font-medium uppercase tracking-wide text-ms-text-secondary"
             >
               Perfil de atendimento
             </div>
@@ -240,7 +240,7 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
                     :class="profile === p ? 'text-ms-primary' : 'text-ms-text-primary'"
                     >{{ profileLabel[p] }}</span
                   >
-                  <span class="text-[11px] text-ms-text-secondary">{{ profileHint[p] }}</span>
+                  <span class="text-2xs text-ms-text-secondary">{{ profileHint[p] }}</span>
                 </div>
               </div>
             </el-dropdown-item>

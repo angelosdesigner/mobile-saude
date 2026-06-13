@@ -31,6 +31,17 @@ const accentBar: Record<KanbanTone, string> = {
   neutral: 'bg-ms-text-secondary',
 }
 
+// Cor do texto do badge de contagem por tom (on-color p/ contraste AA —
+// no âmbar o texto é escuro; branco sobre âmbar reprova AA).
+const badgeText: Record<KanbanTone, string> = {
+  primary: 'text-ms-on-primary',
+  warning: 'text-ms-on-warning',
+  teal: 'text-ms-on-teal',
+  success: 'text-ms-on-success',
+  danger: 'text-ms-on-danger',
+  neutral: 'text-white',
+}
+
 function onDrop(key: string) {
   const id = dragId.value
   dragOver.value = null
@@ -63,14 +74,14 @@ function onDragEnd() {
         <div class="flex items-center justify-between">
           <span class="text-sm font-bold text-ms-text-primary">{{ col.label }}</span>
           <span
-            class="flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold text-white"
-            :class="accentBar[col.tone]"
+            class="flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-2xs font-semibold"
+            :class="[accentBar[col.tone], badgeText[col.tone]]"
             >{{ (groups[col.key] ?? []).length }}</span
           >
         </div>
         <div
           v-if="col.meta?.length"
-          class="mt-1 flex items-center gap-3 text-[11px] uppercase tracking-wide text-ms-text-secondary"
+          class="mt-1 flex items-center gap-3 text-2xs uppercase tracking-wide text-ms-text-secondary"
         >
           <span v-for="m in col.meta" :key="m.label"
             >{{ m.label }} <b class="text-ms-text-regular">{{ m.value }}</b></span

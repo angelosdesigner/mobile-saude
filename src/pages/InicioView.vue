@@ -209,7 +209,7 @@ const kpis = [
       <section class="rounded-xl border border-ms-warning/20 bg-ms-warning/5 p-5">
         <header class="mb-4 flex items-start gap-3">
           <div
-            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ms-warning text-white"
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ms-warning text-ms-on-warning"
           >
             <svg
               class="h-[18px] w-[18px]"

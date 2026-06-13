@@ -162,7 +162,7 @@ const scatterOption = computed(() => ({
           <div class="h-52 w-full">
             <VChart class="h-full w-full" :option="demandaOption" autoresize />
           </div>
-          <div class="mt-1 flex flex-wrap gap-3 text-[11px] text-ms-text-secondary">
+          <div class="mt-1 flex flex-wrap gap-3 text-2xs text-ms-text-secondary">
             <span class="flex items-center gap-1"
               ><span class="h-2 w-2 rounded-sm bg-ms-success" />Demanda equilibrada</span
             >
@@ -185,7 +185,7 @@ const scatterOption = computed(() => ({
           <div class="overflow-x-auto">
             <div class="min-w-[420px]">
               <div
-                class="grid items-center gap-1 text-center text-[11px] text-ms-text-secondary"
+                class="grid items-center gap-1 text-center text-2xs text-ms-text-secondary"
                 :style="{ gridTemplateColumns: `36px repeat(${heatmapSlots.length}, 1fr)` }"
               >
                 <span />
@@ -197,11 +197,11 @@ const scatterOption = computed(() => ({
                 class="mt-1 grid items-center gap-1"
                 :style="{ gridTemplateColumns: `36px repeat(${heatmapSlots.length}, 1fr)` }"
               >
-                <span class="text-[11px] font-medium text-ms-text-regular">{{ row.dia }}</span>
+                <span class="text-2xs font-medium text-ms-text-regular">{{ row.dia }}</span>
                 <span
                   v-for="(v, i) in row.valores"
                   :key="i"
-                  class="rounded py-1.5 text-center text-[11px] font-semibold"
+                  class="rounded py-1.5 text-center text-2xs font-semibold"
                   :class="heatColor(v)"
                   >{{ v }}%</span
                 >
@@ -227,7 +227,7 @@ const scatterOption = computed(() => ({
               </span>
               <span
                 v-if="t.badge"
-                class="text-[11px] font-bold uppercase tracking-wide"
+                class="text-2xs font-bold uppercase tracking-wide"
                 :class="turnoStyle[t.status].badge"
                 >{{ t.badge }}</span
               >
@@ -239,7 +239,7 @@ const scatterOption = computed(() => ({
             <div class="mt-1.5 text-xs font-medium" :class="turnoStyle[t.status].detail">
               {{ t.sugestao }}
             </div>
-            <div class="mt-0.5 text-[11px] text-ms-text-secondary">{{ t.detalhe }}</div>
+            <div class="mt-0.5 text-2xs text-ms-text-secondary">{{ t.detalhe }}</div>
           </div>
 
           <div class="rounded-lg border border-ms-primary/20 bg-ms-primary/5 p-3">

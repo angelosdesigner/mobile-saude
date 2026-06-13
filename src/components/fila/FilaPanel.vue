@@ -23,7 +23,7 @@ const channelIcon = (c: string) => {
       <div class="flex items-center gap-2">
         <h3 class="text-lg font-bold text-ms-text-primary">Minha fila de atendimentos</h3>
         <span
-          class="flex h-5 min-w-5 items-center justify-center rounded-full bg-ms-danger px-1.5 text-[11px] font-semibold text-white"
+          class="flex h-5 min-w-5 items-center justify-center rounded-full bg-ms-danger px-1.5 text-2xs font-semibold text-white"
           >{{ items.length }}</span
         >
       </div>
@@ -70,7 +70,7 @@ const channelIcon = (c: string) => {
           <span class="truncate text-xs italic text-ms-text-secondary">"{{ i.message }}"</span>
           <span
             v-if="i.unread"
-            class="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-ms-success px-1 text-[11px] font-semibold text-white"
+            class="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-ms-success px-1 text-2xs font-semibold text-white"
             >{{ i.unread }}</span
           >
         </div>

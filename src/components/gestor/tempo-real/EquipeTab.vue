@@ -22,11 +22,11 @@ const metricTone: Record<EquipeTone, string> = {
 const rankColors = ['bg-ms-danger', 'bg-ms-warning', 'bg-ms-border', 'bg-ms-border', 'bg-ms-success']
 const rankText = ['text-ms-danger', 'text-ms-warning', 'text-ms-text-regular', 'text-ms-text-regular', 'text-ms-success']
 const rankBadge = [
-  'bg-ms-danger text-white',
-  'bg-ms-warning text-white',
+  'bg-ms-danger text-ms-on-danger',
+  'bg-ms-warning text-ms-on-warning',
   'bg-ms-fill-light text-ms-text-secondary',
   'bg-ms-fill-light text-ms-text-secondary',
-  'bg-ms-success text-white',
+  'bg-ms-success text-ms-on-success',
 ]
 
 const toneColor: Record<'danger' | 'warning' | 'neutral' | 'success', string> = {
@@ -113,7 +113,7 @@ const scatterOption = computed(() => ({
         body-class="!p-4"
         class="!border-ms-border-light text-center"
       >
-        <div class="text-[11px] font-semibold uppercase tracking-wide text-ms-text-secondary">
+        <div class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">
           {{ m.label }}
         </div>
         <div class="mt-1 text-3xl font-bold" :class="metricTone[m.tone]">{{ m.value }}</div>
@@ -136,7 +136,7 @@ const scatterOption = computed(() => ({
         <div class="space-y-3">
           <div v-for="(it, i) in r.itens" :key="it.nome" class="flex items-center gap-2.5">
             <span
-              class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
+              class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-2xs font-bold"
               :class="rankBadge[i]"
               >{{ i + 1 }}</span
             >
@@ -145,7 +145,7 @@ const scatterOption = computed(() => ({
                 <span class="truncate text-sm text-ms-text-regular">{{ it.nome }}</span>
                 <span class="text-sm font-bold" :class="rankText[i]">{{ it.display }}</span>
               </div>
-              <div v-if="it.sub" class="text-[11px] text-ms-text-secondary">{{ it.sub }}</div>
+              <div v-if="it.sub" class="text-2xs text-ms-text-secondary">{{ it.sub }}</div>
               <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
                 <div
                   class="h-full rounded-full"
@@ -155,7 +155,7 @@ const scatterOption = computed(() => ({
               </div>
             </div>
           </div>
-          <div class="flex justify-between border-t border-ms-border-lighter pt-2 text-[11px]">
+          <div class="flex justify-between border-t border-ms-border-lighter pt-2 text-2xs">
             <span class="text-ms-danger">↓ Pior</span>
             <span class="text-ms-success">Melhor ↑</span>
           </div>

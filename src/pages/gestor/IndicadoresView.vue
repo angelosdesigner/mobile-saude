@@ -229,7 +229,7 @@ const segmentoColumns: DataListColumn[] = [
       >
         <div class="flex items-center gap-2">
           <span class="h-2 w-2 rounded-full" :class="statusDot[k.status]" />
-          <span class="text-[11px] font-semibold uppercase tracking-wide text-ms-text-secondary">{{
+          <span class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">{{
             k.label
           }}</span>
         </div>
@@ -297,7 +297,7 @@ const segmentoColumns: DataListColumn[] = [
       </div>
       <!-- Legenda -->
       <div
-        class="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] text-ms-text-secondary"
+        class="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-2xs text-ms-text-secondary"
       >
         <div class="flex items-center gap-2">
           <span class="font-medium">COR = Fila:</span>
@@ -357,11 +357,11 @@ const segmentoColumns: DataListColumn[] = [
       <div class="mb-3 rounded-lg border border-ms-primary/20 bg-ms-primary/5 p-3">
         <div class="mb-1 flex items-center gap-2">
           <span
-            class="rounded bg-ms-primary px-1.5 py-0.5 text-[11px] font-bold uppercase text-white"
+            class="rounded bg-ms-primary px-1.5 py-0.5 text-2xs font-bold uppercase text-white"
             >IA</span
           >
           <span class="text-sm font-bold text-ms-text-primary">Diagnóstico Consolidado</span>
-          <span class="text-[11px] text-ms-text-secondary"
+          <span class="text-2xs text-ms-text-secondary"
             >confiança 84% · 612 padrões similares</span
           >
         </div>
@@ -377,7 +377,7 @@ const segmentoColumns: DataListColumn[] = [
         >
           <div class="text-sm font-semibold text-ms-text-primary">{{ r.titulo }}</div>
           <p class="mt-1 flex-1 text-xs text-ms-text-secondary">{{ r.descricao }}</p>
-          <div class="mt-2 text-[11px] font-medium text-ms-text-regular">
+          <div class="mt-2 text-2xs font-medium text-ms-text-regular">
             Impacto: {{ r.impacto }}
           </div>
           <el-button

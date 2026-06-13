@@ -180,7 +180,7 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
             </div>
           </div>
           <div class="min-w-0">
-            <div class="text-[11px] font-semibold uppercase tracking-wide text-ms-text-secondary">
+            <div class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">
               {{ k.label }}
             </div>
             <div
@@ -189,7 +189,7 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
             >
               {{ k.delta }}
             </div>
-            <div class="text-[11px] text-ms-text-secondary">{{ k.meta }}</div>
+            <div class="text-2xs text-ms-text-secondary">{{ k.meta }}</div>
           </div>
         </div>
       </el-card>
@@ -200,7 +200,7 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
         class="cursor-pointer !border-ms-border-light transition hover:shadow-md"
         @click="goAtendimentos('fila')"
       >
-        <div class="text-[11px] font-semibold uppercase tracking-wide text-ms-text-secondary">
+        <div class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">
           Chamadas na fila · status das equipes
         </div>
         <div class="mt-3 space-y-1.5 text-xs">
@@ -278,7 +278,7 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
             class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
           >
             <span class="text-2xl font-bold text-ms-text-primary">118</span>
-            <span class="text-[11px] text-ms-text-secondary">ativos</span>
+            <span class="text-2xs text-ms-text-secondary">ativos</span>
           </div>
         </div>
         <div class="mt-2 space-y-1 text-xs">

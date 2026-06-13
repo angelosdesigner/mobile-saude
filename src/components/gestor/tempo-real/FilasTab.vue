@@ -123,7 +123,7 @@ const filaScatterOption = computed(() => ({
         body-class="!p-4"
         class="!border-ms-border-light"
       >
-        <div class="text-[11px] font-semibold uppercase tracking-wide text-ms-text-secondary">
+        <div class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">
           {{ m.label }}
         </div>
         <div class="mt-1 text-2xl font-bold" :class="metricTone[m.tone]">{{ m.value }}</div>
