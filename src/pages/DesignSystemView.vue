@@ -229,7 +229,7 @@ const listRows = [
             <div class="flex flex-wrap gap-3">
               <div v-for="r in radiusScale" :key="r.cls" class="text-center">
                 <div class="h-12 w-12 border-2 border-ms-primary bg-ms-primary-light" :class="r.cls" />
-                <span class="mt-1 block text-[10px] text-ms-text-secondary">{{ r.label }}</span>
+                <span class="mt-1 block text-[11px] text-ms-text-secondary">{{ r.label }}</span>
               </div>
             </div>
           </div>
@@ -239,7 +239,7 @@ const listRows = [
             <div class="flex flex-wrap gap-4">
               <div v-for="s in shadowScale" :key="s.cls" class="text-center">
                 <div class="h-12 w-12 rounded-lg bg-ms-surface" :class="s.cls" />
-                <span class="mt-2 block text-[10px] text-ms-text-secondary">{{ s.label }}</span>
+                <span class="mt-2 block text-[11px] text-ms-text-secondary">{{ s.label }}</span>
               </div>
             </div>
           </div>
@@ -344,7 +344,7 @@ const listRows = [
             <div class="flex flex-wrap gap-4">
               <div v-for="n in iconNames" :key="n" class="flex flex-col items-center gap-1 text-ms-text-regular">
                 <AppIcon :name="n" class="h-5 w-5" />
-                <span class="text-[10px] text-ms-text-placeholder">{{ n }}</span>
+                <span class="text-[11px] text-ms-text-placeholder">{{ n }}</span>
               </div>
             </div>
           </div>

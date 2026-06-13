@@ -67,22 +67,22 @@ const tintClass: Record<NotifType, string> = {
       <!-- Metadados (tela cheia): categoria + atendente/setor -->
       <div v-if="!compact" class="mt-1.5 flex flex-wrap items-center gap-1.5">
         <span
-          class="rounded-full bg-ms-fill-light px-2 py-0.5 text-[10px] font-medium text-ms-text-secondary"
+          class="rounded-full bg-ms-fill-light px-2 py-0.5 text-[11px] font-medium text-ms-text-secondary"
           >{{ categoryLabel[notif.category] }}</span
         >
         <span
           v-if="notif.setor"
-          class="rounded-full bg-ms-primary/10 px-2 py-0.5 text-[10px] font-medium text-ms-primary"
+          class="rounded-full bg-ms-primary/10 px-2 py-0.5 text-[11px] font-medium text-ms-primary"
           >{{ notif.setor }}</span
         >
         <span
           v-if="notif.atendente"
-          class="rounded-full bg-ms-teal/10 px-2 py-0.5 text-[10px] font-medium text-ms-teal"
+          class="rounded-full bg-ms-teal/10 px-2 py-0.5 text-[11px] font-medium text-ms-teal"
           >{{ notif.atendente }}</span
         >
       </div>
 
-      <p class="mt-1 text-[11px] text-ms-text-placeholder">{{ notif.time }}</p>
+      <p class="mt-1 text-[11px] text-ms-text-secondary">{{ notif.time }}</p>
     </div>
   </div>
 </template>

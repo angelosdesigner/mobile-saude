@@ -150,7 +150,7 @@ const isActive = (to: string) => route.path === to || route.path.startsWith(to +
           <span v-if="expanded" class="truncate text-sm">{{ item.label }}</span>
           <span
             v-if="expanded && item.comingSoon"
-            class="ml-auto shrink-0 rounded-full bg-ms-fill-light px-1.5 text-[10px] text-ms-text-placeholder"
+            class="ml-auto shrink-0 rounded-full bg-ms-fill-light px-1.5 text-[11px] text-ms-text-placeholder"
             >em breve</span
           >
         </component>

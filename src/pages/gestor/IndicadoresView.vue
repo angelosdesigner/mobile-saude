@@ -357,7 +357,7 @@ const segmentoColumns: DataListColumn[] = [
       <div class="mb-3 rounded-lg border border-ms-primary/20 bg-ms-primary/5 p-3">
         <div class="mb-1 flex items-center gap-2">
           <span
-            class="rounded bg-ms-primary px-1.5 py-0.5 text-[10px] font-bold uppercase text-white"
+            class="rounded bg-ms-primary px-1.5 py-0.5 text-[11px] font-bold uppercase text-white"
             >IA</span
           >
           <span class="text-sm font-bold text-ms-text-primary">Diagnóstico Consolidado</span>

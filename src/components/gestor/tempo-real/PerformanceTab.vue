@@ -185,7 +185,7 @@ const scatterOption = computed(() => ({
           <div class="overflow-x-auto">
             <div class="min-w-[420px]">
               <div
-                class="grid items-center gap-1 text-center text-[10px] text-ms-text-secondary"
+                class="grid items-center gap-1 text-center text-[11px] text-ms-text-secondary"
                 :style="{ gridTemplateColumns: `36px repeat(${heatmapSlots.length}, 1fr)` }"
               >
                 <span />
@@ -227,7 +227,7 @@ const scatterOption = computed(() => ({
               </span>
               <span
                 v-if="t.badge"
-                class="text-[10px] font-bold uppercase tracking-wide"
+                class="text-[11px] font-bold uppercase tracking-wide"
                 :class="turnoStyle[t.status].badge"
                 >{{ t.badge }}</span
               >

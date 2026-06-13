@@ -189,7 +189,7 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
             >
               {{ k.delta }}
             </div>
-            <div class="text-[11px] text-ms-text-placeholder">{{ k.meta }}</div>
+            <div class="text-[11px] text-ms-text-secondary">{{ k.meta }}</div>
           </div>
         </div>
       </el-card>

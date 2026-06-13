@@ -55,7 +55,7 @@ const count = computed(() => props.columns.filter((c) => visible.value[c.key]).l
         <el-checkbox v-model="visible[c.key]" :disabled="c.locked" size="small" @click.stop />
         <span class="text-sm text-ms-text-primary">{{ c.label }}</span>
       </label>
-      <p v-if="!options.length" class="py-2 text-center text-xs text-ms-text-placeholder">
+      <p v-if="!options.length" class="py-2 text-center text-xs text-ms-text-secondary">
         Nenhuma coluna
       </p>
     </div>

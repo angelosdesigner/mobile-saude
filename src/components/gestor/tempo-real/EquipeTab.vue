@@ -145,7 +145,7 @@ const scatterOption = computed(() => ({
                 <span class="truncate text-sm text-ms-text-regular">{{ it.nome }}</span>
                 <span class="text-sm font-bold" :class="rankText[i]">{{ it.display }}</span>
               </div>
-              <div v-if="it.sub" class="text-[10px] text-ms-text-secondary">{{ it.sub }}</div>
+              <div v-if="it.sub" class="text-[11px] text-ms-text-secondary">{{ it.sub }}</div>
               <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
                 <div
                   class="h-full rounded-full"

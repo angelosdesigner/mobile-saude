@@ -131,10 +131,24 @@ const headerCellStyle = {
       <el-table-column v-if="actions" label="Ações" fixed="right" width="96" align="center">
         <template #default="{ row }">
           <div class="flex justify-center gap-1">
-            <el-button text circle size="small" title="Visualizar" @click="emit('visualizar', row)">
+            <el-button
+              text
+              circle
+              size="small"
+              title="Visualizar"
+              aria-label="Visualizar"
+              @click="emit('visualizar', row)"
+            >
               <AppIcon name="eye" class="h-4 w-4 text-ms-text-regular" />
             </el-button>
-            <el-button text circle size="small" title="Editar" @click="emit('editar', row)">
+            <el-button
+              text
+              circle
+              size="small"
+              title="Editar"
+              aria-label="Editar"
+              @click="emit('editar', row)"
+            >
               <AppIcon name="edit" class="h-4 w-4 text-ms-text-regular" />
             </el-button>
           </div>

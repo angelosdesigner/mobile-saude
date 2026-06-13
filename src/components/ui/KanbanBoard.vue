@@ -104,7 +104,7 @@ function onDragEnd() {
 
         <p
           v-if="!(groups[col.key] ?? []).length"
-          class="px-2 py-6 text-center text-xs text-ms-text-placeholder"
+          class="px-2 py-6 text-center text-xs text-ms-text-secondary"
         >
           {{ emptyText }}
         </p>

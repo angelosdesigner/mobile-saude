@@ -145,7 +145,7 @@ const dados = computed(() =>
           </div>
         </div>
         <!-- As floating actions ficam na barra flutuante (abaixo). -->
-        <div class="text-xs text-ms-text-placeholder">Atendimento #{{ oc.id }}</div>
+        <div class="text-xs text-ms-text-secondary">Atendimento #{{ oc.id }}</div>
       </div>
 
       <div class="grid gap-5 lg:grid-cols-3">
@@ -186,8 +186,8 @@ const dados = computed(() =>
               >
                 {{ m.text }}
                 <div
-                  class="mt-1 text-[10px]"
-                  :class="m.from === 'atendente' ? 'text-white/70' : 'text-ms-text-placeholder'"
+                  class="mt-1 text-[11px]"
+                  :class="m.from === 'atendente' ? 'text-white/80' : 'text-ms-text-secondary'"
                 >
                   {{ m.time }}
                 </div>

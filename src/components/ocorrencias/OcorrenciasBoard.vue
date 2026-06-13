@@ -77,7 +77,7 @@ const initials = (name: string) =>
           <el-tag :type="item.statusType" effect="light" size="small">{{ item.status }}</el-tag>
           <span
             v-if="item.risk"
-            class="inline-flex items-center rounded border border-ms-danger px-1.5 py-0.5 text-[10px] font-medium uppercase text-ms-danger"
+            class="inline-flex items-center rounded border border-ms-danger px-1.5 py-0.5 text-[11px] font-medium uppercase text-ms-danger"
             >Risco jurídico</span
           >
         </div>

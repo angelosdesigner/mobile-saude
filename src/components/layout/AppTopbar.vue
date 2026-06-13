@@ -115,18 +115,23 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
         popper-class="!p-0"
       >
         <template #reference>
-          <el-badge is-dot type="danger" :hidden="!unreadCount" class="cursor-pointer">
-            <svg
-              class="h-5 w-5 text-ms-text-regular"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-            </svg>
-          </el-badge>
+          <button
+            class="flex h-8 w-8 items-center justify-center rounded-full text-ms-text-regular transition hover:bg-ms-fill-light hover:text-ms-primary"
+            :aria-label="unreadCount ? `Notificações (${unreadCount} não lidas)` : 'Notificações'"
+          >
+            <el-badge is-dot type="danger" :hidden="!unreadCount">
+              <svg
+                class="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+              </svg>
+            </el-badge>
+          </button>
         </template>
         <NotificacoesPanel @navigate="notifOpen = false" />
       </el-popover>
@@ -168,7 +173,7 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
           </el-avatar>
           <div class="hidden leading-tight sm:block">
             <div class="text-xs font-medium text-ms-text-primary">Juliana Santos</div>
-            <div class="text-[10px] text-ms-text-secondary">
+            <div class="text-[11px] text-ms-text-secondary">
               {{ isGestor ? roleLabel.gestor : profileLabel[profile] }}
             </div>
           </div>
