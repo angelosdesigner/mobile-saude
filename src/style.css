@@ -107,6 +107,10 @@ body {
  */
 html.dark {
   color-scheme: dark;
+  /* Semânticas levemente dessaturadas no escuro: o verde saturado (#67c23a)
+     "vibra"/brilha sobre o fundo escuro. Versão mais suave, calibrada para o
+     dark, mantendo a leitura de status. */
+  --color-ms-success: #5da654;
   --color-ms-text-primary: #e5eaf3;
   --color-ms-text-regular: #cfd3dc;
   --color-ms-text-secondary: #a3a6ad;
