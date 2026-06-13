@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
+import SectionHeader from '@/components/ui/SectionHeader.vue'
 import {
   canalDistribuicao,
   ocupacaoCanal,
@@ -126,12 +127,7 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
 <template>
   <div class="space-y-5">
     <!-- Atendimento em tempo real por canal -->
-    <div class="flex items-center justify-between">
-      <h2 class="text-sm font-bold uppercase tracking-wide text-ms-text-primary">
-        Atendimento em tempo real por canal
-      </h2>
-      <el-button size="small">Acessar detalhes</el-button>
-    </div>
+    <SectionHeader title="Atendimento em tempo real por canal" />
 
     <div class="grid gap-4 lg:grid-cols-3">
       <ChartCard
@@ -207,12 +203,7 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
     </div>
 
     <!-- Atendimento automatizado -->
-    <div class="flex items-center justify-between pt-1">
-      <h2 class="text-sm font-bold uppercase tracking-wide text-ms-text-primary">
-        Atendimento automatizado
-      </h2>
-      <el-button size="small">Acessar detalhes</el-button>
-    </div>
+    <SectionHeader title="Atendimento automatizado" class="pt-1" />
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <el-card

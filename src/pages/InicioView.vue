@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
+import { useActionFeedback } from '@/composables/useActionFeedback'
+
+const { comingSoon } = useActionFeedback()
 
 // ── Dados da tela "Início" (extraídos do frame Figma 3049:34138) ──────────────
 // As cores do design foram normalizadas para os tipos semânticos do Element Plus
@@ -195,7 +198,7 @@ const kpis = [
               </li>
             </ul>
             <p class="mt-3 text-xs text-ms-text-secondary">{{ card.note }}</p>
-            <el-button type="danger" class="mt-4"
+            <el-button type="danger" class="mt-4" @click="comingSoon(card.action)"
               >{{ card.action }} <span class="ml-1">→</span></el-button
             >
           </el-card>
@@ -248,7 +251,7 @@ const kpis = [
             <ul class="mt-2 space-y-0.5">
               <li v-for="s in card.sub" :key="s" class="text-xs text-ms-text-regular">{{ s }}</li>
             </ul>
-            <el-button type="warning" class="mt-3" size="small"
+            <el-button type="warning" class="mt-3" size="small" @click="comingSoon('Acessar casos')"
               >Acessar casos <span class="ml-1">→</span></el-button
             >
           </el-card>
@@ -299,7 +302,9 @@ const kpis = [
             >
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-ms-text-primary">{{ row.label }}</span>
-                <el-button type="primary" link>Acessar →</el-button>
+                <el-button type="primary" link @click="comingSoon(`Acessar ${row.label}`)"
+                  >Acessar →</el-button
+                >
               </div>
               <div class="mt-1 flex flex-wrap gap-x-4 text-xs text-ms-text-secondary">
                 <span v-for="m in row.meta" :key="m">{{ m }}</span>
@@ -322,7 +327,7 @@ const kpis = [
               </li>
             </ul>
             <p class="mt-2 text-xs text-ms-text-secondary">{{ slaInterno.note }}</p>
-            <el-button type="primary" class="mt-4"
+            <el-button type="primary" class="mt-4" @click="comingSoon(slaInterno.action)"
               >{{ slaInterno.action }} <span class="ml-1">→</span></el-button
             >
           </el-card>
@@ -338,7 +343,9 @@ const kpis = [
             >
               <div class="text-xl font-bold text-ms-text-primary">{{ t.value }}</div>
               <div class="text-xs text-ms-text-regular">{{ t.label }}</div>
-              <el-button type="primary" size="small" class="mt-2">Acessar</el-button>
+              <el-button type="primary" size="small" class="mt-2" @click="comingSoon(t.label)"
+                >Acessar</el-button
+              >
             </el-card>
           </div>
         </div>

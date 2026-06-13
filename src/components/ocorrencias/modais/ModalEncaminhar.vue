@@ -16,6 +16,11 @@ watch(
     }
   },
 )
+
+function confirmar() {
+  emit('update:modelValue', false)
+  ElMessage.success('Ocorrência encaminhada')
+}
 </script>
 
 <template>
@@ -105,7 +110,7 @@ watch(
 
     <template #footer>
       <el-button text @click="emit('update:modelValue', false)">Voltar</el-button>
-      <el-button type="primary" :disabled="!escolha" @click="emit('update:modelValue', false)"
+      <el-button type="primary" :disabled="!escolha" @click="confirmar"
         >Confirmar encaminhamento</el-button
       >
     </template>

@@ -1,17 +1,34 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useOcorrenciasStore } from '@/stores/ocorrencias'
+import { useNotificacoesStore } from '@/stores/notificacoes'
+import { useActionFeedback } from '@/composables/useActionFeedback'
+import NotificacaoItem from '@/components/notificacoes/NotificacaoItem.vue'
 
-const store = useOcorrenciasStore()
-const { notifications, unreadCount } = storeToRefs(store)
-const { markAllRead } = store
+const emit = defineEmits<{ navigate: [] }>()
+const router = useRouter()
 
-// Classes de token (com opacidade) por tipo — adaptam automaticamente ao tema.
-const tintClass: Record<string, string> = {
-  warning: 'bg-ms-warning/10 text-ms-warning',
-  info: 'bg-ms-primary/10 text-ms-primary',
-  danger: 'bg-ms-danger/10 text-ms-danger',
-  success: 'bg-ms-success/10 text-ms-success',
+const store = useNotificacoesStore()
+const { recent, unreadCount } = storeToRefs(store)
+const { markRead } = store
+const { done } = useActionFeedback()
+
+onMounted(() => store.load())
+
+function marcarTodas() {
+  store.markAllRead()
+  done('Todas as notificações marcadas como lidas')
+}
+
+function open(id: number) {
+  markRead(id)
+  emit('navigate')
+  router.push('/notificacoes')
+}
+function verTodas() {
+  emit('navigate')
+  router.push('/notificacoes')
 }
 </script>
 
@@ -27,66 +44,29 @@ const tintClass: Record<string, string> = {
           >{{ unreadCount }}</span
         >
       </div>
-      <button class="text-sm text-ms-primary hover:underline" @click="markAllRead">
+      <button
+        class="text-sm text-ms-primary hover:underline disabled:opacity-50"
+        :disabled="!unreadCount"
+        @click="marcarTodas"
+      >
         Marcar todas como lidas
       </button>
     </div>
 
-    <!-- Lista -->
-    <div class="max-h-[360px] overflow-y-auto">
-      <div
-        v-for="n in notifications"
+    <!-- Lista (recentes) -->
+    <div class="max-h-[360px] divide-y divide-ms-border-lighter overflow-y-auto border-t border-ms-border-lighter">
+      <NotificacaoItem
+        v-for="n in recent"
         :key="n.id"
-        class="flex gap-3 border-t border-ms-border-lighter px-4 py-3"
-        :class="n.unread ? 'bg-ms-primary/5' : ''"
-      >
-        <div
-          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-          :class="tintClass[n.type]"
-        >
-          <svg
-            class="h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <template v-if="n.type === 'warning'">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 7v5l3 2" />
-            </template>
-            <template v-else-if="n.type === 'info'">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 8h.01M11 12h1v4h1" />
-            </template>
-            <template v-else-if="n.type === 'danger'">
-              <path
-                d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"
-              />
-              <path d="M12 9v4M12 17h.01" />
-            </template>
-            <template v-else>
-              <circle cx="12" cy="12" r="9" />
-              <path d="m8 12 3 3 5-6" />
-            </template>
-          </svg>
-        </div>
-        <div class="min-w-0">
-          <div class="flex items-center gap-2">
-            <span class="text-sm font-semibold text-ms-text-primary">{{ n.title }}</span>
-            <span v-if="n.unread" class="h-2 w-2 shrink-0 rounded-full bg-ms-primary" />
-          </div>
-          <p class="mt-0.5 text-xs leading-relaxed text-ms-text-regular">{{ n.desc }}</p>
-          <p class="mt-1 text-[11px] text-ms-text-placeholder">{{ n.time }}</p>
-        </div>
-      </div>
+        :notif="n"
+        compact
+        @click="open(n.id)"
+      />
     </div>
 
     <!-- Rodapé -->
     <div class="border-t border-ms-border-lighter py-3 text-center">
-      <button class="text-sm font-medium text-ms-primary hover:underline">
+      <button class="text-sm font-medium text-ms-primary hover:underline" @click="verTodas">
         Ver todas as notificações
       </button>
     </div>

@@ -31,6 +31,11 @@ const templates = [
 ]
 
 const preview = computed(() => templates.find((t) => t.value === template.value)?.text || '')
+
+function enviar() {
+  emit('update:modelValue', false)
+  ElMessage.success('Mensagem enviada')
+}
 </script>
 
 <template>
@@ -92,9 +97,7 @@ const preview = computed(() => templates.find((t) => t.value === template.value)
 
     <template #footer>
       <el-button text @click="emit('update:modelValue', false)">Voltar</el-button>
-      <el-button type="primary" :disabled="!template" @click="emit('update:modelValue', false)"
-        >Enviar mensagem</el-button
-      >
+      <el-button type="primary" :disabled="!template" @click="enviar">Enviar mensagem</el-button>
     </template>
   </el-dialog>
 </template>

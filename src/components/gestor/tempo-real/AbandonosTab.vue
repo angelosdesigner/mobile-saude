@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
+import SectionHeader from '@/components/ui/SectionHeader.vue'
 import {
   porCanal,
   porFluxoBot,
@@ -121,17 +122,10 @@ const ringStyle = (pct: number, color: string) => ({
 
 <template>
   <div class="space-y-5">
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-sm font-bold uppercase tracking-wide text-ms-text-primary">
-          Gestão de Abandono
-        </h2>
-        <p class="text-xs text-ms-text-secondary">
-          Monitoramento das desistências e identificação de pontos críticos da jornada.
-        </p>
-      </div>
-      <el-button size="small">Acessar detalhes</el-button>
-    </div>
+    <SectionHeader
+      title="Gestão de Abandono"
+      subtitle="Monitoramento das desistências e identificação de pontos críticos da jornada."
+    />
 
     <!-- Por canal / fluxo bot / fila humana -->
     <div class="grid gap-4 lg:grid-cols-3">

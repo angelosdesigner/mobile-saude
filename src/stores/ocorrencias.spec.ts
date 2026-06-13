@@ -95,10 +95,4 @@ describe('useOcorrenciasStore', () => {
     expect(store.filteredBoard['NOVO']).toHaveLength(2)
     expect(store.filteredBoard['EM ATENDIMENTO']).toHaveLength(0)
   })
-
-  it('markAllRead zera o contador de não lidas', () => {
-    expect(store.unreadCount).toBeGreaterThan(0)
-    store.markAllRead()
-    expect(store.unreadCount).toBe(0)
-  })
 })

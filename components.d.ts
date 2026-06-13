@@ -45,6 +45,7 @@ declare module 'vue' {
     ElRadioButton: typeof import('element-plus/es')['ElRadioButton']
     ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
     ElSelect: typeof import('element-plus/es')['ElSelect']
+    ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTag: typeof import('element-plus/es')['ElTag']
@@ -70,6 +71,7 @@ declare module 'vue' {
     ModalNovaLigacao: typeof import('./src/components/ocorrencias/modais/ModalNovaLigacao.vue')['default']
     ModalVideochamada: typeof import('./src/components/ocorrencias/modais/ModalVideochamada.vue')['default']
     ModalVincular: typeof import('./src/components/ocorrencias/modais/ModalVincular.vue')['default']
+    NotificacaoItem: typeof import('./src/components/notificacoes/NotificacaoItem.vue')['default']
     NotificacoesPanel: typeof import('./src/components/layout/NotificacoesPanel.vue')['default']
     OcorrenciasBoard: typeof import('./src/components/ocorrencias/OcorrenciasBoard.vue')['default']
     OcorrenciasList: typeof import('./src/components/ocorrencias/OcorrenciasList.vue')['default']
@@ -77,6 +79,7 @@ declare module 'vue' {
     PerformanceTab: typeof import('./src/components/gestor/tempo-real/PerformanceTab.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SectionHeader: typeof import('./src/components/ui/SectionHeader.vue')['default']
   }
   export interface GlobalDirectives {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import NotificacoesPanel from './NotificacoesPanel.vue'
 import { storeToRefs } from 'pinia'
-import { useOcorrenciasStore } from '@/stores/ocorrencias'
+import { useNotificacoesStore } from '@/stores/notificacoes'
 import { useThemeStore } from '@/stores/theme'
+import { useActionFeedback } from '@/composables/useActionFeedback'
 import {
   useProfileStore,
   profileLabel,
@@ -17,7 +18,12 @@ import {
 const route = useRoute()
 const router = useRouter()
 
-const { unreadCount } = storeToRefs(useOcorrenciasStore())
+const notifStore = useNotificacoesStore()
+const { unreadCount } = storeToRefs(notifStore)
+onMounted(() => notifStore.load())
+const notifOpen = ref(false)
+
+const { comingSoon } = useActionFeedback()
 
 const themeStore = useThemeStore()
 const { isDark } = storeToRefs(themeStore)
@@ -78,7 +84,13 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
       <el-button text circle size="small" class="!text-ms-text-secondary" aria-label="Avançar">
         <AppIcon name="chevron-right" class="h-4 w-4" />
       </el-button>
-      <el-button type="primary" size="small" class="!px-2" aria-label="Novo">
+      <el-button
+        type="primary"
+        size="small"
+        class="!px-2"
+        aria-label="Novo"
+        @click="comingSoon('Novo atendimento')"
+      >
         <AppIcon name="plus" class="h-4 w-4" />
       </el-button>
     </div>
@@ -95,7 +107,13 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
         </button>
       </el-tooltip>
 
-      <el-popover trigger="click" :width="382" placement="bottom-end" popper-class="!p-0">
+      <el-popover
+        v-model:visible="notifOpen"
+        trigger="click"
+        :width="382"
+        placement="bottom-end"
+        popper-class="!p-0"
+      >
         <template #reference>
           <el-badge is-dot type="danger" :hidden="!unreadCount" class="cursor-pointer">
             <svg
@@ -110,7 +128,7 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
             </svg>
           </el-badge>
         </template>
-        <NotificacoesPanel />
+        <NotificacoesPanel @navigate="notifOpen = false" />
       </el-popover>
 
       <el-dropdown trigger="click">

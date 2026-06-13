@@ -33,6 +33,7 @@ function onDrop(toIdx: number) {
 function salvar() {
   store.columnConfig = draft.value.map((c) => ({ ...c }))
   emit('update:modelValue', false)
+  ElMessage.success('Configuração de colunas salva')
 }
 </script>
 

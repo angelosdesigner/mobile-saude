@@ -65,6 +65,7 @@ function aplicar() {
   filters.tipoAtendimento = form.tipoAtendimento ? [form.tipoAtendimento] : []
   filters.status = [...form.status]
   emit('update:modelValue', false)
+  ElMessage.success('Filtros aplicados')
 }
 
 function limparTudo() {

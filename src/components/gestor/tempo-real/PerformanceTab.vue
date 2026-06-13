@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
+import SectionHeader from '@/components/ui/SectionHeader.vue'
+import { useActionFeedback } from '@/composables/useActionFeedback'
 import {
   demandaHora,
   heatmapSlots,
@@ -15,6 +17,8 @@ import {
   bannerPerfInfo,
   type TurnoStatus,
 } from '@/data/gestorPerformance'
+
+const { comingSoon } = useActionFeedback()
 
 const C = {
   primary: '#409eff',
@@ -151,17 +155,10 @@ const scatterOption = computed(() => ({
 
 <template>
   <div class="space-y-5">
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-sm font-bold uppercase tracking-wide text-ms-text-primary">
-          Gestão de Performance e Capacidade
-        </h2>
-        <p class="text-xs text-ms-text-secondary">
-          Monitoramento da produtividade e dimensionamento da operação.
-        </p>
-      </div>
-      <el-button size="small">Acessar detalhes</el-button>
-    </div>
+    <SectionHeader
+      title="Gestão de Performance e Capacidade"
+      subtitle="Monitoramento da produtividade e dimensionamento da operação."
+    />
 
     <!-- Demanda × capacidade / heatmap + turnos -->
     <div class="grid gap-4 lg:grid-cols-3">
@@ -274,8 +271,10 @@ const scatterOption = computed(() => ({
         </span>
       </div>
       <div class="flex gap-2">
-        <el-button size="small">Ver causa</el-button>
-        <el-button size="small" type="primary">Criar ação</el-button>
+        <el-button size="small" @click="comingSoon('Ver causa')">Ver causa</el-button>
+        <el-button size="small" type="primary" @click="comingSoon('Criar ação')"
+          >Criar ação</el-button
+        >
       </div>
     </div>
 

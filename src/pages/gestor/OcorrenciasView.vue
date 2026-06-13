@@ -7,6 +7,7 @@ import OperacionalBoard from '@/components/gestor/OperacionalBoard.vue'
 import DataList from '@/components/ui/DataList.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import FilterChips from '@/components/ui/FilterChips.vue'
+import { useActionFeedback } from '@/composables/useActionFeedback'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
 import { stages, type StageTone, type GestorCard } from '@/types/gestorOcorrencias'
 
@@ -46,6 +47,8 @@ function situacao(c: GestorCard): string {
   if (c.stage === 'humano') return `${c.sla} · ${c.tempoAtendimento}`
   return `Concluído ${c.concluidoHora} · ${c.total}`
 }
+
+const { comingSoon } = useActionFeedback()
 
 function onVisualizar(c: GestorCard) {
   ElMessage.info(`Visualizar: ${c.beneficiary}`)
@@ -131,8 +134,8 @@ const pillDot: Record<StageTone | 'info', string> = {
         <el-option v-for="o in f.options" :key="o" :label="o" :value="o" />
       </el-select>
       <div class="ml-auto flex items-center gap-2">
-        <el-button>Status Atendimento</el-button>
-        <el-button>Configurar colunas</el-button>
+        <el-button @click="comingSoon('Status Atendimento')">Status Atendimento</el-button>
+        <el-button @click="comingSoon('Configurar colunas')">Configurar colunas</el-button>
       </div>
     </div>
 
@@ -149,7 +152,7 @@ const pillDot: Record<StageTone | 'info', string> = {
         @editar="onEditar"
       >
         <template #footer-actions>
-          <el-button text type="primary" size="small">
+          <el-button text type="primary" size="small" @click="comingSoon('Criar ocorrência')">
             <AppIcon name="plus" class="mr-1 h-3.5 w-3.5" />Criar
           </el-button>
         </template>

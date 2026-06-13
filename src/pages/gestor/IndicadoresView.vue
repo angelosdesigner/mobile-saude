@@ -18,6 +18,9 @@ import {
   type IndicadorKey,
   type FilaCor,
 } from '@/data/gestorIndicadores'
+import { useActionFeedback } from '@/composables/useActionFeedback'
+
+const { comingSoon } = useActionFeedback()
 
 // Centro de Indicadores Operacionais (Figma 7651:87503). O indicador ativo vem
 // de ?ind= — aceita as chaves canônicas (fcr/resolucao/tme/tmef/nps/abandono) e os
@@ -344,9 +347,14 @@ const segmentoColumns: DataListColumn[] = [
           }}</span>
         </template>
         <template #cell-acao="{ row }">
-          <el-button v-if="row.acao !== '—'" text type="primary" size="small">{{
-            row.acao
-          }}</el-button>
+          <el-button
+            v-if="row.acao !== '—'"
+            text
+            type="primary"
+            size="small"
+            @click="comingSoon(row.acao)"
+            >{{ row.acao }}</el-button
+          >
           <span v-else class="text-ms-text-placeholder">—</span>
         </template>
       </DataList>
@@ -384,6 +392,7 @@ const segmentoColumns: DataListColumn[] = [
             :type="r.destaque ? 'primary' : 'default'"
             size="small"
             class="mt-2 self-start"
+            @click="comingSoon(r.acao)"
           >
             {{ r.acao }}
           </el-button>

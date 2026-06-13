@@ -5,6 +5,7 @@ import { useOcorrenciasStore } from '@/stores/ocorrencias'
 import DataList from '@/components/ui/DataList.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import type { Ocorrencia } from '@/types/ocorrencias'
+import { useActionFeedback } from '@/composables/useActionFeedback'
 
 // Mesma fonte filtrada do Quadro; mesmo primitivo visual (DataList) da Lista do
 // gestor, com as colunas próprias da visão do ATENDENTE.
@@ -18,6 +19,8 @@ const listColumns: DataListColumn[] = [
   { key: 'tipo', label: 'Tipo de ocorrência', minWidth: 240 },
   { key: 'status', label: 'Status', width: 160 },
 ]
+
+const { comingSoon } = useActionFeedback()
 
 function onVisualizar(o: Ocorrencia) {
   router.push(`/ocorrencias/${o.id}`)
@@ -37,7 +40,7 @@ function onEditar(o: Ocorrencia) {
     @editar="onEditar"
   >
     <template #footer-actions>
-      <el-button text type="primary" size="small">
+      <el-button text type="primary" size="small" @click="comingSoon('Criar ocorrência')">
         <AppIcon name="plus" class="mr-1 h-3.5 w-3.5" />Criar
       </el-button>
     </template>

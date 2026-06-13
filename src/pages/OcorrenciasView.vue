@@ -9,6 +9,7 @@ import ConfigurarColunas from '@/components/ocorrencias/ConfigurarColunas.vue'
 import FiltrosAvancados from '@/components/ocorrencias/FiltrosAvancados.vue'
 import FilterChips from '@/components/ui/FilterChips.vue'
 import type { ChipTone, FilterChip } from '@/components/ui/filterChips'
+import { useActionFeedback } from '@/composables/useActionFeedback'
 import { useOcorrenciasStore, type StatTone } from '@/stores/ocorrencias'
 import {
   prioridadeOptions,
@@ -25,6 +26,14 @@ const store = useOcorrenciasStore()
 const { activeFilterCount, stats, quickFilters } = storeToRefs(store)
 const { filters, savedFilters } = store
 const { clearFilters, applyPreset } = store
+
+const { comingSoon, done } = useActionFeedback()
+
+// Aplica um preset salvo e confirma via toast.
+function onPreset(p: (typeof savedFilters)[number]) {
+  applyPreset(p)
+  done(`Filtro "${p.name}" aplicado`)
+}
 
 // Tom semântico do store → tom dos chips (cor fica fora do estado).
 const statToneToChip: Record<StatTone, ChipTone> = {
@@ -150,7 +159,7 @@ const showAvancados = ref(false)
       </div>
       <div class="flex items-center gap-2">
         <el-button @click="showAvancados = true">Filtros avançados</el-button>
-        <el-dropdown trigger="click" @command="applyPreset">
+        <el-dropdown trigger="click" @command="onPreset">
           <el-button>
             Filtros salvos
             <AppIcon name="chevron-down" class="ml-1 h-3 w-3" />
@@ -163,7 +172,7 @@ const showAvancados = ref(false)
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <el-button>Configurar filtros</el-button>
+        <el-button @click="comingSoon('Configurar filtros')">Configurar filtros</el-button>
       </div>
     </div>
 

@@ -35,6 +35,7 @@ const atendenteItems = computed<NavItem[]>(() =>
         comingSoon: true,
       },
       { to: '/ocorrencias', label: 'Ocorrências', icon: 'alert' },
+      { to: '/notificacoes', label: 'Notificações', icon: 'bell' },
       { to: '/contatos', label: 'Contatos', icon: 'users', comingSoon: true },
       { to: '/agenda', label: 'Agenda', icon: 'calendar', comingSoon: true },
       { to: '/widgets', label: 'Widgets', icon: 'grid', comingSoon: true },
@@ -45,6 +46,7 @@ const atendenteItems = computed<NavItem[]>(() =>
 const gestorItems: NavItem[] = [
   { to: '/gestor/tempo-real', label: 'Início', icon: 'home' },
   { to: '/gestor/ocorrencias', label: 'Ocorrências', icon: 'alert' },
+  { to: '/notificacoes', label: 'Notificações', icon: 'bell' },
   { to: '/gestor/relatorios', label: 'Relatórios', icon: 'grid', comingSoon: true },
 ]
 
@@ -133,6 +135,10 @@ const isActive = (to: string) => route.path === to || route.path.startsWith(to +
             <template v-else-if="item.icon === 'calendar'">
               <rect x="3" y="4" width="18" height="18" rx="2" />
               <path d="M16 2v4M8 2v4M3 10h18" />
+            </template>
+            <template v-else-if="item.icon === 'bell'">
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
             </template>
             <template v-else>
               <rect x="3" y="3" width="7" height="7" rx="1" />

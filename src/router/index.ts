@@ -37,6 +37,14 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Detalhe da ocorrência' },
   },
   {
+    // Central de Notificações — role-aware (atendente: gerais; gestor: por
+    // atendente/setor). Acessível pelo dropdown do topbar e pela sidebar.
+    path: '/notificacoes',
+    name: 'notificacoes',
+    component: () => import('@/pages/NotificacoesView.vue'),
+    meta: { title: 'Notificações' },
+  },
+  {
     // A "Início" do gestor É o dashboard de Gestão em tempo real.
     path: '/gestor',
     redirect: '/gestor/tempo-real',

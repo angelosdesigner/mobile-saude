@@ -1,13 +1,6 @@
 import { defineStore } from 'pinia'
 import { reactive, ref, computed } from 'vue'
-import type {
-  Ocorrencia,
-  ColumnKey,
-  ColumnCfg,
-  NotificacaoItem,
-  SavedFilter,
-  FilterState,
-} from '@/types/ocorrencias'
+import type { Ocorrencia, ColumnKey, ColumnCfg, SavedFilter, FilterState } from '@/types/ocorrencias'
 import { columns, columnLabel } from '@/types/ocorrencias'
 import { fetchOcorrencias, updateOcorrenciaColumn } from '@/services/ocorrenciasService'
 
@@ -54,50 +47,6 @@ export const useOcorrenciasStore = defineStore('ocorrencias', () => {
     alta: (o) => o.prioridade === 'Alta',
     'nao-atrib': (o) => o.atendente === 'Não atribuídos',
   }
-
-  // ── Notificações ───────────────────────────────────────────────────────────
-  const notifications = ref<NotificacaoItem[]>([
-    {
-      id: 1,
-      type: 'warning',
-      title: 'Atenção ao SLA de autorizações',
-      desc: 'Volume acima da média hoje. Priorize casos com menor tempo restante.',
-      time: '10min atrás',
-      unread: true,
-    },
-    {
-      id: 2,
-      type: 'info',
-      title: 'Atualização de política',
-      desc: 'Nova política de autorização entra em vigor em 01/04. Consulte o manual atualizado.',
-      time: '1h atrás',
-      unread: true,
-    },
-    {
-      id: 3,
-      type: 'danger',
-      title: 'Sistema de telefonia instável',
-      desc: 'Possíveis intermitências no ramal. Equipe técnica já foi acionada.',
-      time: '2h atrás',
-      unread: true,
-    },
-    {
-      id: 4,
-      type: 'info',
-      title: 'Reunião de equipe agendada',
-      desc: 'Reunião semanal de alinhamento será às 14h na sala de conferências.',
-      time: '3h atrás',
-      unread: false,
-    },
-    {
-      id: 5,
-      type: 'success',
-      title: 'Parabéns! Meta atingida',
-      desc: 'Você completou 20 atendimentos ontem. Excelente trabalho!',
-      time: '1d atrás',
-      unread: false,
-    },
-  ])
 
   // ── Filtros salvos (presets) ────────────────────────────────────────────────
   const savedFilters: SavedFilter[] = [
@@ -166,10 +115,6 @@ export const useOcorrenciasStore = defineStore('ocorrencias', () => {
     quickFilters.value = []
   }
 
-  function markAllRead() {
-    notifications.value.forEach((n) => (n.unread = false))
-  }
-
   /**
    * Move um card para outra coluna, atualiza seu status e persiste via serviço.
    * Retorna `true` quando a coluna efetivamente mudou (para a UI dar feedback).
@@ -214,7 +159,6 @@ export const useOcorrenciasStore = defineStore('ocorrencias', () => {
       quickFilters.value.length,
   )
 
-  const unreadCount = computed(() => notifications.value.filter((n) => n.unread).length)
   const visibleColumns = computed(() => columnConfig.value.filter((c) => c.visible))
   const allItems = computed(() => columnConfig.value.flatMap((c) => board[c.key]))
 
@@ -287,7 +231,6 @@ export const useOcorrenciasStore = defineStore('ocorrencias', () => {
     board,
     filters,
     quickFilters,
-    notifications,
     columnConfig,
     savedFilters,
     // ações
@@ -296,12 +239,10 @@ export const useOcorrenciasStore = defineStore('ocorrencias', () => {
     passesQuick,
     applyPreset,
     clearFilters,
-    markAllRead,
     moveCard,
     findById,
     // getters
     activeFilterCount,
-    unreadCount,
     visibleColumns,
     filteredList,
     filteredBoard,

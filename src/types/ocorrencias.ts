@@ -87,15 +87,6 @@ export interface ColumnCfg {
   visible: boolean
 }
 
-export interface NotificacaoItem {
-  id: number
-  type: 'warning' | 'info' | 'danger' | 'success'
-  title: string
-  desc: string
-  time: string
-  unread: boolean
-}
-
 // Chaves de filtro que um preset pode preencher.
 export type PresetFilterKey =
   | 'prioridade'
