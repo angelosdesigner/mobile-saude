@@ -1,60 +1,45 @@
 <script setup lang="ts">
-// Ícones de "chrome" reutilizados em mais de um lugar (chevrons, busca, etc.),
-// centralizados para evitar SVGs duplicados pelos templates. Ilustrações de uso
-// único continuam inline no componente que as usa — não há ganho em centralizá-las.
+// Ícones de "chrome" do app. Agora servidos pelo Lucide (@lucide/vue) — um
+// sistema de ícones único e mantido, em vez de SVGs à mão. A API pública
+// (<AppIcon name="chevron-left" class="h-4 w-4" />) é preservada: os call sites
+// não mudam. Os nomes em kebab-case mapeiam para os componentes do Lucide.
 //
-// Uso: <AppIcon name="chevron-left" class="h-4 w-4" />
-// A classe passa direto para o <svg> (fall-through), controlando tamanho/cor.
+// `class` (h-*/w-*/text-*) passa direto para o <svg> do Lucide e vence o
+// width/height do `size` (CSS > atributo), então o dimensionamento continua
+// pelas utilitárias. currentColor por padrão herda a cor do texto.
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  Search,
+  X,
+  Plus,
+  Sun,
+  Moon,
+  Eye,
+  Pencil,
+  type LucideProps,
+} from '@lucide/vue'
+import type { Component } from 'vue'
 
-// Cada ícone é uma lista de elementos SVG (sem v-html → sem risco de XSS).
-type SvgEl = { tag: 'path' | 'circle' } & Record<string, string | number>
+const icons = {
+  'chevron-left': ChevronLeft,
+  'chevron-right': ChevronRight,
+  'chevron-down': ChevronDown,
+  search: Search,
+  close: X,
+  plus: Plus,
+  sun: Sun,
+  moon: Moon,
+  eye: Eye,
+  edit: Pencil,
+} satisfies Record<string, Component>
 
-const icons: Record<string, SvgEl[]> = {
-  'chevron-left': [{ tag: 'path', d: 'm15 18-6-6 6-6' }],
-  'chevron-right': [{ tag: 'path', d: 'm9 18 6-6-6-6' }],
-  'chevron-down': [{ tag: 'path', d: 'm6 9 6 6 6-6' }],
-  search: [
-    { tag: 'circle', cx: 11, cy: 11, r: 8 },
-    { tag: 'path', d: 'm21 21-4.3-4.3' },
-  ],
-  close: [{ tag: 'path', d: 'M18 6 6 18M6 6l12 12' }],
-  plus: [{ tag: 'path', d: 'M12 5v14M5 12h14' }],
-  sun: [
-    { tag: 'circle', cx: 12, cy: 12, r: 4 },
-    {
-      tag: 'path',
-      d: 'M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
-    },
-  ],
-  moon: [{ tag: 'path', d: 'M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z' }],
-  eye: [
-    { tag: 'path', d: 'M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z' },
-    { tag: 'circle', cx: 12, cy: 12, r: 3 },
-  ],
-  edit: [
-    { tag: 'path', d: 'M12 20h9' },
-    { tag: 'path', d: 'M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z' },
-  ],
-}
-
-withDefaults(defineProps<{ name: keyof typeof icons; size?: number | string }>(), { size: 16 })
-
-function attrsOf({ tag: _tag, ...rest }: SvgEl) {
-  return rest
-}
+withDefaults(defineProps<{ name: keyof typeof icons; size?: LucideProps['size'] }>(), {
+  size: 16,
+})
 </script>
 
 <template>
-  <svg
-    :width="size"
-    :height="size"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <component :is="el.tag" v-for="(el, i) in icons[name]" :key="i" v-bind="attrsOf(el)" />
-  </svg>
+  <component :is="icons[name]" :size="size" />
 </template>
