@@ -72,6 +72,14 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Ocorrências · Gestão Operacional' },
   },
   {
+    // Design System (styleguide vivo) — tokens + galeria de componentes.
+    // Fora da navegação principal; acesso direto por /design-system.
+    path: '/design-system',
+    name: 'design-system',
+    component: () => import('@/pages/DesignSystemView.vue'),
+    meta: { title: 'Design System' },
+  },
+  {
     // Página de validação da stack (Element Plus + Tailwind). Pode remover
     // depois que os fluxos reais estiverem prontos.
     path: '/demo',
