@@ -2,7 +2,7 @@
 // (+ detalhes 8008:*). Valores extraídos fielmente dos frames. A tela é
 // parametrizada pelo indicador ativo (?ind=).
 
-export type IndicadorKey = 'fcr' | 'resolucao' | 'tme' | 'tmef' | 'nps' | 'abandono'
+export type IndicadorKey = 'fcr' | 'resolucao' | 'tme' | 'tmef' | 'tma' | 'nps' | 'abandono'
 
 export interface IndicadorKpi {
   key: IndicadorKey
@@ -11,12 +11,13 @@ export interface IndicadorKpi {
   status: 'ok' | 'warning' | 'danger'
 }
 
-// Cards seletores (linha "Indicadores estratégicos") — 6 KPIs.
+// Cards seletores (linha "Indicadores estratégicos") — 7 KPIs.
 export const indicadorKpis: IndicadorKpi[] = [
   { key: 'fcr', label: 'FCR', value: '73%', status: 'warning' },
   { key: 'resolucao', label: 'Resol. de chamados', value: '91%', status: 'ok' },
   { key: 'tme', label: 'TME', value: '12min', status: 'danger' },
   { key: 'tmef', label: 'TMEF', value: '4,2min', status: 'warning' },
+  { key: 'tma', label: 'TMA', value: '14min', status: 'warning' },
   { key: 'nps', label: 'NPS', value: '50', status: 'ok' },
   { key: 'abandono', label: 'Abandono', value: '6,4%', status: 'danger' },
 ]
@@ -147,6 +148,27 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
       { label: 'Fila: Reembolso', value: '38' },
       { label: 'Canal: Telefone', value: '42' },
       { label: 'Equipe: Eq. B Renata', value: '36' },
+    ],
+  },
+  tma: {
+    titulo: 'Evolução Temporal · TMA',
+    subtitulo: '7 dias com comparativo vs período anterior e vs meta 12min',
+    valor: '14min',
+    delta: '+1,5min',
+    deltaSub: 'vs período anterior · meta 12min',
+    deltaTone: 'down',
+    meta: 12,
+    serieAtual: [12, 12, 13, 13, 14, 14, 14],
+    serieAnterior: [11, 11, 12, 12, 12, 13, 13],
+    comparacoes: [
+      { label: 'vs Meta (12min)', value: '+2min', tone: 'down' },
+      { label: 'vs Semana anterior', value: '+1,5min', tone: 'down' },
+      { label: 'vs Mesmo dia mês passado', value: '+0,8min', tone: 'down' },
+    ],
+    pioresSegmentos: [
+      { label: 'Fila: Reembolso', value: '18min' },
+      { label: 'Canal: Telefone', value: '16min' },
+      { label: 'Equipe: Eq. B Renata', value: '17min' },
     ],
   },
   abandono: {

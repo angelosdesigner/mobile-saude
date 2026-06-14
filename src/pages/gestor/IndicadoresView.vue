@@ -38,7 +38,7 @@ const indAlias: Record<string, IndicadorKey> = {
   abandono: 'abandono',
   'fix-call-resolution': 'fcr',
   'resolucao-chamados': 'resolucao',
-  tma: 'tme',
+  tma: 'tma',
 }
 
 const active = computed<IndicadorKey>(() => indAlias[route.query.ind as string] ?? 'tme')
@@ -204,7 +204,7 @@ const segmentoColumns: DataListColumn[] = [
       <div>
         <h1 class="text-2xl font-bold text-ms-text-primary">Centro de Indicadores Operacionais</h1>
         <p class="mt-1 text-sm text-ms-text-secondary">
-          Análise temporal, comparativa e por segmento dos 5 KPIs estratégicos da operação.
+          Análise temporal, comparativa e por segmento dos KPIs estratégicos da operação.
         </p>
       </div>
       <el-radio-group :model-value="'7d'" size="small">
@@ -219,7 +219,7 @@ const segmentoColumns: DataListColumn[] = [
     <p class="mb-3 text-xs text-ms-text-secondary">
       Clique em um indicador para ver detalhamento completo
     </p>
-    <div class="mb-5 grid gap-3 sm:grid-cols-3 xl:grid-cols-6">
+    <div class="mb-5 grid gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
       <button
         v-for="k in indicadorKpis"
         :key="k.key"
