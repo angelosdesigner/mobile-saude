@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AbandonmentCard: typeof import('./src/components/indicadores/AbandonmentCard.vue')['default']
     AbandonosTab: typeof import('./src/components/gestor/tempo-real/AbandonosTab.vue')['default']
     AppIcon: typeof import('./src/components/ui/AppIcon.vue')['default']
     AppSidebar: typeof import('./src/components/layout/AppSidebar.vue')['default']
@@ -39,6 +40,7 @@ declare module 'vue' {
     ConfigurarColunas: typeof import('./src/components/ocorrencias/ConfigurarColunas.vue')['default']
     CopilotButton: typeof import('./src/components/ocorrencias/CopilotButton.vue')['default']
     DataList: typeof import('./src/components/ui/DataList.vue')['default']
+    DemandCapacityCard: typeof import('./src/components/indicadores/DemandCapacityCard.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
     ElDialog: typeof import('element-plus/es')['ElDialog']
@@ -66,6 +68,7 @@ declare module 'vue' {
     InicioTab: typeof import('./src/components/gestor/tempo-real/InicioTab.vue')['default']
     KanbanBoard: typeof import('./src/components/ui/KanbanBoard.vue')['default']
     KanbanCard: typeof import('./src/components/ui/KanbanCard.vue')['default']
+    KpiCard: typeof import('./src/components/indicadores/KpiCard.vue')['default']
     MetricCard: typeof import('./src/components/gestor/MetricCard.vue')['default']
     ModalAnexar: typeof import('./src/components/ocorrencias/modais/ModalAnexar.vue')['default']
     ModalCobrarSetor: typeof import('./src/components/ocorrencias/modais/ModalCobrarSetor.vue')['default']
@@ -77,6 +80,7 @@ declare module 'vue' {
     ModalVincular: typeof import('./src/components/ocorrencias/modais/ModalVincular.vue')['default']
     NotificacaoItem: typeof import('./src/components/notificacoes/NotificacaoItem.vue')['default']
     NotificacoesPanel: typeof import('./src/components/layout/NotificacoesPanel.vue')['default']
+    OccupancyCard: typeof import('./src/components/indicadores/OccupancyCard.vue')['default']
     OcorrenciasBoard: typeof import('./src/components/ocorrencias/OcorrenciasBoard.vue')['default']
     OcorrenciasList: typeof import('./src/components/ocorrencias/OcorrenciasList.vue')['default']
     OperacionalBoard: typeof import('./src/components/gestor/OperacionalBoard.vue')['default']
@@ -87,6 +91,7 @@ declare module 'vue' {
     SectionHeader: typeof import('./src/components/ui/SectionHeader.vue')['default']
     SlaBadge: typeof import('./src/components/atendimento/SlaBadge.vue')['default']
     StatusBadge: typeof import('./src/components/atendimento/StatusBadge.vue')['default']
+    TrendCard: typeof import('./src/components/indicadores/TrendCard.vue')['default']
     UserCard: typeof import('./src/components/atendimento/UserCard.vue')['default']
   }
 }

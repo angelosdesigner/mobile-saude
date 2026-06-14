@@ -3,6 +3,9 @@ import { withThemeByClassName } from '@storybook/addon-themes'
 // Estilos reais do produto: layers do Tailwind + Element Plus + tokens (claro e
 // escuro). Garante que o catálogo renderize idêntico ao app.
 import '../src/style.css'
+// Registra os charts do ECharts (efeito colateral) — no app isto vem do main.ts;
+// aqui é preciso para o VChart funcionar nas stories de Indicadores.
+import '../src/plugins/echarts'
 
 const preview: Preview = {
   parameters: {
