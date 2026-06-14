@@ -15,24 +15,17 @@ import {
   bannerFilaInfo,
   type MetricTone,
 } from '@/data/gestorFilas'
+import { normalizeFila } from '@/data/gestorTaxonomia'
 import { chartColors as C } from '@/plugins/echarts'
 
 const router = useRouter()
 
-// Drill-down: clique numa fila → listagem de ocorrências filtrada por aquela
-// fila. Os rótulos do dashboard divergem do `filaTipo` dos cards (ex.: "Dúvidas
-// Adm." vs "Dúvida contratual"); normaliza-se aqui. TODO: unificar nomenclatura
-// das filas em uma fonte única (ver pendência reportada).
-const filaCanonica: Record<string, string> = {
-  'Financeiro (Boleto)': 'Financeiro',
-  Reembolso: 'Reembolso',
-  'Dúvidas Adm.': 'Dúvida contratual',
-  Autorizações: 'Autorização',
-}
+// Drill-down: clique numa fila → listagem de ocorrências filtrada. O nome é
+// normalizado pela taxonomia única (dashboard ↔ cards casam por nome canônico).
 function abrirFila(label: string) {
   router.push({
     path: '/gestor/ocorrencias',
-    query: { view: 'lista', fila: filaCanonica[label] ?? label },
+    query: { view: 'lista', fila: normalizeFila(label) },
   })
 }
 

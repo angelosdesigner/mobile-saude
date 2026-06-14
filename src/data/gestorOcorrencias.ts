@@ -208,7 +208,7 @@ export const gestorCards: GestorCard[] = [
     stage: 'humano',
     beneficiary: 'Bruno Costa',
     channel: 'WhatsApp',
-    atendente: 'Fernando Paz',
+    atendente: 'Fernanda Paz',
     tempoAtendimento: '14min',
     sla: 'Dentro',
   },
@@ -274,7 +274,7 @@ export const gestorCards: GestorCard[] = [
     beneficiary: 'Henrique Pereira',
     channel: 'WhatsApp',
     concluidoHora: '13:48',
-    atendente: 'Fernando Paz',
+    atendente: 'Fernanda Paz',
     total: '9min',
   },
   {

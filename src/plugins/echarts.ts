@@ -35,6 +35,7 @@ export const chartColors = {
   warning: '#e6a23c',
   danger: '#f56c6c',
   teal: '#13c2c2',
+  purple: '#7c6cf2', // roxo do projeto (KPI NPS, insights de IA)
   neutral: '#909399',
   axis: '#909399',
   ink: '#303133',

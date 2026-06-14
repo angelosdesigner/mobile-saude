@@ -13,6 +13,7 @@ import {
   bannerAbandono,
 } from '@/data/gestorAbandonos'
 import { chartColors as C } from '@/plugins/echarts'
+import { canalCor, atendimentoCor } from '@/data/gestorTaxonomia'
 
 const canalOption = computed(() => ({
   tooltip: { trigger: 'item', formatter: '{b}: {c}' },
@@ -24,7 +25,7 @@ const canalOption = computed(() => ({
       data: porCanal.itens.map((i) => ({
         value: i.value,
         name: i.name,
-        itemStyle: { color: i.color },
+        itemStyle: { color: canalCor(i.name) },
       })),
     },
   ],
@@ -56,13 +57,13 @@ const abandonoFluxoOption = computed(() => ({
       name: 'BOT',
       type: 'bar',
       data: abandonoFluxo.bot,
-      itemStyle: { color: C.warning, borderRadius: [3, 3, 0, 0] },
+      itemStyle: { color: atendimentoCor.bot, borderRadius: [3, 3, 0, 0] },
     },
     {
       name: 'Humano',
       type: 'bar',
       data: abandonoFluxo.humano,
-      itemStyle: { color: C.danger, borderRadius: [3, 3, 0, 0] },
+      itemStyle: { color: atendimentoCor.humano, borderRadius: [3, 3, 0, 0] },
     },
   ],
 }))
@@ -141,7 +142,7 @@ const ringStyle = (pct: number, color: string) => ({
         <div class="mt-2 space-y-1 text-xs">
           <div v-for="i in porCanal.itens" :key="i.name" class="flex items-center justify-between">
             <span class="flex items-center gap-1.5 text-ms-text-regular">
-              <span class="h-2 w-2 rounded-full" :style="{ backgroundColor: i.color }" />{{
+              <span class="h-2 w-2 rounded-full" :style="{ backgroundColor: canalCor(i.name) }" />{{
                 i.name
               }}
             </span>
@@ -155,11 +156,11 @@ const ringStyle = (pct: number, color: string) => ({
           <div v-for="f in porFluxoBot" :key="f.label">
             <div class="flex items-center justify-between text-xs">
               <span class="truncate pr-2 text-ms-text-regular">{{ f.label }}</span>
-              <span class="font-medium text-ms-warning">{{ f.value }}%</span>
+              <span class="font-medium text-ms-primary">{{ f.value }}%</span>
             </div>
             <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
               <div
-                class="h-full rounded-full bg-ms-warning"
+                class="h-full rounded-full bg-ms-primary"
                 :style="{ width: `${f.value * 5}%` }"
               />
             </div>
@@ -172,10 +173,10 @@ const ringStyle = (pct: number, color: string) => ({
           <div v-for="f in porFilaHumana" :key="f.label">
             <div class="flex items-center justify-between text-xs">
               <span class="truncate pr-2 text-ms-text-regular">{{ f.label }}</span>
-              <span class="font-medium text-ms-danger">{{ f.value }}%</span>
+              <span class="font-medium text-ms-success">{{ f.value }}%</span>
             </div>
             <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
-              <div class="h-full rounded-full bg-ms-danger" :style="{ width: `${f.value * 2}%` }" />
+              <div class="h-full rounded-full bg-ms-success" :style="{ width: `${f.value * 2}%` }" />
             </div>
           </div>
         </div>
@@ -192,7 +193,7 @@ const ringStyle = (pct: number, color: string) => ({
           <div class="text-center">
             <div
               class="relative mx-auto h-20 w-20 rounded-full"
-              :style="ringStyle(comparativo.bot.pct, C.warning)"
+              :style="ringStyle(comparativo.bot.pct, C.primary)"
             >
               <div
                 class="absolute inset-[6px] flex flex-col items-center justify-center rounded-full bg-ms-surface"
@@ -200,7 +201,7 @@ const ringStyle = (pct: number, color: string) => ({
                 <span class="text-2xs font-semibold uppercase text-ms-text-secondary"
                   >BOT {{ comparativo.bot.pct }}%</span
                 >
-                <span class="text-xl font-bold text-ms-warning">{{ comparativo.bot.casos }}</span>
+                <span class="text-xl font-bold text-ms-primary">{{ comparativo.bot.casos }}</span>
               </div>
             </div>
           </div>
@@ -208,7 +209,7 @@ const ringStyle = (pct: number, color: string) => ({
           <div class="text-center">
             <div
               class="relative mx-auto h-20 w-20 rounded-full"
-              :style="ringStyle(comparativo.humano.pct, C.danger)"
+              :style="ringStyle(comparativo.humano.pct, C.success)"
             >
               <div
                 class="absolute inset-[6px] flex flex-col items-center justify-center rounded-full bg-ms-surface"
@@ -216,7 +217,7 @@ const ringStyle = (pct: number, color: string) => ({
                 <span class="text-2xs font-semibold uppercase text-ms-text-secondary"
                   >Humano {{ comparativo.humano.pct }}%</span
                 >
-                <span class="text-xl font-bold text-ms-danger">{{ comparativo.humano.casos }}</span>
+                <span class="text-xl font-bold text-ms-success">{{ comparativo.humano.casos }}</span>
               </div>
             </div>
           </div>
@@ -224,7 +225,7 @@ const ringStyle = (pct: number, color: string) => ({
         <div class="space-y-1 border-t border-ms-border-lighter pt-2 text-xs">
           <div class="flex justify-between">
             <span class="text-ms-text-secondary">Humano abandona</span>
-            <span class="font-semibold text-ms-danger">{{ comparativo.mult }}</span>
+            <span class="font-semibold text-ms-text-primary">{{ comparativo.mult }}</span>
           </div>
           <div class="flex justify-between">
             <span class="text-ms-text-secondary">TME desistência médio</span>

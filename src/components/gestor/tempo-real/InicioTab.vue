@@ -24,6 +24,7 @@ import {
   type CardTarget,
 } from '@/data/gestorTempoReal'
 import { chartColors as C } from '@/plugins/echarts'
+import { canalCor, atendimentoCor } from '@/data/gestorTaxonomia'
 
 const router = useRouter()
 
@@ -46,18 +47,17 @@ const andamentoTone: Record<'primary' | 'warning' | 'teal', string> = {
 // Número formatado em pt-BR (vírgula decimal) para o card "Chamadas na fila".
 const ptNum = (n: number) => String(n).replace('.', ',')
 
-// Legendas (bolinha + nome) reutilizando ChartLegend; cores = série do gráfico.
-const canalColors = [C.danger, C.primary, C.warning]
+// Legendas (bolinha + nome) reutilizando ChartLegend; cores = taxonomia única.
 const canalLegend = computed(() =>
-  canalDistribuicao.map((c, i) => ({
+  canalDistribuicao.map((c) => ({
     label: c.name,
-    color: canalColors[i] ?? C.axis,
+    color: canalCor(c.name),
     value: `${c.pct} (${c.value})`,
   })),
 )
 const abandonoLegend = [
-  { label: 'BOT', color: C.primary },
-  { label: 'Humano', color: C.danger },
+  { label: 'BOT', color: atendimentoCor.bot },
+  { label: 'Humano', color: atendimentoCor.humano },
 ]
 const demandaLegend = [
   { label: 'Saudável', color: C.success },
@@ -73,23 +73,11 @@ const canalOption = computed(() => ({
       radius: ['62%', '88%'],
       avoidLabelOverlap: false,
       label: { show: false },
-      data: [
-        {
-          value: canalDistribuicao[0].value,
-          name: canalDistribuicao[0].name,
-          itemStyle: { color: C.danger },
-        },
-        {
-          value: canalDistribuicao[1].value,
-          name: canalDistribuicao[1].name,
-          itemStyle: { color: C.primary },
-        },
-        {
-          value: canalDistribuicao[2].value,
-          name: canalDistribuicao[2].name,
-          itemStyle: { color: C.warning },
-        },
-      ],
+      data: canalDistribuicao.map((c) => ({
+        value: c.value,
+        name: c.name,
+        itemStyle: { color: canalCor(c.name) },
+      })),
     },
   ],
 }))
@@ -122,13 +110,13 @@ const abandonoOption = computed(() => ({
       name: 'BOT',
       type: 'bar',
       data: abandonoFluxo.bot,
-      itemStyle: { color: C.primary, borderRadius: [3, 3, 0, 0] },
+      itemStyle: { color: atendimentoCor.bot, borderRadius: [3, 3, 0, 0] },
     },
     {
       name: 'Humano',
       type: 'bar',
       data: abandonoFluxo.humano,
-      itemStyle: { color: C.danger, borderRadius: [3, 3, 0, 0] },
+      itemStyle: { color: atendimentoCor.humano, borderRadius: [3, 3, 0, 0] },
     },
   ],
 }))

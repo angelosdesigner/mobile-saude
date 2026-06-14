@@ -12,6 +12,7 @@ import {
   bannerAutomatizado,
 } from '@/data/gestorAtendimentos'
 import { chartColors as C } from '@/plugins/echarts'
+import { canalCor } from '@/data/gestorTaxonomia'
 
 const canalOption = computed(() => ({
   tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
@@ -20,23 +21,11 @@ const canalOption = computed(() => ({
       type: 'pie',
       radius: ['62%', '88%'],
       label: { show: false },
-      data: [
-        {
-          value: canalDistribuicao[0].value,
-          name: canalDistribuicao[0].name,
-          itemStyle: { color: C.danger },
-        },
-        {
-          value: canalDistribuicao[1].value,
-          name: canalDistribuicao[1].name,
-          itemStyle: { color: C.primary },
-        },
-        {
-          value: canalDistribuicao[2].value,
-          name: canalDistribuicao[2].name,
-          itemStyle: { color: C.warning },
-        },
-      ],
+      data: canalDistribuicao.map((c) => ({
+        value: c.value,
+        name: c.name,
+        itemStyle: { color: canalCor(c.name) },
+      })),
     },
   ],
 }))

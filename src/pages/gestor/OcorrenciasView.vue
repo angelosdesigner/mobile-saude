@@ -9,6 +9,7 @@ import type { DataListColumn } from '@/components/ui/dataList'
 import FilterChips from '@/components/ui/FilterChips.vue'
 import { useActionFeedback } from '@/composables/useActionFeedback'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
+import { FILAS_CANONICAS } from '@/data/gestorTaxonomia'
 import { stages, type StageTone, type GestorStage, type GestorCard } from '@/types/gestorOcorrencias'
 
 const route = useRoute()
@@ -111,7 +112,7 @@ const filterDefs = [
   {
     label: 'Fila',
     ctxKey: 'fila' as const,
-    options: ['Reembolso', 'Autorização', 'Financeiro', 'Dúvidas Administrativas'],
+    options: [...FILAS_CANONICAS],
   },
   { label: 'Tipo de ocorrência', options: ['Reembolso', 'Autorização', 'Dúvida'] },
   {

@@ -43,8 +43,8 @@ export interface FilaPonto {
 }
 
 export const filaScatter: FilaPonto[] = [
-  { nome: 'Reembolsos', pessoas: 12, tme: 14, sla: 45 },
-  { nome: 'Autorizações', pessoas: 8, tme: 9, sla: 62 },
+  { nome: 'Reembolso', pessoas: 12, tme: 14, sla: 45 },
+  { nome: 'Autorização', pessoas: 8, tme: 9, sla: 62 },
   { nome: 'Chat', pessoas: 6, tme: 6, sla: 78 },
   { nome: 'Telefone', pessoas: 3, tme: 3, sla: 95 },
   { nome: 'WhatsApp', pessoas: 4, tme: 4, sla: 92 },

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { GestorCard, GestorStage, StatusPill, StageHeader } from '@/types/gestorOcorrencias'
 import { stages } from '@/types/gestorOcorrencias'
+import { normalizeFila } from '@/data/gestorTaxonomia'
 import { fetchGestorBoard } from '@/services/gestorService'
 import type { ChipTone } from '@/components/ui/filterChips'
 
@@ -134,7 +135,12 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     if (f.atendente && c.atendente !== f.atendente) return false
     // "Fila" casa tanto o tipo de fila quanto o fluxo (Reembolso, Autorização…),
     // pois um mesmo assunto aparece como `fluxo` no BOT e `filaTipo` na fila.
-    if (f.fila && c.filaTipo !== f.fila && c.fluxo !== f.fila) return false
+    // Normaliza os dois lados (taxonomia única) para tolerar variações de grafia.
+    if (f.fila) {
+      const alvo = normalizeFila(f.fila)
+      if (normalizeFila(c.filaTipo ?? '') !== alvo && normalizeFila(c.fluxo ?? '') !== alvo)
+        return false
+    }
     return true
   }
 

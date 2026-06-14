@@ -3,13 +3,14 @@ import { abandonoFluxo } from '@/data/gestorTempoReal'
 
 export { abandonoFluxo }
 
+// Cor por canal vem da taxonomia (canalCor) — não hardcoded aqui.
 export const porCanal = {
   total: 23,
   taxa: '14,6%',
   itens: [
-    { name: 'Chat/WhatsApp', pct: '8.2%', value: 15, color: '#f56c6c' },
-    { name: 'Telefone/Voz', pct: '4.1%', value: 6, color: '#e6a23c' },
-    { name: 'Balcão/Presencial', pct: '2.3%', value: 2, color: '#7c6cf2' },
+    { name: 'Chat/WhatsApp', pct: '8.2%', value: 15 },
+    { name: 'Telefone/Voz', pct: '4.1%', value: 6 },
+    { name: 'Balcão/Presencial', pct: '2.3%', value: 2 },
   ],
 }
 
