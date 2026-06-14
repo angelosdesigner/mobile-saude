@@ -77,7 +77,9 @@ const evolucaoOption = computed(() => ({
   tooltip: { trigger: 'axis' },
   legend: {
     bottom: 0,
-    itemWidth: 14,
+    icon: 'circle',
+    itemWidth: 8,
+    itemHeight: 8,
     textStyle: { color: C.axis, fontSize: 11 },
     data: ['Período atual', 'Período anterior', 'Meta'],
   },

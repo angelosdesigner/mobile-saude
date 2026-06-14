@@ -32,7 +32,13 @@ const canalOption = computed(() => ({
 
 const abandonoFluxoOption = computed(() => ({
   tooltip: { trigger: 'axis', valueFormatter: (v: number) => `${v}%` },
-  legend: { bottom: 0, itemWidth: 10, itemHeight: 10, textStyle: { color: C.axis, fontSize: 11 } },
+  legend: {
+    bottom: 0,
+    icon: 'circle',
+    itemWidth: 8,
+    itemHeight: 8,
+    textStyle: { color: C.axis, fontSize: 11 },
+  },
   grid: { left: 30, right: 8, top: 12, bottom: 32 },
   xAxis: {
     type: 'category',

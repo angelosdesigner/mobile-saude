@@ -164,13 +164,13 @@ const scatterOption = computed(() => ({
           </div>
           <div class="mt-1 flex flex-wrap gap-3 text-2xs text-ms-text-secondary">
             <span class="flex items-center gap-1"
-              ><span class="h-2 w-2 rounded-sm bg-ms-success" />Demanda equilibrada</span
+              ><span class="h-2 w-2 rounded-full bg-ms-success" />Demanda equilibrada</span
             >
             <span class="flex items-center gap-1"
-              ><span class="h-2 w-2 rounded-sm bg-ms-warning" />Pressão (&gt;85% cap.)</span
+              ><span class="h-2 w-2 rounded-full bg-ms-warning" />Pressão (&gt;85% cap.)</span
             >
             <span class="flex items-center gap-1"
-              ><span class="h-2 w-2 rounded-sm bg-ms-danger" />Saturado (&gt; cap.)</span
+              ><span class="h-2 w-2 rounded-full bg-ms-danger" />Saturado (&gt; cap.)</span
             >
             <span class="flex items-center gap-1"
               ><span class="h-0.5 w-3" :style="{ backgroundColor: C.ink }" />Capacidade</span

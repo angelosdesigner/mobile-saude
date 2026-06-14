@@ -67,9 +67,9 @@ const option = computed(() => ({
     </div>
     <div class="h-52 w-full"><VChart class="h-full w-full" :option="option" autoresize /></div>
     <div class="mt-1 flex flex-wrap gap-3 text-2xs text-ms-text-secondary">
-      <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-sm bg-ms-success" />Equilibrada</span>
-      <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-sm bg-ms-warning" />Pressão</span>
-      <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-sm bg-ms-danger" />Saturado</span>
+      <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-ms-success" />Equilibrada</span>
+      <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-ms-warning" />Pressão</span>
+      <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-ms-danger" />Saturado</span>
       <span class="flex items-center gap-1"><span class="h-0.5 w-3" :style="{ backgroundColor: C.ink }" />Capacidade</span>
     </div>
   </BaseCard>

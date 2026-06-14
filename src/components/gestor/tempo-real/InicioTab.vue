@@ -75,7 +75,13 @@ const canalOption = computed(() => ({
 
 const abandonoOption = computed(() => ({
   tooltip: { trigger: 'axis', valueFormatter: (v: number) => `${v}%` },
-  legend: { bottom: 0, itemWidth: 10, itemHeight: 10, textStyle: { color: C.axis, fontSize: 11 } },
+  legend: {
+    bottom: 0,
+    icon: 'circle',
+    itemWidth: 8,
+    itemHeight: 8,
+    textStyle: { color: C.axis, fontSize: 11 },
+  },
   grid: { left: 32, right: 8, top: 12, bottom: 32 },
   xAxis: {
     type: 'category',
@@ -215,10 +221,29 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
 
       <ChartCard title="Ocupação por fila" subtitle="% de uso da capacidade e TMEF">
         <BarList :items="ocupacaoFila" />
+        <div
+          class="mt-3 flex flex-wrap items-center justify-center gap-3 text-2xs text-ms-text-secondary"
+        >
+          <span class="flex items-center gap-1"
+            ><span class="h-2 w-2 rounded-full bg-ms-success" />&lt;70%</span
+          >
+          <span class="flex items-center gap-1"
+            ><span class="h-2 w-2 rounded-full bg-ms-warning" />70–89%</span
+          >
+          <span class="flex items-center gap-1"
+            ><span class="h-2 w-2 rounded-full bg-ms-danger" />≥90% crítico</span
+          >
+        </div>
       </ChartCard>
 
       <ChartCard title="Ocupação por atendente" subtitle="% de uso da capacidade">
         <BarList :items="ocupacaoAtendente" />
+        <div
+          class="mt-3 flex items-center justify-between border-t border-ms-border-lighter pt-2 text-2xs"
+        >
+          <span class="text-ms-danger">↓ Pior</span>
+          <span class="text-ms-success">Melhor ↑</span>
+        </div>
       </ChartCard>
     </div>
 
