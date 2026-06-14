@@ -55,6 +55,17 @@ const visible = ref<Record<string, boolean>>(
 
 const visibleColumns = computed(() => props.columns.filter((c) => visible.value[c.key]))
 
+// Comparador para colunas com `sortBy` (valor de ordenação custom). Strings
+// comparam por locale pt-BR; números, numericamente. El Plus alterna asc/desc.
+function sortByColumn(c: DataListColumn) {
+  return (a: T, b: T) => {
+    const va = c.sortBy!(a)
+    const vb = c.sortBy!(b)
+    if (typeof va === 'number' && typeof vb === 'number') return va - vb
+    return String(va).localeCompare(String(vb), 'pt-BR')
+  }
+}
+
 // ── Paginação (1–10, 1–20, …) ───────────────────────────────────────────────
 const page = ref(1)
 const pageSize = ref(props.defaultPageSize)
@@ -112,7 +123,8 @@ const headerCellStyle = {
         :width="c.width"
         :min-width="c.minWidth"
         :align="c.align ?? 'left'"
-        :sortable="c.sortable"
+        :sortable="c.sortBy ? true : c.sortable"
+        :sort-method="c.sortBy ? sortByColumn(c) : undefined"
         show-overflow-tooltip
       >
         <template #default="{ row }">
