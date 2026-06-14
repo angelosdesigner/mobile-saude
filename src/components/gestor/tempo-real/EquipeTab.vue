@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
@@ -13,6 +14,13 @@ import {
   type EquipeTone,
 } from '@/data/gestorEquipe'
 import { chartColors as C } from '@/plugins/echarts'
+
+const router = useRouter()
+
+// Drill-down: clique num atendente do ranking → ocorrências filtradas por ele.
+function abrirAtendente(nome: string) {
+  router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', atendente: nome } })
+}
 
 const metricTone: Record<EquipeTone, string> = {
   success: 'text-ms-success',
@@ -103,6 +111,7 @@ const scatterOption = computed(() => ({
     <SectionHeader
       title="Desempenho da Equipe"
       subtitle="Monitore produtividade, ocupação, qualidade do atendimento e indicadores individuais para identificar oportunidades de melhoria e riscos operacionais."
+      action-to="/gestor/ocorrencias?view=lista"
     />
 
     <!-- Métricas -->
@@ -135,7 +144,15 @@ const scatterOption = computed(() => ({
     <div class="grid gap-4 lg:grid-cols-3">
       <ChartCard v-for="r in rankings" :key="r.titulo" :title="r.titulo" :subtitle="r.subtitulo">
         <div class="space-y-3">
-          <div v-for="(it, i) in r.itens" :key="it.nome" class="flex items-center gap-2.5">
+          <div
+            v-for="(it, i) in r.itens"
+            :key="it.nome"
+            class="-mx-2 flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-0.5 transition hover:bg-ms-fill-light"
+            role="button"
+            tabindex="0"
+            @click="abrirAtendente(it.nome)"
+            @keydown.enter="abrirAtendente(it.nome)"
+          >
             <span
               class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-2xs font-bold"
               :class="rankBadge[i]"

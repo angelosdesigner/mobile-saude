@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
@@ -114,12 +115,36 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
   danger: 'text-ms-danger',
   neutral: 'text-ms-text-primary',
 }
+
+// Filtro de contexto vindo da navegação do dashboard (?filtro=fila|humano|...).
+// Mostrado como badge no topo para o gestor saber por que chegou aqui.
+const route = useRoute()
+const filtroLabels: Record<string, string> = {
+  automatizado: 'Atendimento automatizado',
+  fila: 'Aguardando na fila',
+  humano: 'Atendimento humano',
+}
+const filtroContexto = computed(() => {
+  const f = route.query.filtro
+  return typeof f === 'string' ? (filtroLabels[f] ?? f) : null
+})
 </script>
 
 <template>
   <div class="space-y-5">
+    <!-- Badge do filtro de contexto (drill-down vindo do dashboard) -->
+    <div v-if="filtroContexto" class="flex items-center gap-2">
+      <span class="text-xs font-medium text-ms-text-secondary">Filtro pré-selecionado:</span>
+      <span class="rounded-full bg-ms-primary/10 px-3 py-1 text-xs font-medium text-ms-primary">{{
+        filtroContexto
+      }}</span>
+    </div>
+
     <!-- Atendimento em tempo real por canal -->
-    <SectionHeader title="Atendimento em tempo real por canal" />
+    <SectionHeader
+      title="Atendimento em tempo real por canal"
+      action-to="/gestor/ocorrencias?view=lista"
+    />
 
     <div class="grid gap-4 lg:grid-cols-3">
       <ChartCard

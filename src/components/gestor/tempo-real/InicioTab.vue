@@ -191,6 +191,7 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
     <SectionHeader
       title="Resumo Executivo da Operação"
       subtitle="Visão consolidada dos indicadores mais importantes da central de atendimento."
+      action-to="/gestor/ocorrencias?view=lista"
     />
 
     <!-- KPIs — todos no mesmo padrão (anel + número + infos), via KpiRingCard. -->

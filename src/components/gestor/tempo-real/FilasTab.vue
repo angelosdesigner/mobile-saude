@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
@@ -15,6 +16,25 @@ import {
   type MetricTone,
 } from '@/data/gestorFilas'
 import { chartColors as C } from '@/plugins/echarts'
+
+const router = useRouter()
+
+// Drill-down: clique numa fila → listagem de ocorrências filtrada por aquela
+// fila. Os rótulos do dashboard divergem do `filaTipo` dos cards (ex.: "Dúvidas
+// Adm." vs "Dúvida contratual"); normaliza-se aqui. TODO: unificar nomenclatura
+// das filas em uma fonte única (ver pendência reportada).
+const filaCanonica: Record<string, string> = {
+  'Financeiro (Boleto)': 'Financeiro',
+  Reembolso: 'Reembolso',
+  'Dúvidas Adm.': 'Dúvida contratual',
+  Autorizações: 'Autorização',
+}
+function abrirFila(label: string) {
+  router.push({
+    path: '/gestor/ocorrencias',
+    query: { view: 'lista', fila: filaCanonica[label] ?? label },
+  })
+}
 
 const metricTone: Record<MetricTone, string> = {
   default: 'text-ms-text-primary',
@@ -112,6 +132,7 @@ const filaScatterOption = computed(() => ({
     <SectionHeader
       title="Gestão de Filas"
       subtitle="Controle dos tempos de espera, ocupação e riscos operacionais."
+      action-to="/gestor/ocorrencias?view=lista&stage=fila"
     />
 
     <!-- Métricas -->
@@ -143,8 +164,8 @@ const filaScatterOption = computed(() => ({
         </div>
       </ChartCard>
 
-      <ChartCard title="Ocupação por Fila" subtitle="% de uso da capacidade e TMEF">
-        <BarList :items="ocupacaoFila" />
+      <ChartCard title="Ocupação por Fila" subtitle="% de uso da capacidade e TMEF · clique para detalhar">
+        <BarList :items="ocupacaoFila" clickable @item-click="abrirFila" />
       </ChartCard>
 
       <ChartCard title="Status atual das equipes" subtitle="distribuição da operação agora">

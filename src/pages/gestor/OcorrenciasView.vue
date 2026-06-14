@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
@@ -9,15 +9,57 @@ import type { DataListColumn } from '@/components/ui/dataList'
 import FilterChips from '@/components/ui/FilterChips.vue'
 import { useActionFeedback } from '@/composables/useActionFeedback'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
-import { stages, type StageTone, type GestorCard } from '@/types/gestorOcorrencias'
+import { stages, type StageTone, type GestorStage, type GestorCard } from '@/types/gestorOcorrencias'
 
 const route = useRoute()
 const router = useRouter()
 
 const store = useGestorOcorrenciasStore()
-const { statusPills, stats, loading, search, filtered, quickFilters } = storeToRefs(store)
+const { statusPills, stats, loading, search, filtered, quickFilters, contextFilters, hasContext } =
+  storeToRefs(store)
 
-onMounted(() => store.load())
+// Lê os filtros de contexto da URL (drill-down vindo do dashboard) e os aplica
+// ao store. Reage a navegações posteriores para a mesma rota com outra query.
+function syncContextFromRoute() {
+  const q = route.query
+  store.setContext({
+    canal: typeof q.canal === 'string' ? q.canal : undefined,
+    fila: typeof q.fila === 'string' ? q.fila : undefined,
+    atendente: typeof q.atendente === 'string' ? q.atendente : undefined,
+    stage: typeof q.stage === 'string' ? (q.stage as GestorStage) : undefined,
+  })
+}
+
+onMounted(() => {
+  store.load()
+  syncContextFromRoute()
+})
+watch(() => route.query, syncContextFromRoute)
+
+// Remove um filtro de contexto (badge) — limpa store + query param da URL.
+function removeContext(key: keyof typeof contextFilters.value) {
+  store.setContext({ ...contextFilters.value, [key]: undefined })
+  const { [key]: _omit, ...rest } = route.query
+  router.replace({ query: rest })
+}
+
+// Limpa todos os filtros de contexto de uma vez.
+function clearAllContext() {
+  store.clearContext()
+  const { canal: _c, fila: _f, atendente: _a, stage: _s, ...rest } = route.query
+  router.replace({ query: rest })
+}
+
+// Badges legíveis dos filtros de contexto ativos.
+const contextBadges = computed(() => {
+  const f = contextFilters.value
+  const out: { key: keyof typeof f; label: string }[] = []
+  if (f.canal) out.push({ key: 'canal', label: `Canal: ${f.canal}` })
+  if (f.fila) out.push({ key: 'fila', label: `Fila: ${f.fila}` })
+  if (f.atendente) out.push({ key: 'atendente', label: `Atendente: ${f.atendente}` })
+  if (f.stage) out.push({ key: 'stage', label: `Estágio: ${stageMeta[f.stage]?.label ?? f.stage}` })
+  return out
+})
 
 // ── Modo Lista (mesma fonte do Kanban; colunas próprias da visão do gestor) ──
 const listColumns: DataListColumn[] = [
@@ -62,14 +104,42 @@ const viewMode = computed({
   set: (v) => router.replace({ query: { ...route.query, view: v } }),
 })
 
-// Filtros visuais (fiéis ao layout; lógica entra quando houver dados reais).
+// Filtros. Canal/Fila/Atendente têm `ctxKey` e ficam atrelados ao contexto de
+// drill-down (store + URL). Prioridade/Tipo são visuais (lógica futura).
 const filterDefs = [
   { label: 'Prioridade', options: ['Alta', 'Média', 'Baixa'] },
-  { label: 'Fila', options: ['Reembolso', 'Autorização', 'Financeiro'] },
+  {
+    label: 'Fila',
+    ctxKey: 'fila' as const,
+    options: ['Reembolso', 'Autorização', 'Financeiro', 'Dúvidas Administrativas'],
+  },
   { label: 'Tipo de ocorrência', options: ['Reembolso', 'Autorização', 'Dúvida'] },
-  { label: 'Canal', options: ['WhatsApp', 'App', 'Portal', 'Telefone'] },
-  { label: 'Atendente', options: ['Ana Silva', 'Lucas Mendes', 'Ana Souza'] },
+  {
+    label: 'Canal',
+    ctxKey: 'canal' as const,
+    options: ['WhatsApp', 'App', 'Portal', 'Telefone', 'Chat'],
+  },
+  { label: 'Atendente', ctxKey: 'atendente' as const, options: ['Ana Silva', 'Lucas Mendes', 'Ana Souza'] },
 ]
+
+// Lê/escreve o valor de um filtro de contexto a partir do select (sincroniza
+// store + query param). Mantém a URL como fonte de verdade do drill-down.
+function ctxModel(key: 'canal' | 'fila' | 'atendente') {
+  return computed<string | undefined>({
+    get: () => contextFilters.value[key],
+    set: (v) => {
+      store.setContext({ ...contextFilters.value, [key]: v || undefined })
+      const next = { ...route.query }
+      if (v) next[key] = v
+      else delete next[key]
+      router.replace({ query: next })
+    },
+  })
+}
+const canalModel = ctxModel('canal')
+const filaModel = ctxModel('fila')
+const atendenteModel = ctxModel('atendente')
+const ctxModels = { canal: canalModel, fila: filaModel, atendente: atendenteModel }
 
 const pillDot: Record<StageTone | 'info', string> = {
   primary: 'bg-ms-primary',
@@ -122,17 +192,39 @@ const pillDot: Record<StageTone | 'info', string> = {
       <FilterChips v-model="quickFilters" :chips="stats" />
     </div>
 
+    <!-- Contexto de drill-down (vindo do dashboard) -->
+    <div v-if="hasContext" class="mb-4 flex flex-wrap items-center gap-2">
+      <span class="text-xs font-medium text-ms-text-secondary">Filtrado por:</span>
+      <el-tag
+        v-for="b in contextBadges"
+        :key="b.key"
+        closable
+        type="primary"
+        size="small"
+        @close="removeContext(b.key)"
+        >{{ b.label }}</el-tag
+      >
+      <el-button text type="primary" size="small" @click="clearAllContext">Limpar filtros</el-button>
+    </div>
+
     <!-- Filtros -->
     <div class="mb-4 flex flex-wrap items-center gap-2">
-      <el-select
-        v-for="f in filterDefs"
-        :key="f.label"
-        :placeholder="f.label"
-        class="!w-40"
-        clearable
-      >
-        <el-option v-for="o in f.options" :key="o" :label="o" :value="o" />
-      </el-select>
+      <template v-for="f in filterDefs" :key="f.label">
+        <!-- Canal/Fila/Atendente: atrelados ao contexto (store + URL). -->
+        <el-select
+          v-if="f.ctxKey"
+          v-model="ctxModels[f.ctxKey].value"
+          :placeholder="f.label"
+          class="!w-40"
+          clearable
+        >
+          <el-option v-for="o in f.options" :key="o" :label="o" :value="o" />
+        </el-select>
+        <!-- Prioridade/Tipo: visuais (lógica futura). -->
+        <el-select v-else :placeholder="f.label" class="!w-40" clearable>
+          <el-option v-for="o in f.options" :key="o" :label="o" :value="o" />
+        </el-select>
+      </template>
       <div class="ml-auto flex items-center gap-2">
         <el-button @click="comingSoon('Status Atendimento')">Status Atendimento</el-button>
         <el-button @click="comingSoon('Configurar colunas')">Configurar colunas</el-button>

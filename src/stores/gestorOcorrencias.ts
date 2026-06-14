@@ -65,6 +65,34 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
   // Filtros rápidos (chips) — combinam em OR entre si, em AND com a busca.
   const quickFilters = ref<string[]>([])
 
+  // Filtros de contexto vindos do drill-down (query params do dashboard):
+  // canal/fila/atendente/estágio. Cada um combina em AND com os demais.
+  interface ContextFilters {
+    canal?: string
+    fila?: string
+    atendente?: string
+    stage?: GestorStage
+  }
+  const contextFilters = ref<ContextFilters>({})
+
+  /** Define os filtros de contexto (drill-down). `undefined` limpa o campo. */
+  function setContext(ctx: ContextFilters) {
+    contextFilters.value = {
+      canal: ctx.canal || undefined,
+      fila: ctx.fila || undefined,
+      atendente: ctx.atendente || undefined,
+      stage: ctx.stage || undefined,
+    }
+  }
+
+  /** Limpa todos os filtros de contexto. */
+  function clearContext() {
+    contextFilters.value = {}
+  }
+
+  /** Há algum filtro de contexto ativo? */
+  const hasContext = computed(() => Object.values(contextFilters.value).some(Boolean))
+
   async function load(force = false) {
     if (loaded.value && !force) return
     loading.value = true
@@ -99,8 +127,19 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     return quickFilters.value.some((k) => chipDefs.find((d) => d.key === k)?.pred(c))
   }
 
-  /** Busca + chips rápidos — usado na lista e no board. */
-  const filtered = computed(() => searched.value.filter(passesQuick))
+  function passesContext(c: GestorCard): boolean {
+    const f = contextFilters.value
+    if (f.canal && c.channel !== f.canal) return false
+    if (f.stage && c.stage !== f.stage) return false
+    if (f.atendente && c.atendente !== f.atendente) return false
+    // "Fila" casa tanto o tipo de fila quanto o fluxo (Reembolso, Autorização…),
+    // pois um mesmo assunto aparece como `fluxo` no BOT e `filaTipo` na fila.
+    if (f.fila && c.filaTipo !== f.fila && c.fluxo !== f.fila) return false
+    return true
+  }
+
+  /** Busca + chips rápidos + contexto (drill-down) — usado na lista e no board. */
+  const filtered = computed(() => searched.value.filter(passesQuick).filter(passesContext))
 
   /** Cards agrupados por estágio (busca + chips). */
   const board = computed(
@@ -139,6 +178,10 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     headers,
     search,
     quickFilters,
+    contextFilters,
+    hasContext,
+    setContext,
+    clearContext,
     load,
     passesQuick,
     filtered,

@@ -21,9 +21,13 @@ withDefaults(
     rankHint?: boolean
     /** Mostra a posição no ranking (1, 2, 3…) no lugar do avatar/iniciais. */
     rank?: boolean
+    /** Torna cada linha clicável (drill-down); emite `item-click` com o label. */
+    clickable?: boolean
   }>(),
-  { thresholdLegend: false, rankHint: false, rank: false },
+  { thresholdLegend: false, rankHint: false, rank: false, clickable: false },
 )
+
+const emit = defineEmits<{ 'item-click': [label: string] }>()
 
 function tone(v: number): string {
   if (v >= 90) return 'bg-ms-danger'
@@ -35,7 +39,16 @@ function tone(v: number): string {
 <template>
   <div class="flex h-full flex-col">
     <div class="space-y-2.5">
-      <div v-for="(it, idx) in items" :key="it.label" class="flex items-center gap-3">
+      <div
+        v-for="(it, idx) in items"
+        :key="it.label"
+        class="flex items-center gap-3"
+        :class="clickable ? '-mx-2 cursor-pointer rounded-md px-2 py-0.5 transition hover:bg-ms-fill-light' : ''"
+        :role="clickable ? 'button' : undefined"
+        :tabindex="clickable ? 0 : undefined"
+        @click="clickable && emit('item-click', it.label)"
+        @keydown.enter="clickable && emit('item-click', it.label)"
+      >
         <span
           v-if="rank || it.avatar"
           class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ms-primary-light text-2xs font-semibold text-ms-primary"
