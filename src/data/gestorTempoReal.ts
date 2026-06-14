@@ -31,8 +31,8 @@ export const kpiGauges: KpiGauge[] = [
   },
   {
     label: 'Resolução de Chamados',
-    value: 92,
-    display: '92%',
+    value: 82,
+    display: '82%',
     delta: '↑ 3% hoje',
     deltaTone: 'up',
     meta: 'Meta: 90%',
@@ -50,6 +50,14 @@ export const kpiGauges: KpiGauge[] = [
     target: { type: 'indicador', ind: 'nps' },
   },
 ]
+
+// 4º card do Resumo Executivo (Figma): "Chamadas na fila" — taxa de abandono.
+export const chamadasNaFila = {
+  abandono: 6.4, // % abandonadas
+  atendidas: 93.6, // %
+  delta: '↑ 1,1% hoje',
+  critico: true,
+}
 
 export interface MetricTile {
   label: string

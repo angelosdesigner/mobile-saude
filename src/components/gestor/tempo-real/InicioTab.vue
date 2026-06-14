@@ -5,8 +5,10 @@ import VChart from 'vue-echarts'
 import MetricCard from '@/components/gestor/MetricCard.vue'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import BarList from '@/components/gestor/BarList.vue'
+import SectionHeader from '@/components/ui/SectionHeader.vue'
 import {
   kpiGauges,
+  chamadasNaFila,
   metricTiles,
   andamento,
   ocupacaoFila,
@@ -44,6 +46,37 @@ const andamentoTone: Record<'primary' | 'warning' | 'teal', string> = {
   warning: 'border-ms-warning/30 bg-ms-warning/5 text-ms-warning',
   teal: 'border-ms-teal/30 bg-ms-teal/5 text-ms-teal',
 }
+
+// Gauge de abandono ("Chamadas na fila") — meio-gauge, arco em vermelho.
+const chamadasOption = computed(() => ({
+  series: [
+    {
+      type: 'gauge',
+      startAngle: 180,
+      endAngle: 0,
+      min: 0,
+      max: 100,
+      center: ['50%', '74%'],
+      radius: '105%',
+      progress: { show: true, width: 8, itemStyle: { color: C.danger } },
+      axisLine: { lineStyle: { width: 8, color: [[1, 'rgba(144,147,153,0.18)']] } },
+      pointer: { show: false },
+      axisTick: { show: false },
+      splitLine: { show: false },
+      axisLabel: {
+        show: true,
+        distance: -4,
+        fontSize: 9,
+        color: C.axis,
+        formatter: (v: number) => (v === 0 ? '0' : v === 100 ? '100%' : ''),
+      },
+      anchor: { show: false },
+      title: { show: false },
+      detail: { show: false },
+      data: [{ value: chamadasNaFila.abandono }],
+    },
+  ],
+}))
 
 const canalOption = computed(() => ({
   tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
@@ -149,12 +182,10 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
 <template>
   <div class="space-y-5">
     <!-- Resumo executivo -->
-    <div>
-      <h2 class="text-base font-bold text-ms-text-primary">Resumo Executivo da Operação</h2>
-      <p class="text-sm text-ms-text-secondary">
-        Visão consolidada dos indicadores mais importantes da central de atendimento.
-      </p>
-    </div>
+    <SectionHeader
+      title="Resumo Executivo da Operação"
+      subtitle="Visão consolidada dos indicadores mais importantes da central de atendimento."
+    />
 
     <!-- KPIs (anéis) + Chamadas na fila -->
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -194,34 +225,38 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
         </div>
       </el-card>
 
+      <!-- Chamadas na fila — taxa de abandono (gauge), fiel ao Figma. -->
       <el-card
         shadow="never"
         body-class="!p-4"
         class="cursor-pointer !border-ms-border-light transition hover:shadow-md"
         @click="goAtendimentos('fila')"
       >
-        <div class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">
-          Chamadas na fila · status das equipes
+        <div class="flex items-center justify-between">
+          <span class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary"
+            >Chamadas na fila</span
+          >
+          <span class="text-2xs font-medium text-ms-danger">
+            {{ chamadasNaFila.delta }}<template v-if="chamadasNaFila.critico"> (crítico)</template>
+          </span>
         </div>
-        <div class="mt-3 space-y-1.5 text-xs">
-          <div class="flex items-center justify-between">
-            <span class="flex items-center gap-1.5 text-ms-text-regular"
-              ><span class="h-2 w-2 rounded-full bg-ms-success" />Disponível</span
+        <div class="relative h-16 w-full">
+          <VChart class="h-full w-full" :option="chamadasOption" autoresize />
+          <div class="pointer-events-none absolute inset-0 flex items-end justify-center pb-1">
+            <span class="text-lg font-bold text-ms-text-primary"
+              >{{ String(chamadasNaFila.abandono).replace('.', ',') }}%</span
             >
-            <b class="text-ms-text-primary">5</b>
           </div>
-          <div class="flex items-center justify-between">
-            <span class="flex items-center gap-1.5 text-ms-text-regular"
-              ><span class="h-2 w-2 rounded-full bg-ms-primary" />Em atendimento</span
-            >
-            <b class="text-ms-text-primary">14</b>
-          </div>
-          <div class="flex items-center justify-between">
-            <span class="flex items-center gap-1.5 text-ms-text-regular"
-              ><span class="h-2 w-2 rounded-full bg-ms-warning" />Ocupados</span
-            >
-            <b class="text-ms-text-primary">4</b>
-          </div>
+        </div>
+        <div class="mt-1 flex items-center justify-center gap-3 text-2xs text-ms-text-secondary">
+          <span class="flex items-center gap-1"
+            ><span class="h-2 w-2 rounded-full bg-ms-danger" />Abandonadas</span
+          >
+          <span class="flex items-center gap-1"
+            ><span class="h-2 w-2 rounded-full bg-ms-primary" />Atendidas ({{
+              String(chamadasNaFila.atendidas).replace('.', ',')
+            }}%)</span
+          >
         </div>
       </el-card>
     </div>
