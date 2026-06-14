@@ -7,6 +7,7 @@ import ChartCard from '@/components/gestor/ChartCard.vue'
 import BarList from '@/components/gestor/BarList.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
 import KpiRingCard from '@/components/indicadores/KpiRingCard.vue'
+import ChartLegend from '@/components/ui/ChartLegend.vue'
 import {
   kpiGauges,
   chamadasNaFila,
@@ -15,6 +16,7 @@ import {
   ocupacaoFila,
   ocupacaoAtendente,
   canalDistribuicao,
+  canalResumo,
   abandonoFluxo,
   demandaCapacidade,
   segmentosCriticos,
@@ -43,6 +45,25 @@ const andamentoTone: Record<'primary' | 'warning' | 'teal', string> = {
 
 // Número formatado em pt-BR (vírgula decimal) para o card "Chamadas na fila".
 const ptNum = (n: number) => String(n).replace('.', ',')
+
+// Legendas (bolinha + nome) reutilizando ChartLegend; cores = série do gráfico.
+const canalColors = [C.danger, C.primary, C.warning]
+const canalLegend = computed(() =>
+  canalDistribuicao.map((c, i) => ({
+    label: c.name,
+    color: canalColors[i] ?? C.axis,
+    value: `${c.pct} (${c.value})`,
+  })),
+)
+const abandonoLegend = [
+  { label: 'BOT', color: C.primary },
+  { label: 'Humano', color: C.danger },
+]
+const demandaLegend = [
+  { label: 'Saudável', color: C.success },
+  { label: 'Tensionado', color: C.warning },
+  { label: 'Acima da capacidade', color: C.danger },
+]
 
 const canalOption = computed(() => ({
   tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
@@ -75,18 +96,20 @@ const canalOption = computed(() => ({
 
 const abandonoOption = computed(() => ({
   tooltip: { trigger: 'axis', valueFormatter: (v: number) => `${v}%` },
-  legend: {
-    bottom: 0,
-    icon: 'circle',
-    itemWidth: 8,
-    itemHeight: 8,
-    textStyle: { color: C.axis, fontSize: 11 },
-  },
-  grid: { left: 32, right: 8, top: 12, bottom: 32 },
+  // Legenda BOT/Humano renderizada em HTML (ChartLegend) no rodapé do card —
+  // evita a sobreposição com os rótulos do eixo X.
+  grid: { left: 32, right: 8, top: 12, bottom: 34 },
   xAxis: {
     type: 'category',
     data: abandonoFluxo.fluxos,
-    axisLabel: { color: C.axis, fontSize: 10, interval: 0 },
+    axisLabel: {
+      color: C.axis,
+      fontSize: 9,
+      interval: 0,
+      width: 64,
+      overflow: 'break',
+      lineHeight: 11,
+    },
     axisLine: { lineStyle: { color: C.split } },
   },
   yAxis: {
@@ -243,10 +266,15 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
             <span class="text-2xs text-ms-text-secondary">ativos</span>
           </div>
         </div>
-        <div class="mt-2 space-y-1 text-xs">
-          <div v-for="c in canalDistribuicao" :key="c.name" class="flex justify-between">
-            <span class="text-ms-text-regular">{{ c.name }}</span>
-            <span class="font-medium text-ms-text-primary">{{ c.pct }} · {{ c.value }}</span>
+        <ChartLegend layout="list" :items="canalLegend" class="mt-3" />
+        <div class="mt-2 space-y-1 border-t border-ms-border-lighter pt-2 text-xs">
+          <div class="flex justify-between">
+            <span class="text-ms-text-regular">Reabertura</span>
+            <span class="font-medium text-ms-danger">{{ canalResumo.reabertura }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-ms-text-regular">SLA Conformidade</span>
+            <span class="font-medium text-ms-success">{{ canalResumo.slaConformidade }}</span>
           </div>
         </div>
       </ChartCard>
@@ -258,15 +286,17 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
         <div class="w-full flex-1" style="min-height: 200px">
           <VChart class="h-full w-full" :option="abandonoOption" autoresize />
         </div>
+        <ChartLegend :items="abandonoLegend" class="mt-3" />
       </ChartCard>
 
       <ChartCard
         title="Demanda × Capacidade"
         subtitle="Distribuição ao longo do dia · pico 14h-16h"
       >
-        <div class="h-52 w-full">
+        <div class="w-full flex-1" style="min-height: 200px">
           <VChart class="h-full w-full" :option="demandaOption" autoresize />
         </div>
+        <ChartLegend :items="demandaLegend" class="mt-3" />
       </ChartCard>
     </div>
 

@@ -126,6 +126,12 @@ export const canalDistribuicao = [
   { name: 'Balcão/Presencial', value: 7, pct: '6%' },
 ]
 
+// Resumo do card de distribuição (abaixo da legenda de canais), fiel ao Figma.
+export const canalResumo = {
+  reabertura: '8% (12 casos)',
+  slaConformidade: '96%',
+}
+
 // Abandono por fluxo — BOT vs Humano (%).
 export const abandonoFluxo = {
   fluxos: ['Dúvidas Adm.', 'Reembolso', 'Autorizações', 'Financeiro (Boleto)'],
