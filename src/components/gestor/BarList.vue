@@ -27,30 +27,32 @@ function tone(v: number): string {
 </script>
 
 <template>
-  <div class="space-y-2.5">
-    <div v-for="it in items" :key="it.label" class="flex items-center gap-3">
-      <span
-        v-if="it.avatar"
-        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ms-primary-light text-2xs font-semibold text-ms-primary"
-        >{{ it.avatar }}</span
-      >
-      <span class="w-28 shrink-0 truncate text-xs text-ms-text-regular">{{ it.label }}</span>
-      <div class="h-2 flex-1 overflow-hidden rounded-full bg-ms-fill-light">
-        <div
-          class="h-full rounded-full"
-          :class="tone(it.value)"
-          :style="{ width: `${Math.min(100, it.value)}%` }"
-        />
+  <div class="flex h-full flex-col">
+    <div class="space-y-2.5">
+      <div v-for="it in items" :key="it.label" class="flex items-center gap-3">
+        <span
+          v-if="it.avatar"
+          class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ms-primary-light text-2xs font-semibold text-ms-primary"
+          >{{ it.avatar }}</span
+        >
+        <span class="w-28 shrink-0 truncate text-xs text-ms-text-regular">{{ it.label }}</span>
+        <div class="h-2 flex-1 overflow-hidden rounded-full bg-ms-fill-light">
+          <div
+            class="h-full rounded-full"
+            :class="tone(it.value)"
+            :style="{ width: `${Math.min(100, it.value)}%` }"
+          />
+        </div>
+        <span class="w-20 shrink-0 text-right text-xs font-medium text-ms-text-primary">{{
+          it.caption ?? `${it.value}%`
+        }}</span>
       </div>
-      <span class="w-20 shrink-0 text-right text-xs font-medium text-ms-text-primary">{{
-        it.caption ?? `${it.value}%`
-      }}</span>
     </div>
 
-    <!-- Legenda de limiares (bolinha + rótulo) — padrão do produto. -->
+    <!-- Legenda de limiares (bolinha + rótulo) — ancorada no rodapé do card. -->
     <div
       v-if="thresholdLegend"
-      class="flex flex-wrap items-center justify-center gap-3 pt-1 text-2xs text-ms-text-secondary"
+      class="mt-auto flex flex-wrap items-center justify-center gap-3 pt-3 text-2xs text-ms-text-secondary"
     >
       <span class="flex items-center gap-1"
         ><span class="h-2 w-2 rounded-full bg-ms-success" />&lt;70%</span
@@ -63,8 +65,8 @@ function tone(v: number): string {
       >
     </div>
 
-    <!-- Rodapé de ranking (pior → melhor). -->
-    <div v-if="rankHint" class="border-t border-ms-border-lighter pt-2">
+    <!-- Rodapé de ranking (pior → melhor) — ancorado no rodapé do card. -->
+    <div v-if="rankHint" class="mt-auto border-t border-ms-border-lighter pt-2">
       <RankHint />
     </div>
   </div>

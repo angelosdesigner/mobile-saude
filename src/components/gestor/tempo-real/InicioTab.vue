@@ -255,7 +255,7 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
         title="Abandono por fluxo — BOT vs Humano"
         subtitle="% de abandono em cada canal por fluxo"
       >
-        <div class="h-52 w-full">
+        <div class="w-full flex-1" style="min-height: 200px">
           <VChart class="h-full w-full" :option="abandonoOption" autoresize />
         </div>
       </ChartCard>
