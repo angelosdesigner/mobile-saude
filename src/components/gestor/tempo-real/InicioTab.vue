@@ -163,6 +163,17 @@ const demandaOption = computed(() => ({
       data: demandaCapacidade.horas.map(() => demandaCapacidade.capacidade),
       symbol: 'none',
       lineStyle: { type: 'dashed', color: C.primary },
+      // Rótulo "Capacidade XX/h" ancorado acima da linha, junto à extremidade
+      // direita (fiel ao Figma dem-card 7740:1937).
+      endLabel: {
+        show: true,
+        formatter: `Capacidade ${demandaCapacidade.capacidade}/h`,
+        color: C.primary,
+        fontSize: 10,
+        align: 'right',
+        verticalAlign: 'bottom',
+        offset: [0, -6],
+      },
     },
   ],
 }))
