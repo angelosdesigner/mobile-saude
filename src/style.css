@@ -54,15 +54,21 @@
 
 /* ── Tier 1: PRIMITIVOS (não geram utilitárias; base dos semânticos) ──────── */
 :root {
-  /* Marca / acentos */
+  /* Marca / acentos (light) */
   --ms-blue-50: #ecf5ff;
   --ms-blue-500: #409eff;
   --ms-blue-600: #337ecc;
   --ms-green-500: #67c23a;
-  --ms-green-soft: #5da654; /* verde calibrado p/ fundo escuro (menos "vibração") */
   --ms-amber-500: #e6a23c;
   --ms-red-500: #f56c6c;
   --ms-teal-500: #13c2c2;
+  /* Versões "soft" calibradas p/ fundo escuro (menos saturação/"vibração").
+     Usadas só no html.dark; light continua com os tons cheios acima. */
+  --ms-blue-soft: #4f93d6;
+  --ms-green-soft: #5da654;
+  --ms-amber-soft: #d99a45;
+  --ms-red-soft: #e07070;
+  --ms-teal-soft: #2aa3a3;
 
   /* Neutros — tema claro (cinzas frios, alinhados ao Element Plus) */
   --ms-gray-0: #ffffff;
@@ -177,8 +183,13 @@ html.dark {
   --color-ms-text-regular: var(--ms-dark-text-regular);
   --color-ms-text-secondary: var(--ms-dark-text-secondary);
   --color-ms-text-placeholder: var(--ms-dark-text-placeholder);
-  /* Verde calibrado p/ dark (o #67c23a saturado "vibra" sobre o fundo escuro). */
+  /* Cores semânticas calibradas p/ dark — os tons cheios do light "vibram"
+     sobre o fundo escuro. Versões soft (menos saturação). */
+  --color-ms-primary: var(--ms-blue-soft);
   --color-ms-success: var(--ms-green-soft);
+  --color-ms-warning: var(--ms-amber-soft);
+  --color-ms-danger: var(--ms-red-soft);
+  --color-ms-teal: var(--ms-teal-soft);
   --color-ms-primary-light: var(--ms-dark-accent-subtle);
   --color-ms-border: var(--ms-dark-border);
   --color-ms-border-light: var(--ms-dark-border-light);
@@ -186,6 +197,43 @@ html.dark {
   --color-ms-fill-light: var(--ms-dark-fill);
   --color-ms-surface: var(--ms-dark-surface);
   --color-ms-bg: var(--ms-dark-bg);
+
+  /* Element Plus no escuro: rebaseia as semânticas para os MESMOS tons soft e
+     recria a rampa (-light-N / -dark-2) misturando com o fundo escuro — assim
+     el-button/el-tag etc. ficam coerentes com os tokens ms-*. */
+  --el-color-primary: var(--ms-blue-soft);
+  --el-color-success: var(--ms-green-soft);
+  --el-color-warning: var(--ms-amber-soft);
+  --el-color-danger: var(--ms-red-soft);
+  --el-color-error: var(--ms-red-soft);
+
+  --el-color-primary-light-3: color-mix(in srgb, var(--ms-blue-soft) 70%, var(--ms-dark-bg));
+  --el-color-primary-light-5: color-mix(in srgb, var(--ms-blue-soft) 50%, var(--ms-dark-bg));
+  --el-color-primary-light-7: color-mix(in srgb, var(--ms-blue-soft) 30%, var(--ms-dark-bg));
+  --el-color-primary-light-8: color-mix(in srgb, var(--ms-blue-soft) 20%, var(--ms-dark-bg));
+  --el-color-primary-light-9: color-mix(in srgb, var(--ms-blue-soft) 10%, var(--ms-dark-bg));
+  --el-color-primary-dark-2: color-mix(in srgb, var(--ms-blue-soft) 80%, #000);
+
+  --el-color-success-light-3: color-mix(in srgb, var(--ms-green-soft) 70%, var(--ms-dark-bg));
+  --el-color-success-light-5: color-mix(in srgb, var(--ms-green-soft) 50%, var(--ms-dark-bg));
+  --el-color-success-light-7: color-mix(in srgb, var(--ms-green-soft) 30%, var(--ms-dark-bg));
+  --el-color-success-light-8: color-mix(in srgb, var(--ms-green-soft) 20%, var(--ms-dark-bg));
+  --el-color-success-light-9: color-mix(in srgb, var(--ms-green-soft) 10%, var(--ms-dark-bg));
+  --el-color-success-dark-2: color-mix(in srgb, var(--ms-green-soft) 80%, #000);
+
+  --el-color-warning-light-3: color-mix(in srgb, var(--ms-amber-soft) 70%, var(--ms-dark-bg));
+  --el-color-warning-light-5: color-mix(in srgb, var(--ms-amber-soft) 50%, var(--ms-dark-bg));
+  --el-color-warning-light-7: color-mix(in srgb, var(--ms-amber-soft) 30%, var(--ms-dark-bg));
+  --el-color-warning-light-8: color-mix(in srgb, var(--ms-amber-soft) 20%, var(--ms-dark-bg));
+  --el-color-warning-light-9: color-mix(in srgb, var(--ms-amber-soft) 10%, var(--ms-dark-bg));
+  --el-color-warning-dark-2: color-mix(in srgb, var(--ms-amber-soft) 80%, #000);
+
+  --el-color-danger-light-3: color-mix(in srgb, var(--ms-red-soft) 70%, var(--ms-dark-bg));
+  --el-color-danger-light-5: color-mix(in srgb, var(--ms-red-soft) 50%, var(--ms-dark-bg));
+  --el-color-danger-light-7: color-mix(in srgb, var(--ms-red-soft) 30%, var(--ms-dark-bg));
+  --el-color-danger-light-8: color-mix(in srgb, var(--ms-red-soft) 20%, var(--ms-dark-bg));
+  --el-color-danger-light-9: color-mix(in srgb, var(--ms-red-soft) 10%, var(--ms-dark-bg));
+  --el-color-danger-dark-2: color-mix(in srgb, var(--ms-red-soft) 80%, #000);
 }
 
 /* Customizações de componentes na layer `components`: ficam ACIMA do
