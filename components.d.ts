@@ -81,5 +81,8 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SectionHeader: typeof import('./src/components/ui/SectionHeader.vue')['default']
+    SlaBadge: typeof import('./src/components/atendimento/SlaBadge.vue')['default']
+    StatusBadge: typeof import('./src/components/atendimento/StatusBadge.vue')['default']
+    UserCard: typeof import('./src/components/atendimento/UserCard.vue')['default']
   }
 }
