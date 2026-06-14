@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
+import RankHint from '@/components/gestor/RankHint.vue'
 import {
   equipeMetrics,
   eficiencia,
@@ -155,9 +156,8 @@ const scatterOption = computed(() => ({
               </div>
             </div>
           </div>
-          <div class="flex justify-between border-t border-ms-border-lighter pt-2 text-2xs">
-            <span class="text-ms-danger">↓ Pior</span>
-            <span class="text-ms-success">Melhor ↑</span>
+          <div class="border-t border-ms-border-lighter pt-2">
+            <RankHint />
           </div>
         </div>
       </ChartCard>

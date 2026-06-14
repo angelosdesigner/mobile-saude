@@ -220,30 +220,11 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
       </ChartCard>
 
       <ChartCard title="Ocupação por fila" subtitle="% de uso da capacidade e TMEF">
-        <BarList :items="ocupacaoFila" />
-        <div
-          class="mt-3 flex flex-wrap items-center justify-center gap-3 text-2xs text-ms-text-secondary"
-        >
-          <span class="flex items-center gap-1"
-            ><span class="h-2 w-2 rounded-full bg-ms-success" />&lt;70%</span
-          >
-          <span class="flex items-center gap-1"
-            ><span class="h-2 w-2 rounded-full bg-ms-warning" />70–89%</span
-          >
-          <span class="flex items-center gap-1"
-            ><span class="h-2 w-2 rounded-full bg-ms-danger" />≥90% crítico</span
-          >
-        </div>
+        <BarList :items="ocupacaoFila" threshold-legend />
       </ChartCard>
 
       <ChartCard title="Ocupação por atendente" subtitle="% de uso da capacidade">
-        <BarList :items="ocupacaoAtendente" />
-        <div
-          class="mt-3 flex items-center justify-between border-t border-ms-border-lighter pt-2 text-2xs"
-        >
-          <span class="text-ms-danger">↓ Pior</span>
-          <span class="text-ms-success">Melhor ↑</span>
-        </div>
+        <BarList :items="ocupacaoAtendente" rank-hint />
       </ChartCard>
     </div>
 

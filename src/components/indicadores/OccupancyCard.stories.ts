@@ -39,30 +39,23 @@ export const Default: Story = {}
 /** Por fila — com legenda de limiares (bolinhas). */
 export const PorFilaComLegenda: Story = { args: { legend: true } }
 
-/** Por atendente — itens com avatar + rodapé "Pior/Melhor". */
+/** Por atendente — itens com avatar + % e quantidade · rodapé "Pior/Melhor". */
 export const PorAtendente: Story = {
   parameters: { controls: { disable: true } },
   render: () => ({
     components: { OccupancyCard },
     setup: () => ({
       items: [
-        { label: 'Fernanda Paz', value: 95, caption: '95%', avatar: 'FP' },
-        { label: 'Paula Reis', value: 78, caption: '78%', avatar: 'PR' },
-        { label: 'Carlos Lima', value: 72, caption: '72%', avatar: 'CL' },
-        { label: 'Ana Souza', value: 60, caption: '60%', avatar: 'AS' },
-        { label: 'João Melo', value: 58, caption: '58%', avatar: 'JM' },
+        { label: 'Fernanda Paz', value: 95, caption: '95% (34)', avatar: 'FP' },
+        { label: 'Paula Reis', value: 78, caption: '78% (27)', avatar: 'PR' },
+        { label: 'Carlos Lima', value: 72, caption: '72% (21)', avatar: 'CL' },
+        { label: 'Ana Souza', value: 60, caption: '60% (18)', avatar: 'AS' },
+        { label: 'João Melo', value: 58, caption: '58% (15)', avatar: 'JM' },
       ],
     }),
     template: `
       <div class="w-96">
-        <OccupancyCard title="Ocupação por Atendente" subtitle="% de uso da capacidade" :items="items">
-          <template #footer>
-            <div class="flex items-center justify-between text-2xs">
-              <span class="text-ms-danger">↓ Pior</span>
-              <span class="text-ms-success">Melhor ↑</span>
-            </div>
-          </template>
-        </OccupancyCard>
+        <OccupancyCard title="Ocupação por Atendente" subtitle="% de uso da capacidade" :items="items" rank-hint />
       </div>`,
   }),
 }
