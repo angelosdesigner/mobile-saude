@@ -80,6 +80,7 @@ declare module 'vue' {
     KanbanBoard: typeof import('./src/components/ui/KanbanBoard.vue')['default']
     KanbanCard: typeof import('./src/components/ui/KanbanCard.vue')['default']
     KpiCard: typeof import('./src/components/indicadores/KpiCard.vue')['default']
+    KpiRingCard: typeof import('./src/components/indicadores/KpiRingCard.vue')['default']
     MetricCard: typeof import('./src/components/gestor/MetricCard.vue')['default']
     ModalAnexar: typeof import('./src/components/ocorrencias/modais/ModalAnexar.vue')['default']
     ModalCobrarSetor: typeof import('./src/components/ocorrencias/modais/ModalCobrarSetor.vue')['default']
