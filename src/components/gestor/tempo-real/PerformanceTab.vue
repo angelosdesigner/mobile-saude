@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
+import ChartLegend from '@/components/ui/ChartLegend.vue'
 import { useActionFeedback } from '@/composables/useActionFeedback'
 import {
   demandaHora,
@@ -20,6 +21,13 @@ import {
 import { chartColors as C } from '@/plugins/echarts'
 
 const { comingSoon } = useActionFeedback()
+
+const demandaLegend = [
+  { label: 'Demanda equilibrada', color: C.success },
+  { label: 'Pressão (>85% cap.)', color: C.warning },
+  { label: 'Saturado (> cap.)', color: C.danger },
+  { label: 'Capacidade', color: C.ink, marker: 'line' as const },
+]
 
 // Cor da barra conforme a relação volume × capacidade.
 const barColor = (v: number) => {
@@ -162,20 +170,7 @@ const scatterOption = computed(() => ({
           <div class="h-52 w-full">
             <VChart class="h-full w-full" :option="demandaOption" autoresize />
           </div>
-          <div class="mt-1 flex flex-wrap gap-3 text-2xs text-ms-text-secondary">
-            <span class="flex items-center gap-1"
-              ><span class="h-2 w-2 rounded-full bg-ms-success" />Demanda equilibrada</span
-            >
-            <span class="flex items-center gap-1"
-              ><span class="h-2 w-2 rounded-full bg-ms-warning" />Pressão (&gt;85% cap.)</span
-            >
-            <span class="flex items-center gap-1"
-              ><span class="h-2 w-2 rounded-full bg-ms-danger" />Saturado (&gt; cap.)</span
-            >
-            <span class="flex items-center gap-1"
-              ><span class="h-0.5 w-3" :style="{ backgroundColor: C.ink }" />Capacidade</span
-            >
-          </div>
+          <ChartLegend :items="demandaLegend" class="mt-1" />
         </ChartCard>
 
         <ChartCard

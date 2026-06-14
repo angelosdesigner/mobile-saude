@@ -4,7 +4,15 @@
 import { computed } from 'vue'
 import VChart from 'vue-echarts'
 import BaseCard from '@/components/base/BaseCard.vue'
+import ChartLegend from '@/components/ui/ChartLegend.vue'
 import { chartColors as C } from '@/plugins/echarts'
+
+const legendItems = [
+  { label: 'Equilibrada', color: C.success },
+  { label: 'Pressão', color: C.warning },
+  { label: 'Saturado', color: C.danger },
+  { label: 'Capacidade', color: C.ink, marker: 'line' as const },
+]
 
 const props = withDefaults(
   defineProps<{
@@ -66,11 +74,6 @@ const option = computed(() => ({
       <p v-if="subtitle" class="text-2xs text-ms-text-secondary">{{ subtitle }}</p>
     </div>
     <div class="h-52 w-full"><VChart class="h-full w-full" :option="option" autoresize /></div>
-    <div class="mt-1 flex flex-wrap gap-3 text-2xs text-ms-text-secondary">
-      <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-ms-success" />Equilibrada</span>
-      <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-ms-warning" />Pressão</span>
-      <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-ms-danger" />Saturado</span>
-      <span class="flex items-center gap-1"><span class="h-0.5 w-3" :style="{ backgroundColor: C.ink }" />Capacidade</span>
-    </div>
+    <ChartLegend :items="legendItems" class="mt-1" />
   </BaseCard>
 </template>
