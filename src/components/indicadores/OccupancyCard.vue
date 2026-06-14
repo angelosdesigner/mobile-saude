@@ -21,8 +21,10 @@ withDefaults(
     legend?: boolean
     /** Rodapé "↓ Pior  Melhor ↑" (ranking de atendentes). */
     rankHint?: boolean
+    /** Mostra a posição (1, 2, 3…) no lugar do avatar. */
+    rank?: boolean
   }>(),
-  { subtitle: '', legend: false, rankHint: false },
+  { subtitle: '', legend: false, rankHint: false, rank: false },
 )
 </script>
 
@@ -32,6 +34,6 @@ withDefaults(
       <h3 class="text-sm font-bold text-ms-text-primary">{{ title }}</h3>
       <p v-if="subtitle" class="text-2xs text-ms-text-secondary">{{ subtitle }}</p>
     </div>
-    <BarList :items="items" :threshold-legend="legend" :rank-hint="rankHint" />
+    <BarList :items="items" :threshold-legend="legend" :rank-hint="rankHint" :rank="rank" />
   </BaseCard>
 </template>

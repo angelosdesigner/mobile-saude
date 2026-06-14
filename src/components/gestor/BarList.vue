@@ -14,10 +14,16 @@ interface BarItem {
   avatar?: string // iniciais opcionais
 }
 
-withDefaults(defineProps<{ items: BarItem[]; thresholdLegend?: boolean; rankHint?: boolean }>(), {
-  thresholdLegend: false,
-  rankHint: false,
-})
+withDefaults(
+  defineProps<{
+    items: BarItem[]
+    thresholdLegend?: boolean
+    rankHint?: boolean
+    /** Mostra a posição no ranking (1, 2, 3…) no lugar do avatar/iniciais. */
+    rank?: boolean
+  }>(),
+  { thresholdLegend: false, rankHint: false, rank: false },
+)
 
 function tone(v: number): string {
   if (v >= 90) return 'bg-ms-danger'
@@ -29,11 +35,11 @@ function tone(v: number): string {
 <template>
   <div class="flex h-full flex-col">
     <div class="space-y-2.5">
-      <div v-for="it in items" :key="it.label" class="flex items-center gap-3">
+      <div v-for="(it, idx) in items" :key="it.label" class="flex items-center gap-3">
         <span
-          v-if="it.avatar"
+          v-if="rank || it.avatar"
           class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ms-primary-light text-2xs font-semibold text-ms-primary"
-          >{{ it.avatar }}</span
+          >{{ rank ? idx + 1 : it.avatar }}</span
         >
         <span class="w-28 shrink-0 truncate text-xs text-ms-text-regular">{{ it.label }}</span>
         <div class="h-2 flex-1 overflow-hidden rounded-full bg-ms-fill-light">

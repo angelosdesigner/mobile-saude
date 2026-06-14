@@ -55,7 +55,7 @@ export const PorAtendente: Story = {
     }),
     template: `
       <div class="w-96">
-        <OccupancyCard title="Ocupação por Atendente" subtitle="% de uso da capacidade" :items="items" rank-hint />
+        <OccupancyCard title="Ocupação por Atendente" subtitle="% de uso da capacidade" :items="items" rank rank-hint />
       </div>`,
   }),
 }

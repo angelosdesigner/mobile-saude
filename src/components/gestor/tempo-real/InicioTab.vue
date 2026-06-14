@@ -247,7 +247,7 @@ const statusTone: Record<SegmentoCritico['status'], string> = {
       </ChartCard>
 
       <ChartCard title="Ocupação por atendente" subtitle="% de uso da capacidade">
-        <BarList :items="ocupacaoAtendente" rank-hint />
+        <BarList :items="ocupacaoAtendente" rank rank-hint />
       </ChartCard>
     </div>
 
