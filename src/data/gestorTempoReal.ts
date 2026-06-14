@@ -111,12 +111,13 @@ export const ocupacaoFila = [
   { label: 'Autorizações', value: 45, caption: '45% (5min)' },
 ]
 
+// Caption = % de ocupação + quantidade de atendimentos entre parênteses.
 export const ocupacaoAtendente = [
-  { label: 'Fernanda Paz', value: 95, avatar: 'FP' },
-  { label: 'Paula Reis', value: 78, avatar: 'PR' },
-  { label: 'Carlos Lima', value: 72, avatar: 'CL' },
-  { label: 'Ana Souza', value: 60, avatar: 'AS' },
-  { label: 'João Melo', value: 58, avatar: 'JM' },
+  { label: 'Fernanda Paz', value: 95, caption: '95% (34)', avatar: 'FP' },
+  { label: 'Paula Reis', value: 78, caption: '78% (27)', avatar: 'PR' },
+  { label: 'Carlos Lima', value: 72, caption: '72% (21)', avatar: 'CL' },
+  { label: 'Ana Souza', value: 60, caption: '60% (18)', avatar: 'AS' },
+  { label: 'João Melo', value: 58, caption: '58% (15)', avatar: 'JM' },
 ]
 
 export const canalDistribuicao = [
