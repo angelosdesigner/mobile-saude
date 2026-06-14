@@ -40,10 +40,11 @@ function goAtendimentos(filtro: string) {
   router.push({ path: '/gestor/tempo-real', query: { tab: 'atendimentos', filtro } })
 }
 
-const andamentoTone: Record<'primary' | 'warning' | 'teal', string> = {
+const andamentoTone: Record<'primary' | 'warning' | 'teal' | 'success', string> = {
   primary: 'border-ms-primary/30 bg-ms-primary/5 text-ms-primary',
   warning: 'border-ms-warning/30 bg-ms-warning/5 text-ms-warning',
   teal: 'border-ms-teal/30 bg-ms-teal/5 text-ms-teal',
+  success: 'border-ms-success/30 bg-ms-success/5 text-ms-success',
 }
 
 // Número formatado em pt-BR (vírgula decimal) para o card "Chamadas na fila".

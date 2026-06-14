@@ -13,11 +13,13 @@ export interface StageMeta {
 }
 
 // Metadados/cores de cada coluna (acento no topo + badge de contagem).
+// Convenção de identidade (taxonomia): Automatizado/BOT = azul (primary),
+// Atendimento humano = verde (success). Concluído usa teal; fila, amarelo.
 export const stages: StageMeta[] = [
   { key: 'automatizado', label: 'Atendimento Automatizado', tone: 'primary' },
   { key: 'fila', label: 'Fila', tone: 'warning' },
-  { key: 'humano', label: 'Atendimento Humano', tone: 'teal' },
-  { key: 'concluido', label: 'Concluídos hoje', tone: 'success' },
+  { key: 'humano', label: 'Atendimento Humano', tone: 'success' },
+  { key: 'concluido', label: 'Concluídos hoje', tone: 'teal' },
 ]
 
 export type Canal = 'WhatsApp' | 'Portal' | 'App' | 'Telefone' | 'Chat'

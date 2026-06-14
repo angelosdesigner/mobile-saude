@@ -6,8 +6,8 @@ export const statusPills: StatusPill[] = [
   { label: 'ATIVOS AGORA', value: 247, tone: 'primary' },
   { label: 'EM CHATBOT', value: 84, tone: 'info' },
   { label: 'EM FILA', value: 23, tone: 'warning' },
-  { label: 'EM ATENDIMENTO', value: 56, tone: 'teal' },
-  { label: 'CONCLUÍDOS', value: 412, tone: 'success' },
+  { label: 'EM ATENDIMENTO', value: 56, tone: 'success' },
+  { label: 'CONCLUÍDOS', value: 412, tone: 'teal' },
 ]
 
 export const gestorStats: GestorStat[] = [
