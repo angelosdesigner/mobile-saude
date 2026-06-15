@@ -56,6 +56,27 @@ export const filasTabela: FilaLinha[] = [
 export const filasAlerta =
   'Fila Dúvidas Administrativas com risco de estouro — TME acima da SLA com 0 atendentes livres.'
 
+// ── Correlação operacional (tabela diagnóstica por fila) ─────────────────────
+export type CorrelStatus = 'Crítico' | 'Alto' | 'Médio' | 'OK'
+export type FilaCorrel = {
+  fila: string
+  volume: number
+  sla: number
+  tme: string
+  ocupacao: number
+  espera: string
+  gargalo: string
+  status: CorrelStatus
+}
+export const correlacao: FilaCorrel[] = [
+  { fila: 'Financeiro (Boleto)', volume: 842, sla: 61, tme: '14:00', ocupacao: 92, espera: '8:12', gargalo: 'Alta ocupação → TME elevado', status: 'Crítico' },
+  { fila: 'Reembolso', volume: 531, sla: 72, tme: '8:00', ocupacao: 90, espera: '6:40', gargalo: 'Ocupação alta → fila crescente', status: 'Alto' },
+  { fila: 'Dúvidas Adm.', volume: 614, sla: 89, tme: '4:00', ocupacao: 84, espera: '2:30', gargalo: 'SLA saudável; monitorar pico de demanda', status: 'Médio' },
+  { fila: 'Autorizações', volume: 198, sla: 74, tme: '—', ocupacao: 45, espera: '1:10', gargalo: 'Baixa ocupação; sem gargalo identificado', status: 'OK' },
+]
+export const comoInterpretar =
+  'Score Crítico = 2+ dimensões acima do limite simultaneamente. Filas com Alta Ocupação (>85%) E TME elevado (>8min) indicam subdimensionamento da equipe. Filas com SLA < meta E T. Espera alta indicam roteamento ou dimensionamento mal configurados.'
+
 // ── 3) Gráfico principal · fila × período × indicador ─────────────────────────
 export const indicadores = ['TME', 'TMA', 'SLA', 'Ocupação'] as const
 export type Indicador = (typeof indicadores)[number]

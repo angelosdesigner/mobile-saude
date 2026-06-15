@@ -17,6 +17,8 @@ import {
   resumoExecutivo,
   filasTabela,
   filasAlerta,
+  correlacao,
+  comoInterpretar,
   indicadores,
   graficoPeriodos,
   horasGrafico,
@@ -32,6 +34,7 @@ import {
   recomendacoesFila,
   proximaAcao,
   type Indicador,
+  type CorrelStatus,
 } from '@/data/gestorFilasDetalhe'
 
 // Tela de detalhe "Gestão de Filas e Atendimento Humano" (drill-down da aba
@@ -239,6 +242,31 @@ function abrirFila(fila: string) {
   router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', fila: normalizeFila(fila) } })
 }
 
+// ── Correlação operacional ────────────────────────────────────────────────────
+const tmeSeg = (s: string) => {
+  if (s === '—') return Number.POSITIVE_INFINITY
+  const [m, sec] = s.split(':').map(Number)
+  return (m || 0) * 60 + (sec || 0)
+}
+const correlStatusOrder: Record<CorrelStatus, number> = { OK: 0, Médio: 1, Alto: 2, Crítico: 3 }
+const correlColumns: DataListColumn[] = [
+  { key: 'fila', label: 'Fila', minWidth: 150, sortable: true },
+  { key: 'volume', label: 'Volume', align: 'right', width: 100, sortable: true },
+  { key: 'sla', label: 'SLA', align: 'right', width: 90, sortBy: (r) => r.sla as number },
+  { key: 'tme', label: 'TME', align: 'right', width: 90, sortBy: (r) => tmeSeg(r.tme as string) },
+  { key: 'ocupacao', label: 'Ocupação', align: 'right', width: 110, sortBy: (r) => r.ocupacao as number },
+  { key: 'espera', label: 'T. espera', align: 'right', width: 110, sortBy: (r) => tmeSeg(r.espera as string) },
+  { key: 'gargalo', label: 'Gargalo', minWidth: 240 },
+  { key: 'status', label: 'Status', width: 120, sortBy: (r) => correlStatusOrder[r.status as CorrelStatus] },
+]
+const correlStatusTone: Record<CorrelStatus, { text: string; dot: string }> = {
+  Crítico: { text: 'text-ms-danger', dot: 'bg-ms-danger' },
+  Alto: { text: 'text-ms-warning', dot: 'bg-ms-warning' },
+  Médio: { text: 'text-ms-warning', dot: 'bg-ms-warning/60' },
+  OK: { text: 'text-ms-success', dot: 'bg-ms-success' },
+}
+const slaTone = (v: number) => (v >= 90 ? 'text-ms-success' : v >= 70 ? 'text-ms-warning' : 'text-ms-danger')
+
 // ── Registro de beneficiários ─────────────────────────────────────────────────
 const beneficiarioColumns: DataListColumn[] = [
   { key: 'beneficiario', label: 'Beneficiário', minWidth: 140, sortable: true },
@@ -424,7 +452,48 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
       </div>
     </ChartCard>
 
-    <!-- 4) Fila de abandono -->
+    <!-- 4) Correlação operacional -->
+    <ChartCard
+      title="Correlação operacional"
+      subtitle="Volume × SLA × TME × Ocupação × Espera · Por fila · Identificação de gargalos"
+      class="mb-3"
+    >
+      <DataList
+        :columns="correlColumns"
+        :rows="correlacao"
+        row-key="fila"
+        :selectable="false"
+        :expandable="false"
+        :actions="false"
+        count-label="filas"
+      >
+        <template #cell-sla="{ row }">
+          <span class="font-medium" :class="slaTone(row.sla)">{{ row.sla }}%</span>
+        </template>
+        <template #cell-ocupacao="{ row }">
+          <span class="font-medium" :class="ocupTone(row.ocupacao)">{{ row.ocupacao }}%</span>
+        </template>
+        <template #cell-gargalo="{ row }">
+          <span class="text-xs text-ms-text-regular">{{ row.gargalo }}</span>
+        </template>
+        <template #cell-status="{ row }">
+          <span class="flex items-center gap-1.5 text-xs font-semibold" :class="correlStatusTone[row.status].text">
+            <span class="h-2 w-2 rounded-full" :class="correlStatusTone[row.status].dot" />{{ row.status }}
+          </span>
+        </template>
+      </DataList>
+    </ChartCard>
+    <div
+      class="mb-5 flex items-start gap-2 rounded-lg border border-ms-primary/20 bg-ms-primary/5 px-3 py-2.5"
+    >
+      <span class="text-ms-primary">ℹ</span>
+      <div class="text-xs text-ms-text-regular">
+        <span class="font-semibold text-ms-text-primary">Como interpretar</span>
+        <p class="mt-0.5 leading-relaxed">{{ comoInterpretar }}</p>
+      </div>
+    </div>
+
+    <!-- 5) Fila de abandono -->
     <div class="mb-1 text-xs font-bold uppercase tracking-wide text-ms-text-secondary">
       Fila de abandono
     </div>
