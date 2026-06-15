@@ -101,8 +101,9 @@ const stageMeta = Object.fromEntries(stages.map((s) => [s.key, s])) as Record<
 >
 
 // Rótulos da coluna "Etapa atual" (lista) — distintos dos headers do Kanban.
+// "Atendimento automatizado" engloba Chatbot e URA (conceito da operação).
 const etapaLabel: Record<GestorCard['stage'], string> = {
-  automatizado: 'Chatbot',
+  automatizado: 'Atendimento automatizado',
   fila: 'Fila',
   humano: 'Atendimento humano',
   concluido: 'Concluídos no dia',
