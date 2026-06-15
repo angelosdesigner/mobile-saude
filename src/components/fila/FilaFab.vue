@@ -21,10 +21,15 @@ function setMinimized(v: boolean) {
   }
 }
 
-// ── Drag (mesmo padrão do EquipeStatusFloating) ──────────────────────────────
+// ── Drag (alça do widget + ícone minimizado) ────────────────────────────────
+// A posição persiste; o ícone minimizado também é arrastável (distingue
+// clique de arraste por um limiar de movimento).
+const POS_KEY = 'ms.fab.fila.pos'
 const el = ref<HTMLElement>()
 const pos = ref<{ left: number; top: number } | null>(null)
 let dragging = false
+let moved = false
+let fromBubble = false
 let sx = 0, sy = 0, sl = 0, st = 0
 
 function clamp(left: number, top: number) {
@@ -34,11 +39,20 @@ function clamp(left: number, top: number) {
     top: Math.max(8, Math.min(top, window.innerHeight - r.height - 8)),
   }
 }
-function onDown(e: PointerEvent) {
+function savePos() {
+  try {
+    if (pos.value) localStorage.setItem(POS_KEY, JSON.stringify(pos.value))
+  } catch {
+    /* ignore */
+  }
+}
+function onDown(e: PointerEvent, bubble = false) {
   e.preventDefault()
   const r = el.value!.getBoundingClientRect()
   if (!pos.value) pos.value = { left: r.left, top: r.top }
   dragging = true
+  moved = false
+  fromBubble = bubble
   sx = e.clientX; sy = e.clientY
   sl = pos.value.left; st = pos.value.top
   window.addEventListener('pointermove', onMove)
@@ -46,12 +60,17 @@ function onDown(e: PointerEvent) {
 }
 function onMove(e: PointerEvent) {
   if (!dragging) return
+  if (!moved && Math.hypot(e.clientX - sx, e.clientY - sy) > 4) moved = true
   pos.value = clamp(sl + (e.clientX - sx), st + (e.clientY - sy))
 }
 function onUp() {
   dragging = false
   window.removeEventListener('pointermove', onMove)
   window.removeEventListener('pointerup', onUp)
+  if (moved) savePos()
+  // Clique no ícone minimizado (sem arrastar) restaura o widget.
+  else if (fromBubble) setMinimized(false)
+  fromBubble = false
 }
 function onResize() {
   if (pos.value) pos.value = clamp(pos.value.left, pos.value.top)
@@ -60,6 +79,8 @@ onMounted(() => {
   window.addEventListener('resize', onResize)
   try {
     if (localStorage.getItem(MIN_KEY) === '1') minimized.value = true
+    const p = localStorage.getItem(POS_KEY)
+    if (p) pos.value = JSON.parse(p)
   } catch {
     /* ignore */
   }
@@ -86,10 +107,12 @@ function onCardSelect(item: FilaItem) {
     <!-- ── Minimizado (só ícone) ────────────────────────────────────────── -->
     <button
       v-if="minimized"
-      class="relative flex h-12 w-12 items-center justify-center rounded-full border border-ms-border-light bg-ms-surface text-ms-primary shadow-xl transition hover:shadow-2xl"
-      title="Mostrar fila de atendimento"
+      class="relative flex h-12 w-12 cursor-grab items-center justify-center rounded-full border border-ms-border-light bg-ms-surface text-ms-primary shadow-xl transition hover:shadow-2xl active:cursor-grabbing"
+      style="touch-action: none"
+      title="Arraste para mover · clique para abrir"
       aria-label="Mostrar fila de atendimento"
-      @click="setMinimized(false)"
+      @pointerdown="onDown($event, true)"
+      @keydown.enter="setMinimized(false)"
     >
       <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
