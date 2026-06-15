@@ -424,32 +424,34 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string;
       </div>
     </div>
 
-    <!-- 5) Alertas -->
-    <div class="mb-1 text-xs font-bold uppercase tracking-wide text-ms-text-secondary">
-      Alertas {{ isGeral ? 'da operação' : 'do canal' }} · ativos
-    </div>
-    <p class="mb-3 text-xs text-ms-text-secondary">Sinais detectados nas últimas 4 horas</p>
-    <div class="mb-5 grid gap-4 lg:grid-cols-3">
-      <el-card
-        v-for="a in ctx.alertas"
-        :key="a.titulo"
-        shadow="never"
-        body-class="!p-4"
-        class="border-l-4 !border-ms-border-light"
-        :class="alertaTone[a.severidade].bar"
-      >
-        <div class="flex items-center justify-between">
-          <span class="flex items-center gap-1.5 text-2xs font-bold uppercase tracking-wide" :class="alertaTone[a.severidade].badge">
-            <span class="h-1.5 w-1.5 rounded-full" :class="alertaTone[a.severidade].dot" />{{ a.severidade }}
-          </span>
-          <span class="text-2xs text-ms-text-secondary">{{ a.tempo }}</span>
-        </div>
-        <div class="mt-2 text-sm font-semibold text-ms-text-primary">{{ a.titulo }}</div>
-        <p class="mt-1 text-xs text-ms-text-secondary">{{ a.corpo }}</p>
-      </el-card>
-    </div>
+    <!-- Alertas — oculto por enquanto (estrutura padrão = 5 seções) -->
+    <template v-if="false">
+      <div class="mb-1 text-xs font-bold uppercase tracking-wide text-ms-text-secondary">
+        Alertas {{ isGeral ? 'da operação' : 'do canal' }} · ativos
+      </div>
+      <p class="mb-3 text-xs text-ms-text-secondary">Sinais detectados nas últimas 4 horas</p>
+      <div class="mb-5 grid gap-4 lg:grid-cols-3">
+        <el-card
+          v-for="a in ctx.alertas"
+          :key="a.titulo"
+          shadow="never"
+          body-class="!p-4"
+          class="border-l-4 !border-ms-border-light"
+          :class="alertaTone[a.severidade].bar"
+        >
+          <div class="flex items-center justify-between">
+            <span class="flex items-center gap-1.5 text-2xs font-bold uppercase tracking-wide" :class="alertaTone[a.severidade].badge">
+              <span class="h-1.5 w-1.5 rounded-full" :class="alertaTone[a.severidade].dot" />{{ a.severidade }}
+            </span>
+            <span class="text-2xs text-ms-text-secondary">{{ a.tempo }}</span>
+          </div>
+          <div class="mt-2 text-sm font-semibold text-ms-text-primary">{{ a.titulo }}</div>
+          <p class="mt-1 text-xs text-ms-text-secondary">{{ a.corpo }}</p>
+        </el-card>
+      </div>
+    </template>
 
-    <!-- 6) Recomendações IA -->
+    <!-- 5) Insights da IA -->
     <RecomendacoesIA
       :subtitle="iaSubtitulo"
       :diagnostico-titulo="isGeral ? 'Diagnóstico da operação' : 'Diagnóstico do canal'"

@@ -8,20 +8,22 @@ import type { RecomendacaoIA } from '@/components/gestor/recomendacoesIA'
 
 withDefaults(
   defineProps<{
+    /** Título da seção. Padrão "Insights da IA" (seção 5 das telas de detalhe). */
+    title?: string
     subtitle?: string
     diagnosticoTitulo?: string
     confianca: string
     texto: string
     recomendacoes: RecomendacaoIA[]
   }>(),
-  { subtitle: undefined, diagnosticoTitulo: 'Diagnóstico' },
+  { title: 'Insights da IA', subtitle: undefined, diagnosticoTitulo: 'Diagnóstico' },
 )
 
 const { comingSoon } = useActionFeedback()
 </script>
 
 <template>
-  <ChartCard title="Recomendações IA" :subtitle="subtitle">
+  <ChartCard :title="title" :subtitle="subtitle">
     <div class="mb-3 rounded-lg border border-ms-primary/20 bg-ms-primary/5 p-3">
       <div class="mb-1 flex flex-wrap items-center gap-2">
         <span class="text-sm font-bold text-ms-text-primary">{{ diagnosticoTitulo }}</span>

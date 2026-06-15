@@ -356,7 +356,8 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
       </div>
     </div>
 
-    <!-- 5) BOT vs Atendimento Humano -->
+    <!-- BOT vs Humano + Jornada do BOT — ocultos por enquanto (5 seções) -->
+    <template v-if="false">
     <div class="mb-1 text-xs font-bold uppercase tracking-wide text-ms-text-secondary">
       BOT vs Atendimento Humano
     </div>
@@ -451,8 +452,9 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
       </div>
     </ChartCard>
     </div>
+    </template>
 
-    <!-- 6) Recomendações IA -->
+    <!-- 5) Insights da IA -->
     <RecomendacoesIA
       subtitle="Otimizações para reduzir abandono e aumentar retenção"
       diagnostico-titulo="Diagnóstico do BOT"

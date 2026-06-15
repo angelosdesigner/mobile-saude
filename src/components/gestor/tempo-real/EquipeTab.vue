@@ -101,7 +101,7 @@ const scatterOption = computed(() => ({
     <SectionHeader
       title="Desempenho da Equipe"
       subtitle="Monitore produtividade, ocupação, qualidade do atendimento e indicadores individuais para identificar oportunidades de melhoria e riscos operacionais."
-      action-to="/gestor/ocorrencias?view=lista"
+      action-to="/gestor/equipe-detalhe"
     />
 
     <!-- Métricas (alinhadas à esquerda, padrão da aba Gestão de filas) -->

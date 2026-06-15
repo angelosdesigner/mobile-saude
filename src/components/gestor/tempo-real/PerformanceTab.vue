@@ -164,7 +164,7 @@ const scatterOption = computed(() => ({
     <SectionHeader
       title="Gestão de Performance e Capacidade"
       subtitle="Monitoramento da produtividade e dimensionamento da operação."
-      action-to="/gestor/indicadores"
+      action-to="/gestor/performance-detalhe"
     />
 
     <!-- Demanda × capacidade / heatmap + turnos -->

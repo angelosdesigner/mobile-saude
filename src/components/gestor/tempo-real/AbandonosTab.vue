@@ -131,7 +131,7 @@ const ringStyle = (pct: number, color: string) => ({
     <SectionHeader
       title="Gestão de Abandono"
       subtitle="Monitoramento das desistências e identificação de pontos críticos da jornada."
-      action-to="/gestor/abandonos"
+      action-to="/gestor/abandonos-detalhe"
     />
 
     <!-- Por canal / fluxo bot / fila humana -->

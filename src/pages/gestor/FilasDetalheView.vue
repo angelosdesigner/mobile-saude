@@ -479,7 +479,8 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
       </div>
     </div>
 
-    <!-- 5) Fila de abandono -->
+    <!-- Fila de abandono + Registro de beneficiários — ocultos (5 seções) -->
+    <template v-if="false">
     <div class="mb-1 text-xs font-bold uppercase tracking-wide text-ms-text-secondary">
       Fila de abandono
     </div>
@@ -549,8 +550,9 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
         </button>
       </div>
     </ChartCard>
+    </template>
 
-    <!-- 6) Recomendações IA -->
+    <!-- 5) Insights da IA -->
     <RecomendacoesIA
       subtitle="Ações ordenadas por impacto · mitigação imediata da Fila Dúvidas Adm."
       diagnostico-titulo="Diagnóstico da Fila"

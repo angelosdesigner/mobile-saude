@@ -83,6 +83,30 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Central de Automação' },
   },
   {
+    // Detalhe "Abandonos e Desistência" (drill-down da aba Abandonos).
+    // Estrutura padrão das telas de detalhe (5 seções).
+    path: '/gestor/abandonos-detalhe',
+    name: 'gestor-abandonos-detalhe',
+    component: () => import('@/pages/gestor/AbandonosDetalheView.vue'),
+    meta: { title: 'Abandonos · Detalhes' },
+  },
+  {
+    // Detalhe "Performance e Workforce" (drill-down da aba Performance).
+    // Estrutura padrão das telas de detalhe (5 seções).
+    path: '/gestor/performance-detalhe',
+    name: 'gestor-performance-detalhe',
+    component: () => import('@/pages/gestor/PerformanceDetalheView.vue'),
+    meta: { title: 'Performance e Workforce · Detalhes' },
+  },
+  {
+    // Detalhe "Desempenho da Equipe" (drill-down da aba Equipe).
+    // Estrutura padrão das telas de detalhe (5 seções).
+    path: '/gestor/equipe-detalhe',
+    name: 'gestor-equipe-detalhe',
+    component: () => import('@/pages/gestor/EquipeDetalheView.vue'),
+    meta: { title: 'Equipe · Detalhes' },
+  },
+  {
     // Indicadores do gestor — recebe ?ind= para pré-selecionar.
     path: '/gestor/indicadores',
     name: 'gestor-indicadores',
