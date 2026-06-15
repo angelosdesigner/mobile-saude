@@ -1,8 +1,7 @@
 <script setup lang="ts" generic="T extends { id: number | string }">
 // Quadro Kanban compartilhado (atendente e gestor) — header com acento de cor +
 // contador + sub-contagens, colunas roláveis, drop targets e slot de card.
-// Drag-and-drop nativo opcional (emite `move`); o conteúdo do card vem do slot,
-// garantindo linha visual única com a config de cada visão.
+// Slot #column-action (scoped: { col }) permite injetar botão de filtro no header.
 import { ref } from 'vue'
 import type { KanbanColumn, KanbanTone } from './kanbanBoard'
 
@@ -17,7 +16,10 @@ withDefaults(
 )
 
 const emit = defineEmits<{ move: [id: number | string, toKey: string] }>()
-defineSlots<{ card: (props: { item: T; columnKey: string }) => unknown }>()
+defineSlots<{
+  card: (props: { item: T; columnKey: string }) => unknown
+  'column-action': (props: { col: KanbanColumn }) => unknown
+}>()
 
 const dragId = ref<number | string | null>(null)
 const dragOver = ref<string | null>(null)
@@ -31,8 +33,6 @@ const accentBar: Record<KanbanTone, string> = {
   neutral: 'bg-ms-text-secondary',
 }
 
-// Cor do texto do badge de contagem por tom (on-color p/ contraste AA —
-// no âmbar o texto é escuro; branco sobre âmbar reprova AA).
 const badgeText: Record<KanbanTone, string> = {
   primary: 'text-ms-on-primary',
   warning: 'text-ms-on-warning',
@@ -40,6 +40,12 @@ const badgeText: Record<KanbanTone, string> = {
   success: 'text-ms-on-success',
   danger: 'text-ms-on-danger',
   neutral: 'text-white',
+}
+
+const metaToneClass: Record<string, string> = {
+  warning: 'text-ms-warning',
+  danger: 'text-ms-danger',
+  success: 'text-ms-success',
 }
 
 function onDrop(key: string) {
@@ -57,9 +63,6 @@ function onDragEnd() {
 
 <template>
   <div v-drag-scroll class="flex items-start gap-4 overflow-x-auto pb-2">
-    <!-- Contêiner único da coluna: acento + header + cards agrupados num só
-         bloco (referência Jira) para o usuário entender que tudo pertence à
-         mesma coluna. A borda + o fundo levemente recuado fazem a quebra sutil. -->
     <div
       v-for="col in columns"
       :key="col.key"
@@ -69,10 +72,12 @@ function onDragEnd() {
       <!-- Acento de cor no topo -->
       <div class="h-1 w-full" :class="accentBar[col.tone]" />
 
-      <!-- Header da coluna (título + contador + sub-contagens) -->
+      <!-- Header da coluna -->
       <div class="px-3 pb-2.5 pt-3">
-        <div class="flex items-center justify-between">
-          <span class="text-sm font-bold text-ms-text-primary">{{ col.label }}</span>
+        <div class="flex items-center gap-1.5">
+          <span class="flex-1 text-sm font-bold text-ms-text-primary">{{ col.label }}</span>
+          <!-- Slot para botão de filtro (injetado pelo board pai) -->
+          <slot name="column-action" :col="col" />
           <span
             class="flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-2xs font-semibold"
             :class="[accentBar[col.tone], badgeText[col.tone]]"
@@ -81,11 +86,12 @@ function onDragEnd() {
         </div>
         <div
           v-if="col.meta?.length"
-          class="mt-1 flex items-center gap-3 text-2xs uppercase tracking-wide text-ms-text-secondary"
+          class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-2xs uppercase tracking-wide text-ms-text-secondary"
         >
-          <span v-for="m in col.meta" :key="m.label"
-            >{{ m.label }} <b class="text-ms-text-regular">{{ m.value }}</b></span
-          >
+          <span v-for="m in col.meta" :key="m.label">
+            {{ m.label }}
+            <b :class="m.tone ? metaToneClass[m.tone] : 'text-ms-text-regular'">{{ m.value }}</b>
+          </span>
         </div>
       </div>
 

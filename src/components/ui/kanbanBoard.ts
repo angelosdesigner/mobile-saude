@@ -5,6 +5,6 @@ export interface KanbanColumn {
   key: string
   label: string
   tone: KanbanTone
-  /** Sub-contagens exibidas no header da coluna (ex.: TOTAL / MAIOR ESPERA). */
-  meta?: { label: string; value: string | number }[]
+  /** Sub-contagens exibidas no header da coluna. Tone opcional colore o valor. */
+  meta?: { label: string; value: string | number; tone?: 'warning' | 'danger' | 'success' }[]
 }

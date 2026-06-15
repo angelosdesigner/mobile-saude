@@ -1,5 +1,4 @@
 // Fixtures mock da tela operacional do gestor (Figma 8074:4666).
-// Nomes/valores fiéis ao frame de referência.
 import type { GestorCard, StatusPill, GestorStat, StageHeader } from '@/types/gestorOcorrencias'
 
 export const statusPills: StatusPill[] = [
@@ -21,10 +20,42 @@ export const gestorStats: GestorStat[] = [
 ]
 
 export const stageHeaders: StageHeader[] = [
-  { key: 'automatizado', total: 84, metaLabel: 'TRANSFERIDOS', metaValue: '7' },
-  { key: 'fila', total: 23, metaLabel: 'MAIOR ESPERA', metaValue: '18min' },
-  { key: 'humano', total: 56, metaLabel: 'TME', metaValue: '6min' },
-  { key: 'concluido', total: 412, metaLabel: 'MÉDIA APÓS HMS', metaValue: '14min' },
+  {
+    key: 'automatizado',
+    total: 84,
+    meta: [
+      { label: 'TOTAL', value: 84 },
+      { label: 'TRANSBORDO 1H', value: 12, tone: 'warning' },
+      { label: 'ABANDONOS 1H', value: 7, tone: 'danger' },
+    ],
+  },
+  {
+    key: 'fila',
+    total: 23,
+    meta: [
+      { label: 'AGUARDANDO', value: 23 },
+      { label: 'TMEF', value: '8min', tone: 'warning' },
+      { label: 'MAIOR ESPERA', value: '18min', tone: 'danger' },
+    ],
+  },
+  {
+    key: 'humano',
+    total: 56,
+    meta: [
+      { label: 'ATIVOS', value: 56 },
+      { label: 'TMA', value: '12min' },
+      { label: 'OCUPAÇÃO', value: '88%', tone: 'warning' },
+    ],
+  },
+  {
+    key: 'concluido',
+    total: 412,
+    meta: [
+      { label: 'TOTAL', value: 412 },
+      { label: 'FCR', value: '78%', tone: 'success' },
+      { label: 'NPS MÉDIO', value: '4.2', tone: 'success' },
+    ],
+  },
 ]
 
 export const gestorCards: GestorCard[] = [
@@ -35,6 +66,8 @@ export const gestorCards: GestorCard[] = [
     beneficiary: 'Maria Silva',
     channel: 'WhatsApp',
     fluxo: 'Reembolso',
+    no: 'Anexar comprovante',
+    tempoBot: '2m15s',
     flag: 'Novo atendimento',
     risco: true,
   },
@@ -44,6 +77,8 @@ export const gestorCards: GestorCard[] = [
     beneficiary: 'João Pereira',
     channel: 'WhatsApp',
     fluxo: '2ª via boleto',
+    no: 'Confirmar CPF',
+    tempoBot: '1m40s',
   },
   {
     id: 3,
@@ -51,6 +86,8 @@ export const gestorCards: GestorCard[] = [
     beneficiary: 'Carlos Oliveira',
     channel: 'Portal',
     fluxo: 'Reembolso',
+    no: 'Confirmar dados',
+    tempoBot: '3m05s',
     flag: 'Confirmar dados',
   },
   {
@@ -59,6 +96,8 @@ export const gestorCards: GestorCard[] = [
     beneficiary: 'Beatriz Rocha',
     channel: 'WhatsApp',
     fluxo: 'Autorização',
+    no: 'Aguardando OCR',
+    tempoBot: '4m22s',
     flag: 'Aguardando OCR',
   },
   {
@@ -67,6 +106,8 @@ export const gestorCards: GestorCard[] = [
     beneficiary: 'Lucas Almeida',
     channel: 'Portal',
     fluxo: 'Reembolso',
+    no: 'Selecionar fluxo',
+    tempoBot: '0m55s',
   },
   {
     id: 6,
@@ -74,6 +115,8 @@ export const gestorCards: GestorCard[] = [
     beneficiary: 'Renata Costa',
     channel: 'WhatsApp',
     fluxo: 'Reembolso',
+    no: 'Identificação',
+    tempoBot: '1m10s',
     flag: 'Novo atendimento',
   },
   {
@@ -82,6 +125,8 @@ export const gestorCards: GestorCard[] = [
     beneficiary: 'Thiago Mendes',
     channel: 'WhatsApp',
     fluxo: 'Carência',
+    no: 'Verificar carência',
+    tempoBot: '2m48s',
   },
 
   // ── Fila ──────────────────────────────────────────────────────────────────
@@ -94,6 +139,7 @@ export const gestorCards: GestorCard[] = [
     posicao: 1,
     espera: '12min',
     pill: { label: 'Chatbot', tone: 'primary' },
+    prioridade: 'Alta',
   },
   {
     id: 9,
@@ -104,6 +150,7 @@ export const gestorCards: GestorCard[] = [
     posicao: 2,
     espera: '18min',
     pill: { label: 'App', tone: 'success' },
+    prioridade: 'Alta',
     destaque: true,
   },
   {
@@ -115,6 +162,7 @@ export const gestorCards: GestorCard[] = [
     posicao: 3,
     espera: '8min',
     pill: { label: 'URA', tone: 'warning' },
+    prioridade: 'Média',
   },
   {
     id: 11,
@@ -125,16 +173,18 @@ export const gestorCards: GestorCard[] = [
     posicao: 4,
     espera: '6min',
     pill: { label: 'App', tone: 'success' },
+    prioridade: 'Normal',
   },
   {
     id: 12,
     stage: 'fila',
     beneficiary: 'Fernando Lopes',
-    channel: 'Portal',
+    channel: 'App',
     filaTipo: 'Financeiro',
     posicao: 5,
     espera: '6min',
-    pill: { label: 'Financeiro', tone: 'info' },
+    pill: { label: 'App', tone: 'success' },
+    prioridade: 'Normal',
   },
   {
     id: 13,
@@ -145,6 +195,7 @@ export const gestorCards: GestorCard[] = [
     posicao: 6,
     espera: '5min',
     pill: { label: 'App', tone: 'success' },
+    prioridade: 'Média',
   },
   {
     id: 14,
@@ -155,6 +206,7 @@ export const gestorCards: GestorCard[] = [
     posicao: 7,
     espera: '3min',
     pill: { label: 'Chatbot', tone: 'primary' },
+    prioridade: 'Normal',
   },
 
   // ── Atendimento Humano ──────────────────────────────────────────────────
@@ -231,6 +283,7 @@ export const gestorCards: GestorCard[] = [
     concluidoHora: '14:23',
     atendente: 'Marcelo Silva',
     total: '18min',
+    estrelas: 4.5,
   },
   {
     id: 23,
@@ -240,6 +293,7 @@ export const gestorCards: GestorCard[] = [
     concluidoHora: '14:18',
     atendente: 'Marcelo Silva',
     total: '24min',
+    estrelas: 3.8,
   },
   {
     id: 24,
@@ -249,6 +303,7 @@ export const gestorCards: GestorCard[] = [
     concluidoHora: '14:10',
     atendente: 'Lucas Mendes',
     total: '12min',
+    estrelas: 5.0,
   },
   {
     id: 25,
@@ -258,6 +313,7 @@ export const gestorCards: GestorCard[] = [
     concluidoHora: '14:02',
     atendente: 'Ana Souza',
     total: '16min',
+    estrelas: 4.2,
   },
   {
     id: 26,
@@ -267,6 +323,7 @@ export const gestorCards: GestorCard[] = [
     concluidoHora: '13:55',
     atendente: 'Carlos Lima',
     total: '21min',
+    estrelas: 3.5,
   },
   {
     id: 27,
@@ -276,6 +333,7 @@ export const gestorCards: GestorCard[] = [
     concluidoHora: '13:48',
     atendente: 'Fernanda Paz',
     total: '9min',
+    estrelas: 4.8,
   },
   {
     id: 28,
@@ -285,5 +343,6 @@ export const gestorCards: GestorCard[] = [
     concluidoHora: '13:40',
     atendente: 'Fernanda Paz',
     total: '43min',
+    estrelas: 2.9,
   },
 ]
