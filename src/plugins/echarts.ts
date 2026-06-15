@@ -1,5 +1,8 @@
 // Registro mínimo do ECharts (tree-shaking) — só os charts/componentes usados
 // nos dashboards do gestor. Importado uma vez em main.ts.
+import { reactive, watchEffect } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useThemeStore } from '@/stores/theme'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { PieChart, BarChart, LineChart, GaugeChart, ScatterChart } from 'echarts/charts'
@@ -29,6 +32,8 @@ use([
 // ECharts exige cores literais (não lê CSS vars), então estes hex espelham os
 // tokens `--color-ms-*`. `axis`/`neutral` = cinza dos eixos; `ink` = linha de
 // referência (capacidade) / textos fortes; `split` = linhas de grade.
+// As cores semânticas (primary/danger/…) servem nos dois temas; só os neutros
+// dependentes de contraste (ink/axis/split) mudam no dark — ver useChartColors.
 export const chartColors = {
   primary: '#409eff',
   success: '#67c23a',
@@ -40,4 +45,27 @@ export const chartColors = {
   axis: '#909399',
   ink: '#303133',
   split: 'rgba(144,147,153,0.15)',
+}
+
+// Sobrescritas para o tema escuro: o ECharts não lê CSS vars, então alternamos
+// os neutros aqui. `ink` é o caso crítico (#303133 some no fundo escuro).
+const chartColorsDark = {
+  axis: '#a3a6ad',
+  ink: '#e5e7eb',
+  split: 'rgba(144,147,153,0.24)',
+}
+
+/**
+ * Paleta reativa ao tema para os gráficos. Use no lugar de `chartColors` dentro
+ * dos componentes: `const C = useChartColors()`. Como as opções do ECharts são
+ * `computed`, elas recalculam ao alternar claro/escuro. Só os neutros mudam;
+ * as cores semânticas permanecem. Deve ser chamado em `setup()`.
+ */
+export function useChartColors() {
+  const { isDark } = storeToRefs(useThemeStore())
+  const c = reactive({ ...chartColors })
+  watchEffect(() => {
+    Object.assign(c, chartColors, isDark.value ? chartColorsDark : {})
+  })
+  return c
 }

@@ -16,7 +16,9 @@ import {
   type MetricTone,
 } from '@/data/gestorFilas'
 import { normalizeFila } from '@/data/gestorTaxonomia'
-import { chartColors as C } from '@/plugins/echarts'
+import { useChartColors } from '@/plugins/echarts'
+
+const C = useChartColors()
 
 const router = useRouter()
 

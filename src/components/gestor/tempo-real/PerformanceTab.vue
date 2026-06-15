@@ -18,16 +18,17 @@ import {
   bannerPerfInfo,
   type TurnoStatus,
 } from '@/data/gestorPerformance'
-import { chartColors as C } from '@/plugins/echarts'
+import { useChartColors } from '@/plugins/echarts'
 
 const { comingSoon } = useActionFeedback()
+const C = useChartColors()
 
-const demandaLegend = [
+const demandaLegend = computed(() => [
   { label: 'Demanda equilibrada', color: C.success },
   { label: 'Pressão (>85% cap.)', color: C.warning },
   { label: 'Saturado (> cap.)', color: C.danger },
   { label: 'Capacidade', color: C.ink, marker: 'line' as const },
-]
+])
 
 // Cor da barra conforme a relação volume × capacidade.
 const barColor = (v: number) => {

@@ -10,8 +10,10 @@ import {
   automatizado,
   bannerAutomatizado,
 } from '@/data/gestorAtendimentos'
-import { chartColors as C } from '@/plugins/echarts'
+import { useChartColors } from '@/plugins/echarts'
 import { canalCor } from '@/data/gestorTaxonomia'
+
+const C = useChartColors()
 
 const canalOption = computed(() => ({
   tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
@@ -79,7 +81,7 @@ const tmeOption = computed(() => ({
         valueAnimation: true,
         formatter: '{v|{value}}\n{u|min · Crítico}',
         rich: {
-          v: { fontSize: 22, fontWeight: 'bold', color: '#303133' },
+          v: { fontSize: 22, fontWeight: 'bold', color: C.ink },
           u: { fontSize: 11, color: C.danger },
         },
         offsetCenter: [0, 0],
