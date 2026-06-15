@@ -91,7 +91,7 @@ const headerCellStyle = {
   fontSize: '12px',
 }
 
-// ── Top scrollbar (mirrors the table body's horizontal scroll) ───────────────
+// ── Top scrollbar + drag-to-scroll (horizontais, sincronizados) ─────────────
 const tableWrap = ref<HTMLElement>()
 const topBar = ref<HTMLElement>()
 const topInner = ref<HTMLElement>()
@@ -129,6 +129,47 @@ function onBodyScroll() {
   syncLock = false
 }
 
+// ── Drag to scroll (arrastar na área da tabela desloca horizontalmente) ───────
+const DRAG_IGNORE = 'button, a, input, textarea, select, [role="button"], .el-checkbox, .el-button, .el-tag'
+let dragDown = false, dragMoved = false
+let dragSx = 0, dragSl = 0
+
+function onTablePointerDown(e: PointerEvent) {
+  if (e.button !== 0) return
+  if ((e.target as Element).closest(DRAG_IGNORE)) return
+  const bw = getBodyWrapper()
+  if (!bw) return
+  dragDown = true
+  dragMoved = false
+  dragSx = e.clientX
+  dragSl = bw.scrollLeft
+  window.addEventListener('pointermove', onTablePointerMove)
+  window.addEventListener('pointerup', onTablePointerUp)
+}
+
+function onTablePointerMove(e: PointerEvent) {
+  if (!dragDown) return
+  const dx = e.clientX - dragSx
+  if (!dragMoved && Math.abs(dx) < 4) return
+  dragMoved = true
+  document.body.style.cursor = 'grabbing'
+  document.body.style.userSelect = 'none'
+  const bw = getBodyWrapper()
+  if (bw) bw.scrollLeft = dragSl - dx
+}
+
+function onTablePointerUp() {
+  if (!dragDown) return
+  dragDown = false
+  window.removeEventListener('pointermove', onTablePointerMove)
+  window.removeEventListener('pointerup', onTablePointerUp)
+  if (dragMoved) {
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+    dragMoved = false
+  }
+}
+
 onMounted(() => {
   if (!props.topScrollbar) return
   nextTick(() => {
@@ -139,6 +180,7 @@ onMounted(() => {
       scrollRo.observe(bw)
       syncInnerWidth()
     }
+    tableWrap.value?.addEventListener('pointerdown', onTablePointerDown)
   })
 })
 
@@ -146,6 +188,9 @@ onBeforeUnmount(() => {
   scrollRo?.disconnect()
   const bw = getBodyWrapper()
   if (bw) bw.removeEventListener('scroll', onBodyScroll)
+  tableWrap.value?.removeEventListener('pointerdown', onTablePointerDown)
+  window.removeEventListener('pointermove', onTablePointerMove)
+  window.removeEventListener('pointerup', onTablePointerUp)
 })
 </script>
 
@@ -155,14 +200,13 @@ onBeforeUnmount(() => {
     <div
       v-if="topScrollbar"
       ref="topBar"
-      class="overflow-x-auto overflow-y-hidden border-b border-ms-border-light"
-      style="height: 12px"
+      class="top-scrollbar-bar overflow-x-auto overflow-y-hidden"
       @scroll.passive="onTopScroll"
     >
       <div ref="topInner" style="height: 1px; min-width: 100%" />
     </div>
 
-    <div ref="tableWrap">
+    <div ref="tableWrap" :class="{ 'has-top-scrollbar': topScrollbar }">
     <el-table
       :data="pagedRows"
       :row-key="rowKey"
@@ -247,6 +291,7 @@ onBeforeUnmount(() => {
     </el-table>
     </div><!-- /tableWrap -->
 
+
     <!-- Rodapé: ações + paginação (estilo Jira) -->
     <div
       class="flex flex-wrap items-center justify-between gap-2 border-t border-ms-border-light px-4 py-2.5 text-sm text-ms-text-secondary"
@@ -268,3 +313,27 @@ onBeforeUnmount(() => {
     </div>
   </el-card>
 </template>
+
+<style scoped>
+/* ── Top scrollbar: visualmente idêntica à barra inferior do EP ─────────────── */
+.top-scrollbar-bar {
+  height: 8px;
+  scrollbar-width: thin;                          /* Firefox */
+  scrollbar-color: #909399 transparent;           /* Firefox: thumb / track */
+}
+.top-scrollbar-bar::-webkit-scrollbar {
+  height: 6px;
+}
+.top-scrollbar-bar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.top-scrollbar-bar::-webkit-scrollbar-thumb {
+  background-color: #909399;
+  border-radius: 4px;
+}
+
+/* ── Oculta a barra inferior do EP quando a barra superior está ativa ────────── */
+.has-top-scrollbar :deep(.el-scrollbar__bar.is-horizontal) {
+  display: none !important;
+}
+</style>
