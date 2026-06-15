@@ -13,8 +13,10 @@ import {
   type OrigemAbandono,
 } from '@/data/gestorAbandonosLista'
 import { canalCor, atendimentoCor, normalizeCanal, normalizeFila } from '@/data/gestorTaxonomia'
+import { useChartColors } from '@/plugins/echarts'
 
 const route = useRoute()
+const C = useChartColors()
 
 // Filtros locais (semeados pela query, p/ drill-down compartilhável).
 const seed = (k: string) => (typeof route.query[k] === 'string' ? (route.query[k] as string) : '')
@@ -60,10 +62,10 @@ const esperaMedia = computed(() =>
 const bot = computed(() => filtrados.value.filter((c) => c.origem === 'BOT').length)
 const humano = computed(() => filtrados.value.filter((c) => c.origem === 'Humano').length)
 
-const origemCor: Record<OrigemAbandono, string> = {
-  BOT: atendimentoCor.bot,
-  Humano: atendimentoCor.humano,
-}
+const origemCor = computed<Record<OrigemAbandono, string>>(() => ({
+  BOT: atendimentoCor(C).bot,
+  Humano: atendimentoCor(C).humano,
+}))
 
 const columns: DataListColumn[] = [
   { key: 'beneficiary', label: 'Beneficiário', minWidth: 200, sortable: true },
@@ -160,7 +162,7 @@ const columns: DataListColumn[] = [
     >
       <template #cell-canal="{ row }">
         <span class="flex items-center gap-1.5">
-          <span class="h-2 w-2 shrink-0 rounded-full" :style="{ backgroundColor: canalCor(row.canal) }" />{{
+          <span class="h-2 w-2 shrink-0 rounded-full" :style="{ backgroundColor: canalCor(row.canal, C) }" />{{
             row.canal
           }}
         </span>

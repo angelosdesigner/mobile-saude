@@ -1,27 +1,35 @@
 // Fonte única de taxonomia da visão do Gestor: nomes canônicos de canais/filas
 // (com sinônimos) e a cor de cada informação. Antes, a mesma informação recebia
 // cores diferentes entre abas e os nomes de fila divergiam (auditoria 2026-06-14).
-import { chartColors as C } from '@/plugins/echarts'
+import { chartColors } from '@/plugins/echarts'
+
+type Palette = typeof chartColors
 
 // ── Canais ──────────────────────────────────────────────────────────────────
-// Cor canônica por canal (padrão das abas Início/Atendimentos). Aceita as
-// variações de grafia ("Telefone" / "Telefone/Voz", "Balcão" / "Balcão/Presencial").
-const CANAL_CORES: Record<string, string> = {
-  'chat/whatsapp': C.danger,
-  whatsapp: C.danger,
-  chat: C.danger,
-  telefone: C.primary,
-  'telefone/voz': C.primary,
-  'balcão/presencial': C.warning,
-  balcão: C.warning,
-  presencial: C.warning,
-  portal: C.teal,
-  app: C.neutral,
+// Chave de cor canônica por canal (padrão das abas Início/Atendimentos). Aceita
+// variações de grafia ("Telefone"/"Telefone/Voz", "Balcão"/"Balcão/Presencial").
+// Guardamos a CHAVE (não o hex) p/ a cor poder vir de uma paleta theme-aware.
+const CANAL_COR_KEY: Record<string, keyof Palette> = {
+  'chat/whatsapp': 'danger',
+  whatsapp: 'danger',
+  chat: 'danger',
+  telefone: 'primary',
+  'telefone/voz': 'primary',
+  'balcão/presencial': 'warning',
+  balcão: 'warning',
+  presencial: 'warning',
+  portal: 'teal',
+  app: 'neutral',
 }
 
-/** Cor canônica de um canal (tolerante à grafia). Fallback: neutro. */
-export function canalCor(nome: string): string {
-  return CANAL_CORES[nome.trim().toLowerCase()] ?? C.neutral
+/**
+ * Cor canônica de um canal (tolerante à grafia). Fallback: neutro.
+ * `palette` permite passar a paleta reativa (useChartColors) p/ suavizar no dark;
+ * sem ela, usa a paleta estática (claro).
+ */
+export function canalCor(nome: string, palette: Palette = chartColors): string {
+  const key = CANAL_COR_KEY[nome.trim().toLowerCase()]
+  return key ? palette[key] : palette.neutral
 }
 
 // Grupo canônico de canal (casa as várias grafias e o canal combinado
@@ -56,9 +64,11 @@ export const CANAIS_CANONICOS = [
 
 // ── Atendimento: BOT vs Humano + IA ──────────────────────────────────────────
 // Convenção de identidade (não severidade): BOT = azul, Humano = verde.
-// Insights de IA = roxo.
-export const atendimentoCor = { bot: C.primary, humano: C.success }
-export const IA_COR = C.purple
+// Insights de IA = roxo. `palette` opcional p/ versão theme-aware (suave no dark).
+export function atendimentoCor(palette: Palette = chartColors) {
+  return { bot: palette.primary, humano: palette.success }
+}
+export const IA_COR = chartColors.purple
 
 // ── Filas / fluxos ───────────────────────────────────────────────────────────
 // Nome canônico por sinônimo. Usado para casar o drill-down (dashboard ↔ cards)

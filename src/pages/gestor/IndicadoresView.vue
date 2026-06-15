@@ -18,7 +18,7 @@ import {
   type IndicadorKey,
   type FilaCor,
 } from '@/data/gestorIndicadores'
-import { chartColors as C } from '@/plugins/echarts'
+import { useChartColors } from '@/plugins/echarts'
 import { useActionFeedback } from '@/composables/useActionFeedback'
 
 const { comingSoon } = useActionFeedback()
@@ -28,6 +28,7 @@ const { comingSoon } = useActionFeedback()
 // apelidos vindos dos cards do Início.
 const route = useRoute()
 const router = useRouter()
+const C = useChartColors()
 
 const indAlias: Record<string, IndicadorKey> = {
   fcr: 'fcr',
@@ -82,11 +83,11 @@ const statusDot: Record<'ok' | 'warning' | 'danger', string> = {
 }
 
 // COR da bolha = fila (legenda do Figma).
-const filaColor: Record<FilaCor, string> = {
+const filaColor = computed<Record<FilaCor, string>>(() => ({
   duvidas: C.primary,
   reembolso: C.warning,
   autoriz: C.success,
-}
+}))
 const filaDot: Record<FilaCor, string> = {
   duvidas: 'bg-ms-primary',
   reembolso: 'bg-ms-warning',
@@ -177,7 +178,7 @@ const segmentacaoOption = computed(() => ({
       symbolSize: (d: number[]) => d[2],
       data: segmentacao.map((s) => ({
         value: [s.volume, s.tme, s.size, s.nome, s.caption],
-        itemStyle: { color: filaColor[s.fila], opacity: 0.75 },
+        itemStyle: { color: filaColor.value[s.fila], opacity: 0.75 },
       })),
       markLine: {
         silent: true,

@@ -25,7 +25,7 @@ const canalOption = computed(() => ({
       data: canalDistribuicao.map((c) => ({
         value: c.value,
         name: c.name,
-        itemStyle: { color: canalCor(c.name) },
+        itemStyle: { color: canalCor(c.name, C) },
       })),
     },
   ],

@@ -12,8 +12,10 @@ import {
   abandonoScatter,
   bannerAbandono,
 } from '@/data/gestorAbandonos'
-import { chartColors as C } from '@/plugins/echarts'
+import { useChartColors } from '@/plugins/echarts'
 import { canalCor, atendimentoCor } from '@/data/gestorTaxonomia'
+
+const C = useChartColors()
 
 const canalOption = computed(() => ({
   tooltip: { trigger: 'item', formatter: '{b}: {c}' },
@@ -25,7 +27,7 @@ const canalOption = computed(() => ({
       data: porCanal.itens.map((i) => ({
         value: i.value,
         name: i.name,
-        itemStyle: { color: canalCor(i.name) },
+        itemStyle: { color: canalCor(i.name, C) },
       })),
     },
   ],
@@ -57,13 +59,13 @@ const abandonoFluxoOption = computed(() => ({
       name: 'BOT',
       type: 'bar',
       data: abandonoFluxo.bot,
-      itemStyle: { color: atendimentoCor.bot, borderRadius: [3, 3, 0, 0] },
+      itemStyle: { color: atendimentoCor(C).bot, borderRadius: [3, 3, 0, 0] },
     },
     {
       name: 'Humano',
       type: 'bar',
       data: abandonoFluxo.humano,
-      itemStyle: { color: atendimentoCor.humano, borderRadius: [3, 3, 0, 0] },
+      itemStyle: { color: atendimentoCor(C).humano, borderRadius: [3, 3, 0, 0] },
     },
   ],
 }))
@@ -142,7 +144,7 @@ const ringStyle = (pct: number, color: string) => ({
         <div class="mt-2 space-y-1 text-xs">
           <div v-for="i in porCanal.itens" :key="i.name" class="flex items-center justify-between">
             <span class="flex items-center gap-1.5 text-ms-text-regular">
-              <span class="h-2 w-2 rounded-full" :style="{ backgroundColor: canalCor(i.name) }" />{{
+              <span class="h-2 w-2 rounded-full" :style="{ backgroundColor: canalCor(i.name, C) }" />{{
                 i.name
               }}
             </span>

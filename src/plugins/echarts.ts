@@ -48,11 +48,19 @@ export const chartColors = {
 }
 
 // Sobrescritas para o tema escuro: o ECharts não lê CSS vars, então alternamos
-// os neutros aqui. `ink` é o caso crítico (#303133 some no fundo escuro).
+// aqui. `ink` é o caso crítico (#303133 some no fundo escuro). As cores
+// semânticas ganham variantes mais SUAVES (menos neon) p/ não estourar contraste
+// sobre o fundo escuro — mantendo a identidade de cada cor.
 const chartColorsDark = {
   axis: '#a3a6ad',
   ink: '#e5e7eb',
   split: 'rgba(144,147,153,0.24)',
+  primary: '#3b82c9',
+  success: '#58a83f',
+  warning: '#cf9239',
+  danger: '#d96666',
+  teal: '#1aa3a3',
+  purple: '#7163cc',
 }
 
 /**

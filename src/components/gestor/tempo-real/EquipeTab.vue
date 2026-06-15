@@ -13,9 +13,10 @@ import {
   bannerEquipe,
   type EquipeTone,
 } from '@/data/gestorEquipe'
-import { chartColors as C } from '@/plugins/echarts'
+import { useChartColors } from '@/plugins/echarts'
 
 const router = useRouter()
+const C = useChartColors()
 
 // Drill-down: clique num atendente do ranking → ocorrências filtradas por ele.
 function abrirAtendente(nome: string) {
@@ -38,12 +39,12 @@ const rankBadge = [
   'bg-ms-success text-ms-on-success',
 ]
 
-const toneColor: Record<'danger' | 'warning' | 'neutral' | 'success', string> = {
+const toneColor = computed<Record<'danger' | 'warning' | 'neutral' | 'success', string>>(() => ({
   danger: C.danger,
   warning: C.warning,
   neutral: C.neutral,
   success: C.success,
-}
+}))
 
 const scatterOption = computed(() => ({
   tooltip: {
@@ -86,7 +87,7 @@ const scatterOption = computed(() => ({
       },
       data: equipeScatter.map((e) => ({
         value: [e.ocupacao, e.csat, e.nome, e.reab],
-        itemStyle: { color: toneColor[e.tone], opacity: 0.85 },
+        itemStyle: { color: toneColor.value[e.tone], opacity: 0.85 },
       })),
       markArea: {
         silent: true,

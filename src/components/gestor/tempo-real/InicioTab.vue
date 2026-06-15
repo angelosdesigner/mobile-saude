@@ -25,11 +25,12 @@ import {
   type SegmentoCritico,
   type CardTarget,
 } from '@/data/gestorTempoReal'
-import { chartColors as C } from '@/plugins/echarts'
+import { useChartColors } from '@/plugins/echarts'
 import { canalCor, atendimentoCor, normalizeFila } from '@/data/gestorTaxonomia'
 import type { GestorStage } from '@/types/gestorOcorrencias'
 
 const router = useRouter()
+const C = useChartColors()
 
 // Drill-down unificado: todo card operacional leva à listagem de ocorrências
 // (OcorrenciasView), com o estágio pré-filtrado quando aplicável. Antes alguns
@@ -84,19 +85,19 @@ const ptNum = (n: number) => String(n).replace('.', ',')
 const canalLegend = computed(() =>
   canalDistribuicao.map((c) => ({
     label: c.name,
-    color: canalCor(c.name),
+    color: canalCor(c.name, C),
     value: `${c.pct} (${c.value})`,
   })),
 )
-const abandonoLegend = [
-  { label: 'BOT', color: atendimentoCor.bot },
-  { label: 'Humano', color: atendimentoCor.humano },
-]
-const demandaLegend = [
+const abandonoLegend = computed(() => [
+  { label: 'BOT', color: atendimentoCor(C).bot },
+  { label: 'Humano', color: atendimentoCor(C).humano },
+])
+const demandaLegend = computed(() => [
   { label: 'Saudável', color: C.success },
   { label: 'Tensionado', color: C.warning },
   { label: 'Acima da capacidade', color: C.danger },
-]
+])
 
 const canalOption = computed(() => ({
   tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
@@ -109,7 +110,7 @@ const canalOption = computed(() => ({
       data: canalDistribuicao.map((c) => ({
         value: c.value,
         name: c.name,
-        itemStyle: { color: canalCor(c.name) },
+        itemStyle: { color: canalCor(c.name, C) },
       })),
     },
   ],
@@ -143,13 +144,13 @@ const abandonoOption = computed(() => ({
       name: 'BOT',
       type: 'bar',
       data: abandonoFluxo.bot,
-      itemStyle: { color: atendimentoCor.bot, borderRadius: [3, 3, 0, 0] },
+      itemStyle: { color: atendimentoCor(C).bot, borderRadius: [3, 3, 0, 0] },
     },
     {
       name: 'Humano',
       type: 'bar',
       data: abandonoFluxo.humano,
-      itemStyle: { color: atendimentoCor.humano, borderRadius: [3, 3, 0, 0] },
+      itemStyle: { color: atendimentoCor(C).humano, borderRadius: [3, 3, 0, 0] },
     },
   ],
 }))
