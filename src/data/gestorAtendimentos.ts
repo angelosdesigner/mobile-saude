@@ -49,12 +49,19 @@ export const ocupacaoCanal = [
   { label: 'Balcão/Presencial', value: 30 },
 ]
 
-// TME por canal (tempo médio de espera, em minutos).
+// TME por canal (tempo médio de espera, em minutos). Card no padrão do
+// "Capacidade Operacional": gauge semicircular + número central + linha de
+// status colorida + subtexto; detalhamento por canal abaixo.
 export const tmeCanal = {
-  gauge: { value: 12, max: 20, status: 'Crítico' as const },
+  value: 12, // TME geral (min)
+  max: 20, // escala do gauge
+  meta: 5, // meta de TME (min)
+  status: 'Crítico',
+  statusTone: 'danger' as 'danger' | 'warning' | 'success',
+  sub: 'meta 5 min · +7 acima',
   bars: [
-    { label: 'Chat/WhatsApp', value: 12 },
-    { label: 'Telefone', value: 4 },
+    { label: 'Chat/WhatsApp', value: 12, tone: 'danger' as 'danger' | 'warning' | 'success' },
+    { label: 'Telefone', value: 4, tone: 'success' as 'danger' | 'warning' | 'success' },
   ],
 }
 

@@ -68,16 +68,37 @@ const ocupacaoOption = computed(() => ({
   ],
 }))
 
+// Cor (arco/texto) por severidade do TME — padrão do card Capacidade Operacional.
+const toneColor: Record<'danger' | 'warning' | 'success', string> = {
+  danger: C.danger,
+  warning: C.warning,
+  success: C.success,
+}
+const toneText: Record<'danger' | 'warning' | 'success', string> = {
+  danger: 'text-ms-danger',
+  warning: 'text-ms-warning',
+  success: 'text-ms-success',
+}
+const toneBar: Record<'danger' | 'warning' | 'success', string> = {
+  danger: 'bg-ms-danger',
+  warning: 'bg-ms-warning',
+  success: 'bg-ms-success',
+}
+
+// Gauge semicircular (180→0), igual ao "Capacidade Operacional": número central
+// + unidade pequena; arco colorido pela severidade do TME.
 const tmeOption = computed(() => ({
   series: [
     {
       type: 'gauge',
-      startAngle: 210,
-      endAngle: -30,
+      startAngle: 180,
+      endAngle: 0,
       min: 0,
-      max: tmeCanal.gauge.max,
-      progress: { show: true, width: 10, itemStyle: { color: C.danger } },
-      axisLine: { lineStyle: { width: 10, color: [[1, 'rgba(144,147,153,0.18)']] } },
+      max: tmeCanal.max,
+      center: ['50%', '72%'],
+      radius: '108%',
+      progress: { show: true, width: 12, itemStyle: { color: toneColor[tmeCanal.statusTone] } },
+      axisLine: { lineStyle: { width: 12, color: [[1, 'rgba(144,147,153,0.18)']] } },
       pointer: { show: false },
       axisTick: { show: false },
       splitLine: { show: false },
@@ -85,20 +106,17 @@ const tmeOption = computed(() => ({
       anchor: { show: false },
       title: { show: false },
       detail: {
-        valueAnimation: true,
-        formatter: '{v|{value}}\n{u|min · Crítico}',
+        offsetCenter: [0, '-8%'],
+        formatter: `{v|${tmeCanal.value}}{t| min}`,
         rich: {
-          v: { fontSize: 22, fontWeight: 'bold', color: C.ink },
-          u: { fontSize: 11, color: C.danger },
+          v: { fontSize: 28, fontWeight: 'bold', color: C.ink },
+          t: { fontSize: 14, color: C.axis },
         },
-        offsetCenter: [0, 0],
       },
-      data: [{ value: tmeCanal.gauge.value }],
+      data: [{ value: tmeCanal.value }],
     },
   ],
 }))
-
-const tmeMax = Math.max(...tmeCanal.bars.map((b) => b.value)) * 1.15
 
 // Fluxos mais acessados — barras verticais (BOT = primary/azul).
 const fluxosOption = computed(() => ({
@@ -234,23 +252,29 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
       </ChartCard>
 
       <ChartCard title="TME por Canal" subtitle="tempo médio de espera">
-        <div class="flex items-center gap-3">
-          <div class="h-32 w-32 shrink-0">
-            <VChart class="h-full w-full" :option="tmeOption" autoresize />
+        <div class="h-32 w-full">
+          <VChart class="h-full w-full" :option="tmeOption" autoresize />
+        </div>
+        <div class="text-center">
+          <div class="text-sm font-semibold" :class="toneText[tmeCanal.statusTone]">
+            {{ tmeCanal.status }}
           </div>
-          <div class="flex-1 space-y-2">
-            <div v-for="b in tmeCanal.bars" :key="b.label" class="flex items-center gap-2">
-              <span class="w-16 shrink-0 text-xs text-ms-text-regular">{{ b.label }}</span>
-              <div class="h-2 flex-1 overflow-hidden rounded-full bg-ms-fill-light">
-                <div
-                  class="h-full rounded-full bg-ms-primary"
-                  :style="{ width: `${(b.value / tmeMax) * 100}%` }"
-                />
-              </div>
-              <span class="w-12 shrink-0 text-right text-xs font-medium text-ms-text-primary"
-                >{{ b.value }}min</span
-              >
+          <div class="text-xs text-ms-text-secondary">{{ tmeCanal.sub }}</div>
+        </div>
+        <!-- Detalhamento por canal -->
+        <div class="mt-auto space-y-2 border-t border-ms-border-lighter pt-3">
+          <div v-for="b in tmeCanal.bars" :key="b.label" class="flex items-center gap-2">
+            <span class="w-24 shrink-0 truncate text-xs text-ms-text-regular">{{ b.label }}</span>
+            <div class="h-2 flex-1 overflow-hidden rounded-full bg-ms-fill-light">
+              <div
+                class="h-full rounded-full"
+                :class="toneBar[b.tone]"
+                :style="{ width: `${(b.value / tmeCanal.max) * 100}%` }"
+              />
             </div>
+            <span class="w-12 shrink-0 text-right text-xs font-medium text-ms-text-primary"
+              >{{ b.value }}min</span
+            >
           </div>
         </div>
       </ChartCard>
