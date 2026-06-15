@@ -257,7 +257,11 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
     </div>
 
     <!-- Atendimento automatizado -->
-    <SectionHeader title="Atendimento automatizado" class="pt-1" />
+    <SectionHeader
+      title="Atendimento automatizado"
+      class="pt-1"
+      action-to="/gestor/automacao-bot"
+    />
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <el-card

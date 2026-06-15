@@ -66,6 +66,14 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Operação por Canal' },
   },
   {
+    // Detalhe "Central de Automação" (drill-down de Atendimentos → Atendimento
+    // automatizado) — Figma 7654:104067. Estrutura padrão das telas de detalhe.
+    path: '/gestor/automacao-bot',
+    name: 'gestor-automacao-bot',
+    component: () => import('@/pages/gestor/AutomacaoBotView.vue'),
+    meta: { title: 'Central de Automação' },
+  },
+  {
     // Indicadores do gestor — recebe ?ind= para pré-selecionar.
     path: '/gestor/indicadores',
     name: 'gestor-indicadores',

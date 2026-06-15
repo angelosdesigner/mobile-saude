@@ -106,6 +106,7 @@ declare module 'vue' {
     PrioridadeTag: typeof import('./src/components/ui/PrioridadeTag.vue')['default']
     QueueCard: typeof import('./src/components/atendimento/QueueCard.vue')['default']
     RankHint: typeof import('./src/components/gestor/RankHint.vue')['default']
+    RecomendacoesIA: typeof import('./src/components/gestor/RecomendacoesIA.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SectionHeader: typeof import('./src/components/ui/SectionHeader.vue')['default']
