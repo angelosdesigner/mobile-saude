@@ -17,7 +17,12 @@ export interface AppTab {
 
 const STORAGE_KEY = 'ms.tabs'
 
+// Painel secundário (iframe `?embed=1`): não persiste abas, p/ não poluir o
+// estado compartilhado da instância principal.
+const inIframe = typeof window !== 'undefined' && window.self !== window.top
+
 function load(): AppTab[] {
+  if (inIframe) return []
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return []
@@ -35,6 +40,7 @@ export const useTabsStore = defineStore('tabs', () => {
   watch(
     tabs,
     () => {
+      if (inIframe) return
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(tabs.value))
       } catch {

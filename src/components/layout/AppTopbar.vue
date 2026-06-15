@@ -14,6 +14,7 @@ import {
   type Role,
 } from '@/stores/profile'
 import { useTabsStore, type AppTab } from '@/stores/tabs'
+import { useSplitStore } from '@/stores/split'
 import { appScreens, type AppScreen } from '@/data/appScreens'
 
 const route = useRoute()
@@ -69,6 +70,19 @@ function closeTab(t: AppTab) {
 function openScreen(s: AppScreen) {
   addOpen.value = false
   if (s.path !== route.path) router.push(s.path).catch(() => {})
+}
+
+// Arrastar uma aba abre o painel dividido (drop zone no DashboardLayout).
+const splitStore = useSplitStore()
+function onTabDragStart(t: AppTab, e: DragEvent) {
+  splitStore.startDrag({ path: t.fullPath, title: t.title })
+  if (e.dataTransfer) {
+    e.dataTransfer.setData('text/plain', t.id)
+    e.dataTransfer.effectAllowed = 'copy'
+  }
+}
+function onTabDragEnd() {
+  splitStore.endDrag()
 }
 
 // ── Rolagem horizontal das abas (sem scrollbar; setas + fade nas bordas) ──────
@@ -142,6 +156,7 @@ const status = ref<'Disponível' | 'Ocupado'>('Disponível')
           v-for="t in tabs"
           :key="t.id"
           :data-active="t.id === activeId"
+          draggable="true"
           class="group flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1 text-sm transition"
           :class="
             t.id === activeId
@@ -150,8 +165,11 @@ const status = ref<'Disponível' | 'Ocupado'>('Disponível')
           "
           role="button"
           :tabindex="0"
+          :title="`${t.title} — arraste para dividir a tela`"
           @click="activateTab(t)"
           @keydown.enter="activateTab(t)"
+          @dragstart="onTabDragStart(t, $event)"
+          @dragend="onTabDragEnd"
         >
           <span class="max-w-[160px] truncate">{{ t.title }}</span>
           <button

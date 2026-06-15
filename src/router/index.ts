@@ -142,6 +142,8 @@ router.afterEach((to) => {
   const base = 'Mobile Saúde'
   document.title = to.meta.title ? `${to.meta.title} · ${base}` : base
   if (to.name === 'not-found') return
+  // Painel secundário (iframe embutido): não sincroniza abas.
+  if (typeof window !== 'undefined' && window.self !== window.top) return
   try {
     useTabsStore().syncFromRoute(to)
   } catch {
