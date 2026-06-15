@@ -117,7 +117,7 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
     <!-- Atendimento em tempo real por canal -->
     <SectionHeader
       title="Atendimento em tempo real por canal"
-      action-to="/gestor/ocorrencias?view=lista"
+      action-to="/gestor/operacao-canal"
     />
 
     <div class="grid gap-4 lg:grid-cols-3">

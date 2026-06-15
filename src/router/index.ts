@@ -58,6 +58,14 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Gestão em tempo real' },
   },
   {
+    // Detalhe "Operação por Canal" (drill-down da aba Atendimentos) — Figma
+    // 7651:98838. Estrutura padrão das telas de detalhe do gestor.
+    path: '/gestor/operacao-canal',
+    name: 'gestor-operacao-canal',
+    component: () => import('@/pages/gestor/OperacaoCanalView.vue'),
+    meta: { title: 'Operação por Canal' },
+  },
+  {
     // Indicadores do gestor — recebe ?ind= para pré-selecionar.
     path: '/gestor/indicadores',
     name: 'gestor-indicadores',
