@@ -23,8 +23,10 @@ const props = withDefaults(
     /** Cor do anel. */
     tone?: KpiRingTone
     clickable?: boolean
+    /** Legenda opcional (bolinha + rótulo) abaixo das infos. */
+    legend?: { label: string; tone: KpiRingTone }[]
   }>(),
-  { delta: '', deltaTone: 'up', meta: '', tone: 'primary', clickable: false },
+  { delta: '', deltaTone: 'up', meta: '', tone: 'primary', clickable: false, legend: undefined },
 )
 
 defineEmits<{ click: [] }>()
@@ -71,6 +73,17 @@ const dCls = computed(() => deltaClass[props.deltaTone])
         </div>
         <div v-if="delta" class="mt-1 text-xs" :class="dCls">{{ delta }}</div>
         <div v-if="meta" class="text-2xs text-ms-text-secondary">{{ meta }}</div>
+        <div v-if="legend" class="mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
+          <span
+            v-for="l in legend"
+            :key="l.label"
+            class="flex items-center gap-1 text-2xs text-ms-text-secondary"
+          >
+            <span class="h-2 w-2 shrink-0 rounded-full" :style="{ backgroundColor: ringVar[l.tone] }" />{{
+              l.label
+            }}
+          </span>
+        </div>
       </div>
     </div>
   </el-card>

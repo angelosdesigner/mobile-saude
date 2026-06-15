@@ -26,7 +26,7 @@ import {
   type CardTarget,
 } from '@/data/gestorTempoReal'
 import { chartColors as C } from '@/plugins/echarts'
-import { canalCor, atendimentoCor } from '@/data/gestorTaxonomia'
+import { canalCor, atendimentoCor, normalizeFila } from '@/data/gestorTaxonomia'
 import type { GestorStage } from '@/types/gestorOcorrencias'
 
 const router = useRouter()
@@ -55,6 +55,14 @@ function goTarget(t: CardTarget) {
 function abrirCanal(params: { name?: string }) {
   if (params?.name)
     router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', canal: params.name } })
+}
+
+// Drill-down das ocupações: fila (normalizada) e atendente.
+function abrirFilaLista(label: string) {
+  router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', fila: normalizeFila(label) } })
+}
+function abrirAtendente(nome: string) {
+  router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', atendente: nome } })
 }
 
 const andamentoTone: Record<'primary' | 'warning' | 'teal' | 'success', string> = {
@@ -286,8 +294,11 @@ const segmentoColumns: DataListColumn[] = [
         label="Chamadas na fila"
         :delta="`${chamadasNaFila.delta}${chamadasNaFila.critico ? ' (crítico)' : ''}`"
         delta-tone="danger"
-        :meta="`Atendidas: ${ptNum(chamadasNaFila.atendidas)}%`"
         tone="danger"
+        :legend="[
+          { label: `Abandonadas ${ptNum(chamadasNaFila.abandono)}%`, tone: 'danger' },
+          { label: `Atendidas ${ptNum(chamadasNaFila.atendidas)}%`, tone: 'success' },
+        ]"
         clickable
         @click="abrirLista('fila')"
       />
@@ -324,12 +335,12 @@ const segmentoColumns: DataListColumn[] = [
         </div>
       </ChartCard>
 
-      <ChartCard title="Ocupação por fila" subtitle="% de uso da capacidade e TMEF">
-        <BarList :items="ocupacaoFila" threshold-legend />
+      <ChartCard title="Ocupação por fila" subtitle="% de uso da capacidade e TMEF · clique para detalhar">
+        <BarList :items="ocupacaoFila" threshold-legend clickable @item-click="abrirFilaLista" />
       </ChartCard>
 
-      <ChartCard title="Ocupação por atendente" subtitle="% de uso da capacidade">
-        <BarList :items="ocupacaoAtendente" rank rank-hint />
+      <ChartCard title="Ocupação por atendente" subtitle="% de uso da capacidade · clique para detalhar">
+        <BarList :items="ocupacaoAtendente" rank rank-hint clickable @item-click="abrirAtendente" />
       </ChartCard>
     </div>
 
