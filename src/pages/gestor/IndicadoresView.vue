@@ -205,9 +205,12 @@ const segmentacaoOption = computed(() => {
           show: true,
           position: 'inside',
           formatter: (p: { data: { equipe: string } }) => p.data.equipe,
-          color: C.axis,
-          fontSize: 9,
-          fontWeight: 600,
+          color: '#fff',
+          fontSize: 10,
+          fontWeight: 700,
+          // Contorno escuro garante leitura do texto branco em qualquer cor de bolha.
+          textBorderColor: 'rgba(0,0,0,0.35)',
+          textBorderWidth: 2,
         },
         data: segmentosBase.map((s) => {
           const v = s.metrics[ind]
@@ -217,9 +220,9 @@ const segmentacaoOption = computed(() => {
             equipe: s.equipe,
             itemStyle: {
               color: filaColor.value[s.fila],
-              opacity: 0.78,
-              borderColor: critico ? C.danger : 'transparent',
-              borderWidth: critico ? 2 : 0,
+              opacity: 0.95,
+              borderColor: critico ? C.danger : 'rgba(255,255,255,0.65)',
+              borderWidth: critico ? 2.5 : 1,
             },
           }
         }),
