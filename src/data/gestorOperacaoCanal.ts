@@ -133,22 +133,22 @@ export const contextos: Record<CanalContexto, ContextoCanal> = {
       {
         severidade: 'ATENÇÃO',
         tempo: 'há 2h',
-        titulo: 'Volume crescente no WhatsApp',
-        corpo: 'WhatsApp concentra 47 em atendimento · fila subindo de forma contínua desde 13h',
+        titulo: 'Volume crescente no canal',
+        corpo: '68 conversas em atendimento · fila subindo de forma contínua desde 13h',
       },
       {
         severidade: 'ATENÇÃO',
         tempo: 'há 40min',
-        titulo: 'Chat com folga, WhatsApp pressionado',
-        corpo: 'Chat em 92% (saudável) e com capacidade ociosa; WhatsApp em 84% puxa o tipo para 86%',
+        titulo: 'Ocupação desequilibrada na fila',
+        corpo: 'Parte dos atendentes saturada enquanto outros têm folga · distribuição puxa o SLA para 86%',
       },
     ],
     diagnostico: {
       confianca: 'confiança 88% · 410 padrões similares',
-      texto: 'Chat/WhatsApp respondem por 65% do volume com SLA saudável (86%). O WhatsApp (84%) começa a sentir o volume enquanto o Chat (92%) tem folga. Balancear o roteamento entre os dois mantém o tipo acima da meta sem reforço de equipe.',
+      texto: 'O canal Chat/WhatsApp concentra 65% do volume com SLA saudável (86%), mas começa a sentir a pressão do volume crescente nos horários de pico. Ampliar a automação de triagem e equilibrar a distribuição da fila mantém o canal acima da meta sem reforço de equipe.',
     },
     recomendacoes: [
-      { titulo: 'Balancear roteamento WhatsApp → Chat', corpo: 'Direcionar parte das novas conversas do WhatsApp para o Chat, que opera com ocupação menor.', impacto: 'SLA WhatsApp +5 pp', acao: 'Aplicar', destaque: true },
+      { titulo: 'Equilibrar distribuição da fila', corpo: 'Redistribuir as novas conversas entre os atendentes com menor ocupação para suavizar os picos do canal.', impacto: 'SLA +5 pp', acao: 'Aplicar', destaque: true },
       { titulo: 'Ampliar BOT de triagem', corpo: 'Aumentar a cobertura do BOT para FAQs e 2ª via, reduzindo o volume que chega ao humano.', impacto: 'Volume humano -18%', acao: 'Detalhar' },
       { titulo: 'Respostas rápidas para FAQ', corpo: 'Habilitar templates de resposta rápida para as 10 dúvidas mais frequentes.', impacto: 'TMA -25%', acao: 'Detalhar' },
     ],
@@ -175,10 +175,10 @@ export const contextos: Record<CanalContexto, ContextoCanal> = {
     ],
     diagnostico: {
       confianca: 'confiança 89% · 218 padrões similares',
-      texto: 'O canal Telefone concentra demandas complexas (Autorizações, Reembolso, Dúvidas Administrativas representam 80% do volume) mas opera com capacidade saturada nos horários de pico. Migrar 25-30% de Autorizações para WhatsApp via BOT pode aliviar a fila telefônica sem perder qualidade.',
+      texto: 'O canal Telefone concentra demandas complexas (Autorizações, Reembolso, Dúvidas Administrativas representam 80% do volume) mas opera com capacidade saturada nos horários de pico. Migrar 25-30% de Autorizações para o Chat/WhatsApp via BOT pode aliviar a fila telefônica sem perder qualidade.',
     },
     recomendacoes: [
-      { titulo: 'Migrar Autorizações para BOT WhatsApp', corpo: 'Ativar fluxo de autorização prévia via BOT no WhatsApp para casos simples (consulta, exames de rotina). BOT atual tem retenção de 72% em fluxos similares.', impacto: 'Volume Telefone -28% · em 2h', acao: 'Aplicar', destaque: true },
+      { titulo: 'Migrar Autorizações para BOT Chat/WhatsApp', corpo: 'Ativar fluxo de autorização prévia via BOT no Chat/WhatsApp para casos simples (consulta, exames de rotina). BOT atual tem retenção de 72% em fluxos similares.', impacto: 'Volume Telefone -28% · em 2h', acao: 'Aplicar', destaque: true },
       { titulo: 'Escalar capacidade Telefone', corpo: 'Adicionar 3 atendentes de outras filas durante o pico vespertino (14h-18h). Patricia M. e João C. têm equipes com folga.', impacto: 'TME -45% · SLA +15 pp', acao: 'Detalhar' },
       { titulo: 'Callback inteligente', corpo: 'Oferecer retorno em horário escolhido para clientes em fila >5min. Reduz pressão imediata sem perder demanda.', impacto: 'TME percebido -60% · NPS +', acao: 'Detalhar' },
     ],
