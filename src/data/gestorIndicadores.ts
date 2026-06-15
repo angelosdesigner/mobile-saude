@@ -63,7 +63,7 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
     pioresSegmentos: [
       { label: 'Fila: Reembolso', value: '68%' },
       { label: 'Canal: Telefone', value: '70%' },
-      { label: 'Equipe: Eq. B Renata', value: '65%' },
+      { label: 'Turno: Noite', value: '65%' },
     ],
   },
   resolucao: {
@@ -84,7 +84,7 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
     pioresSegmentos: [
       { label: 'Fila: Carência', value: '78%' },
       { label: 'Canal: Telefone', value: '87%' },
-      { label: 'Equipe: Eq. C Patricia', value: '82%' },
+      { label: 'Turno: Noite', value: '82%' },
     ],
   },
   tme: {
@@ -103,9 +103,9 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
       { label: 'vs Mesmo dia mês passado', value: '-2,5 pp', tone: 'down' },
     ],
     pioresSegmentos: [
-      { label: 'Fila: Dúvidas Adm.', value: '65%' },
-      { label: 'Canal: Telefone', value: '71%' },
-      { label: 'Equipe: Supervisor B', value: '74%' },
+      { label: 'Fila: Dúvidas Adm.', value: '15min' },
+      { label: 'Canal: Telefone', value: '16min' },
+      { label: 'Turno: Noite', value: '18min' },
     ],
   },
   tmef: {
@@ -126,7 +126,7 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
     pioresSegmentos: [
       { label: 'Fila: Dúvidas Adm.', value: '6,8min' },
       { label: 'Canal: Telefone', value: '5,4min' },
-      { label: 'Equipe: Eq. B Renata', value: '6,2min' },
+      { label: 'Turno: Noite', value: '6,5min' },
     ],
   },
   nps: {
@@ -147,7 +147,7 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
     pioresSegmentos: [
       { label: 'Fila: Reembolso', value: '38' },
       { label: 'Canal: Telefone', value: '42' },
-      { label: 'Equipe: Eq. B Renata', value: '36' },
+      { label: 'Turno: Noite', value: '36' },
     ],
   },
   tma: {
@@ -168,7 +168,7 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
     pioresSegmentos: [
       { label: 'Fila: Reembolso', value: '18min' },
       { label: 'Canal: Telefone', value: '16min' },
-      { label: 'Equipe: Eq. B Renata', value: '17min' },
+      { label: 'Turno: Noite', value: '19min' },
     ],
   },
   abandono: {
@@ -189,7 +189,7 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
     pioresSegmentos: [
       { label: 'Fila: Reembolso', value: '18,2%' },
       { label: 'Canal: Telefone', value: '13,2%' },
-      { label: 'Equipe: Eq. C Patricia', value: '8,4%' },
+      { label: 'Turno: Noite', value: '12,5%' },
     ],
   },
 }
@@ -235,81 +235,92 @@ export const indicadorEixoY: Record<IndicadorKey, string> = {
   abandono: 'Abandono %',
 }
 
+export type Turno = 'Manhã' | 'Tarde' | 'Noite'
+
 export interface SegmentoBase {
-  nome: string // rótulo completo (canal · fila · equipe)
-  equipe: string // rótulo curto exibido na bolha (Eq. A…)
+  canal: string
+  fila: FilaCor
+  filaLabel: string // rótulo legível da fila
+  turno: Turno
   volume: number // eixo X
   size: number // diâmetro da bolha (∝ volume)
-  fila: FilaCor
   metrics: Record<IndicadorKey, number> // valor de cada indicador no segmento
 }
 
-// 8 segmentos reais. Os valores são internamente coerentes: o pior segmento
-// (Tel·Dúv.Adm·Renata) é o pior em TODOS os indicadores; os de Balcão/Financeiro
-// são os melhores; chat supera telefone, etc.
+// 8 segmentos reais por canal × fila × turno. Os valores são internamente
+// coerentes: o pior segmento (Telefone · Dúvidas Adm. · Noite) é o pior em TODOS
+// os indicadores; os de Balcão/Financeiro são os melhores; chat supera telefone.
 export const segmentosBase: SegmentoBase[] = [
   {
-    nome: 'WhatsApp · Dúvidas Adm. · Eq. A',
-    equipe: 'Eq. A',
+    canal: 'WhatsApp',
+    fila: 'duvidas',
+    filaLabel: 'Dúvidas Adm.',
+    turno: 'Tarde',
     volume: 1800,
     size: 42,
-    fila: 'duvidas',
     metrics: { fcr: 88, resolucao: 94, tme: 6, tmef: 3.5, tma: 11, nps: 58, abandono: 4.2 },
   },
   {
-    nome: 'Telefone · Dúvidas Adm. · Eq. B',
-    equipe: 'Eq. B',
+    canal: 'Telefone',
+    fila: 'duvidas',
+    filaLabel: 'Dúvidas Adm.',
+    turno: 'Manhã',
     volume: 1170,
     size: 30,
-    fila: 'duvidas',
     metrics: { fcr: 71, resolucao: 86, tme: 16, tmef: 5.8, tma: 17, nps: 42, abandono: 11.5 },
   },
   {
-    nome: 'Chat · Reembolso · Eq. C',
-    equipe: 'Eq. C',
+    canal: 'Chat',
+    fila: 'reembolso',
+    filaLabel: 'Reembolso',
+    turno: 'Tarde',
     volume: 760,
     size: 28,
-    fila: 'reembolso',
     metrics: { fcr: 82, resolucao: 90, tme: 8, tmef: 4.0, tma: 13, nps: 50, abandono: 6.0 },
   },
   {
-    nome: 'Balcão · Autorizações · Eq. A',
-    equipe: 'Eq. A',
+    canal: 'Balcão',
+    fila: 'autoriz',
+    filaLabel: 'Autorizações',
+    turno: 'Manhã',
     volume: 2050,
     size: 24,
-    fila: 'autoriz',
     metrics: { fcr: 95, resolucao: 97, tme: 4, tmef: 2.5, tma: 9, nps: 66, abandono: 2.0 },
   },
   {
-    nome: 'WhatsApp · Financeiro · Eq. D',
-    equipe: 'Eq. D',
+    canal: 'WhatsApp',
+    fila: 'autoriz',
+    filaLabel: 'Financeiro',
+    turno: 'Noite',
     volume: 2200,
     size: 48,
-    fila: 'autoriz',
     metrics: { fcr: 98, resolucao: 98, tme: 6, tmef: 3.0, tma: 10, nps: 70, abandono: 3.0 },
   },
   {
-    nome: 'Telefone · Dúvidas Adm. · Renata · Eq. B',
-    equipe: 'Eq. B',
+    canal: 'Telefone',
+    fila: 'duvidas',
+    filaLabel: 'Dúvidas Adm.',
+    turno: 'Noite',
     volume: 720,
     size: 30,
-    fila: 'duvidas',
     metrics: { fcr: 65, resolucao: 82, tme: 18, tmef: 6.5, tma: 19, nps: 36, abandono: 18.2 },
   },
   {
-    nome: 'Chat · Reembolso · Eq. D',
-    equipe: 'Eq. D',
+    canal: 'Chat',
+    fila: 'reembolso',
+    filaLabel: 'Reembolso',
+    turno: 'Manhã',
     volume: 1420,
     size: 36,
-    fila: 'reembolso',
     metrics: { fcr: 82, resolucao: 91, tme: 9, tmef: 4.2, tma: 14, nps: 48, abandono: 6.4 },
   },
   {
-    nome: 'Telefone · Autorizações · Eq. A',
-    equipe: 'Eq. A',
+    canal: 'Telefone',
+    fila: 'autoriz',
+    filaLabel: 'Autorizações',
+    turno: 'Tarde',
     volume: 1650,
     size: 46,
-    fila: 'autoriz',
     metrics: { fcr: 84, resolucao: 92, tme: 12, tmef: 4.5, tma: 16, nps: 52, abandono: 7.5 },
   },
 ]
@@ -339,7 +350,7 @@ export type SegmentoLinha = {
 
 export const segmentosCriticos: SegmentoLinha[] = [
   {
-    segmento: 'Telefone · Dúvidas Adm. · Eq. B',
+    segmento: 'Telefone · Dúvidas Adm. · Noite',
     volume: 342,
     atendidos: 298,
     abandonados: 44,
@@ -353,7 +364,7 @@ export const segmentosCriticos: SegmentoLinha[] = [
     acao: 'Investigar',
   },
   {
-    segmento: 'Telefone · Reembolso · Eq. C',
+    segmento: 'Telefone · Reembolso · Tarde',
     volume: 287,
     atendidos: 241,
     abandonados: 46,
@@ -367,7 +378,7 @@ export const segmentosCriticos: SegmentoLinha[] = [
     acao: 'Investigar',
   },
   {
-    segmento: 'Telefone · Autorizações · Eq. A',
+    segmento: 'Telefone · Autorizações · Manhã',
     volume: 256,
     atendidos: 213,
     abandonados: 43,
@@ -381,7 +392,7 @@ export const segmentosCriticos: SegmentoLinha[] = [
     acao: 'Investigar',
   },
   {
-    segmento: 'Chat/WhatsApp · Dúvidas Adm. · Eq. B',
+    segmento: 'Chat/WhatsApp · Dúvidas Adm. · Tarde',
     volume: 412,
     atendidos: 378,
     abandonados: 34,
@@ -395,7 +406,7 @@ export const segmentosCriticos: SegmentoLinha[] = [
     acao: 'Investigar',
   },
   {
-    segmento: 'Chat/WhatsApp · Dúvidas Adm. · Eq. A',
+    segmento: 'Chat/WhatsApp · Dúvidas Adm. · Manhã',
     volume: 528,
     atendidos: 489,
     abandonados: 39,
@@ -409,7 +420,7 @@ export const segmentosCriticos: SegmentoLinha[] = [
     acao: '—',
   },
   {
-    segmento: 'Chat/WhatsApp · Reembolso · Eq. C',
+    segmento: 'Chat/WhatsApp · Reembolso · Noite',
     volume: 318,
     atendidos: 276,
     abandonados: 42,
@@ -423,7 +434,7 @@ export const segmentosCriticos: SegmentoLinha[] = [
     acao: 'Investigar',
   },
   {
-    segmento: 'Chat/WhatsApp · Autorizações · Eq. A',
+    segmento: 'Chat/WhatsApp · Autorizações · Manhã',
     volume: 245,
     atendidos: 221,
     abandonados: 24,
@@ -437,7 +448,7 @@ export const segmentosCriticos: SegmentoLinha[] = [
     acao: '—',
   },
   {
-    segmento: 'Balcão · Autorizações · Eq. D',
+    segmento: 'Balcão · Autorizações · Tarde',
     volume: 94,
     atendidos: 82,
     abandonados: 12,

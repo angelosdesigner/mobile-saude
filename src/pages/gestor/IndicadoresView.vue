@@ -168,7 +168,7 @@ function segmentoCritico(ind: IndicadorKey, v: number, meta: number): boolean {
 
 const segmentacaoSubtitulo = computed(
   () =>
-    `Volume × ${indicadorEixoY[active.value]} por canal, fila e equipe — identifique gargalos em 1 view`,
+    `Volume × ${indicadorEixoY[active.value]} por canal, fila e turno — identifique gargalos em 1 view`,
 )
 
 const segmentacaoOption = computed(() => {
@@ -204,7 +204,8 @@ const segmentacaoOption = computed(() => {
         label: {
           show: true,
           position: 'inside',
-          formatter: (p: { data: { equipe: string } }) => p.data.equipe,
+          formatter: (p: { data: { value: [number, number, number, string, string] } }) =>
+            p.data.value[4],
           color: '#fff',
           fontSize: 10,
           fontWeight: 700,
@@ -215,9 +216,9 @@ const segmentacaoOption = computed(() => {
         data: segmentosBase.map((s) => {
           const v = s.metrics[ind]
           const critico = segmentoCritico(ind, v, meta)
+          const nome = `${s.canal} · ${s.filaLabel} · ${s.turno}`
           return {
-            value: [s.volume, v, s.size, s.nome, fmtIndicador(ind, v)],
-            equipe: s.equipe,
+            value: [s.volume, v, s.size, nome, fmtIndicador(ind, v)],
             itemStyle: {
               color: filaColor.value[s.fila],
               opacity: 0.95,
@@ -379,8 +380,8 @@ const segmentoColumns: DataListColumn[] = [
             <span class="h-2 w-2 rounded-full" :class="filaDot[l.fila]" />{{ l.label }}
           </span>
         </div>
-        <span>TAMANHO = Equipe (volume): menor → maior</span>
-        <span>RÓTULO = Equipe</span>
+        <span>TAMANHO = Volume: menor → maior</span>
+        <span>RÓTULO = {{ indicadorEixoY[active] }}</span>
       </div>
     </ChartCard>
 
