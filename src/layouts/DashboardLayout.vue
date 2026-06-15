@@ -2,10 +2,11 @@
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppTopbar from '@/components/layout/AppTopbar.vue'
 import FilaFab from '@/components/fila/FilaFab.vue'
+import EquipeStatusFloating from '@/components/gestor/EquipeStatusFloating.vue'
 import { useProfileStore } from '@/stores/profile'
 import { storeToRefs } from 'pinia'
 
-const { hasQueue } = storeToRefs(useProfileStore())
+const { hasQueue, isGestor } = storeToRefs(useProfileStore())
 </script>
 
 <template>
@@ -26,5 +27,8 @@ const { hasQueue } = storeToRefs(useProfileStore())
 
     <!-- Fila flutuante global — só para perfis que atendem a quente. -->
     <FilaFab v-if="hasQueue" />
+
+    <!-- Status das equipes — ação flutuante global do gestor (arrastável). -->
+    <EquipeStatusFloating v-if="isGestor" />
   </div>
 </template>
