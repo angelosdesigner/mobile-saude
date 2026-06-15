@@ -57,6 +57,11 @@ function abrirCanal(params: { name?: string }) {
     router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', canal: params.name } })
 }
 
+// "Chamadas na fila" → lista dedicada de chamadas abandonadas.
+function abrirAbandonos() {
+  router.push('/gestor/abandonos')
+}
+
 // Drill-down das ocupações: fila (normalizada) e atendente.
 function abrirFilaLista(label: string) {
   router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', fila: normalizeFila(label) } })
@@ -300,7 +305,7 @@ const segmentoColumns: DataListColumn[] = [
           { label: `Atendidas ${ptNum(chamadasNaFila.atendidas)}%`, tone: 'success' },
         ]"
         clickable
-        @click="abrirLista('fila')"
+        @click="abrirAbandonos"
       />
     </div>
 
