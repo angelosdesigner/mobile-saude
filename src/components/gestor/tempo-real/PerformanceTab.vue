@@ -4,8 +4,10 @@ import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
 import ChartLegend from '@/components/ui/ChartLegend.vue'
+import IndicadoresGerais from '@/components/gestor/IndicadoresGerais.vue'
 import { useActionFeedback } from '@/composables/useActionFeedback'
 import {
+  indicadoresGerais,
   demandaHora,
   heatmapSlots,
   heatmapDias,
@@ -156,6 +158,9 @@ const scatterOption = computed(() => ({
 
 <template>
   <div class="space-y-5">
+    <!-- Indicadores gerais -->
+    <IndicadoresGerais :items="indicadoresGerais" />
+
     <SectionHeader
       title="Gestão de Performance e Capacidade"
       subtitle="Monitoramento da produtividade e dimensionamento da operação."

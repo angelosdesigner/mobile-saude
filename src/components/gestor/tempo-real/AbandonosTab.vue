@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
+import IndicadoresGerais from '@/components/gestor/IndicadoresGerais.vue'
 import {
   porCanal,
   porFluxoBot,
@@ -11,6 +12,7 @@ import {
   comparativo,
   abandonoScatter,
   bannerAbandono,
+  indicadoresGerais,
 } from '@/data/gestorAbandonos'
 import { useChartColors } from '@/plugins/echarts'
 import { canalCor, atendimentoCor } from '@/data/gestorTaxonomia'
@@ -123,6 +125,9 @@ const ringStyle = (pct: number, color: string) => ({
 
 <template>
   <div class="space-y-5">
+    <!-- Indicadores gerais -->
+    <IndicadoresGerais :items="indicadoresGerais" />
+
     <SectionHeader
       title="Gestão de Abandono"
       subtitle="Monitoramento das desistências e identificação de pontos críticos da jornada."

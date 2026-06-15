@@ -1,4 +1,47 @@
 // Fixtures da aba "Performance e Workforce" — Figma 7894:108707.
+import type { IndicadorGeral } from '@/data/gestorIndicadoresGerais'
+
+// Indicadores gerais (4 cards de topo). O que o gestor precisa ver em poucos
+// segundos para dimensionar a operação:
+// 1) Pico de demanda vs capacidade — o momento em que mais passamos da
+//    capacidade (15h: 32 chamados/h vs 14/h = 229%).
+// 2) Atendentes na escala (14 + 12 + 10 = 36).
+// 3) Limite de inflexão (26/h) — acima disso o TME estoura o SLA.
+// 4) Ganho previsto do remanejamento sugerido (-28% TME).
+export const indicadoresGerais: IndicadorGeral[] = [
+  {
+    label: 'Pico vs capacidade',
+    value: 100,
+    display: '229%',
+    delta: 'Turno tarde · crítico',
+    deltaTone: 'danger',
+    meta: '15h: 32 vs 14/h',
+    tone: 'danger',
+  },
+  {
+    label: 'Atendentes na escala',
+    value: 100,
+    display: '36',
+    meta: 'Manhã 14 · Tarde 12 · Noite 10',
+    tone: 'primary',
+  },
+  {
+    label: 'Limite de inflexão',
+    value: 100,
+    display: '26/h',
+    meta: 'acima disso o SLA de 8min estoura',
+    tone: 'warning',
+  },
+  {
+    label: 'Ganho do remanejamento',
+    value: 28,
+    display: '−28%',
+    delta: '+12% SLA',
+    deltaTone: 'up',
+    meta: 'mover 3 da noite p/ tarde',
+    tone: 'success',
+  },
+]
 
 // Demanda vs capacidade por hora (barras = volume; linha = capacidade).
 export const demandaHora = {

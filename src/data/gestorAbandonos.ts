@@ -1,7 +1,47 @@
 // Fixtures da aba "Abandonos e desistência" — Figma 7900:111365.
 import { abandonoFluxo } from '@/data/gestorTempoReal'
+import type { IndicadorGeral } from '@/data/gestorIndicadoresGerais'
 
 export { abandonoFluxo }
+
+// Indicadores gerais (4 cards de topo). Total 23 (= porCanal.total); quebra
+// BOT/Humano coerente com `comparativo` (6 + 17 = 23). 4º card: taxa geral de
+// abandono — KPI-resumo que o gestor acompanha ao longo do tempo.
+// Convenção de cor: BOT=primary, humano=success (identidade), taxa=warning.
+export const indicadoresGerais: IndicadorGeral[] = [
+  {
+    label: 'Abandonos',
+    value: 100,
+    display: '23',
+    delta: '↑ 2 hoje',
+    deltaTone: 'danger',
+    meta: 'desistências no período',
+    tone: 'danger',
+  },
+  {
+    label: 'No BOT',
+    value: 26,
+    display: '6',
+    meta: '26% dos abandonos',
+    tone: 'primary',
+  },
+  {
+    label: 'No humano',
+    value: 74,
+    display: '17',
+    meta: '74% · 2,8× o BOT',
+    tone: 'success',
+  },
+  {
+    label: 'Taxa de abandono',
+    value: 14.6,
+    display: '14,6%',
+    delta: '↑ 1,1% hoje',
+    deltaTone: 'danger',
+    meta: 'Meta: < 10%',
+    tone: 'warning',
+  },
+]
 
 // Cor por canal vem da taxonomia (canalCor) — não hardcoded aqui.
 export const porCanal = {
@@ -31,10 +71,10 @@ export const porFilaHumana = [
 ]
 
 export const comparativo = {
-  total: 17,
-  bot: { pct: 24, casos: 4 },
-  humano: { pct: 76, casos: 13 },
-  mult: '3.25× mais que BOT',
+  total: 23,
+  bot: { pct: 26, casos: 6 },
+  humano: { pct: 74, casos: 17 },
+  mult: '2.8× mais que BOT',
   tmeBot: '06:35',
   tmeHumano: '02:00',
   insight: 'O fluxo está muito complexo ou com erro',

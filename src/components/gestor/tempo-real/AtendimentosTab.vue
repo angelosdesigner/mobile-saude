@@ -3,12 +3,14 @@ import { computed } from 'vue'
 import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
+import IndicadoresGerais from '@/components/gestor/IndicadoresGerais.vue'
 import {
   canalDistribuicao,
   ocupacaoCanal,
   tmeCanal,
   automatizado,
   bannerAutomatizado,
+  indicadoresGerais,
 } from '@/data/gestorAtendimentos'
 import { useChartColors } from '@/plugins/echarts'
 import { canalCor } from '@/data/gestorTaxonomia'
@@ -109,6 +111,9 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
 
 <template>
   <div class="space-y-5">
+    <!-- Indicadores gerais -->
+    <IndicadoresGerais :items="indicadoresGerais" />
+
     <!-- Atendimento em tempo real por canal -->
     <SectionHeader
       title="Atendimento em tempo real por canal"

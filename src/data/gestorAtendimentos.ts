@@ -1,7 +1,46 @@
 // Fixtures da aba "Atendimentos" (Gestão tempo real) — Figma 7894:109478.
 import { canalDistribuicao } from '@/data/gestorTempoReal'
+import type { IndicadorGeral } from '@/data/gestorIndicadoresGerais'
 
 export { canalDistribuicao }
+
+// Indicadores gerais (4 cards de topo). Total e quebra por estágio coerentes
+// com `andamento` (gestorTempoReal): automatizado 84 + fila 23 + humano 56 = 163.
+// Convenção de cor: automatizado/BOT=primary, fila=warning, humano=success.
+export const indicadoresGerais: IndicadorGeral[] = [
+  {
+    label: 'Atendimentos',
+    value: 100,
+    display: '163',
+    delta: '↑ 4 hoje',
+    deltaTone: 'up',
+    meta: 'em andamento agora',
+    tone: 'primary',
+  },
+  {
+    label: 'No automatizado',
+    value: 52,
+    display: '84',
+    meta: '52% do total · Chatbot + URA',
+    tone: 'primary',
+  },
+  {
+    label: 'Pessoas na fila',
+    value: 14,
+    display: '23',
+    delta: '↑ 3 hoje',
+    deltaTone: 'danger',
+    meta: '14% do total · aguardando',
+    tone: 'warning',
+  },
+  {
+    label: 'Na fila humana',
+    value: 34,
+    display: '56',
+    meta: '34% do total · em atendimento',
+    tone: 'success',
+  },
+]
 
 // Ocupação por canal vs capacidade (% de uso da capacidade operacional).
 export const ocupacaoCanal = [

@@ -79,6 +79,7 @@ declare module 'vue' {
     FiltrosAvancados: typeof import('./src/components/ocorrencias/FiltrosAvancados.vue')['default']
     FloatingActions: typeof import('./src/components/ocorrencias/FloatingActions.vue')['default']
     FloatingDock: typeof import('./src/components/ocorrencias/FloatingDock.vue')['default']
+    IndicadoresGerais: typeof import('./src/components/gestor/IndicadoresGerais.vue')['default']
     IndicadoresTab: typeof import('./src/components/gestor/tempo-real/IndicadoresTab.vue')['default']
     InicioTab: typeof import('./src/components/gestor/tempo-real/InicioTab.vue')['default']
     KanbanBoard: typeof import('./src/components/ui/KanbanBoard.vue')['default']
