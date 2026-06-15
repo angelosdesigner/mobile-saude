@@ -106,7 +106,7 @@ function detalheEtapa(c: GestorCard): string {
     return parts.length ? parts.join(' / ') : '—'
   }
   if (c.stage === 'fila') return `${c.filaTipo ?? '—'} · Posição ${c.posicao ?? '—'}º`
-  if (c.stage === 'humano') return `Em conversa · SLA ${c.sla ?? '—'}`
+  if (c.stage === 'humano') return 'Em conversa'
   return `Resolvido às ${c.concluidoHora ?? '—'}`
 }
 
@@ -351,34 +351,10 @@ const pillDot: Record<StageTone | 'info', string> = {
           <span class="text-xs font-medium text-ms-text-primary">{{ tempoAtual(row) }}</span>
         </template>
 
-        <!-- Accordion: detalhes completos por estágio -->
+        <!-- Accordion: SOMENTE informações complementares (não repetir colunas) -->
         <template #expand="{ row }">
           <dl class="grid grid-cols-2 gap-x-8 gap-y-1 text-xs md:grid-cols-4">
-            <div>
-              <dt class="text-ms-text-secondary">Protocolo</dt>
-              <dd class="font-mono text-ms-text-primary">{{ row.protocolo ?? '—' }}</dd>
-            </div>
-            <div>
-              <dt class="text-ms-text-secondary">CPF</dt>
-              <dd class="text-ms-text-primary">{{ row.cpf ?? '—' }}</dd>
-            </div>
-            <div>
-              <dt class="text-ms-text-secondary">Perfil</dt>
-              <dd class="text-ms-text-primary">{{ row.perfilTipo ?? '—' }}</dd>
-            </div>
-            <div>
-              <dt class="text-ms-text-secondary">Canal</dt>
-              <dd class="text-ms-text-primary">{{ row.channel }}</dd>
-            </div>
             <template v-if="row.stage === 'automatizado'">
-              <div>
-                <dt class="text-ms-text-secondary">Fluxo</dt>
-                <dd class="text-ms-text-primary">{{ row.fluxo ?? '—' }}</dd>
-              </div>
-              <div>
-                <dt class="text-ms-text-secondary">Nó</dt>
-                <dd class="text-ms-text-primary">{{ row.no ?? '—' }}</dd>
-              </div>
               <div>
                 <dt class="text-ms-text-secondary">Sinalização</dt>
                 <dd class="text-ms-text-primary">{{ row.flag ?? '—' }}</dd>
@@ -392,16 +368,8 @@ const pillDot: Record<StageTone | 'info', string> = {
             </template>
             <template v-else-if="row.stage === 'fila'">
               <div>
-                <dt class="text-ms-text-secondary">Fila</dt>
-                <dd class="text-ms-text-primary">{{ row.filaTipo }}</dd>
-              </div>
-              <div>
-                <dt class="text-ms-text-secondary">Posição</dt>
-                <dd class="text-ms-text-primary">{{ row.posicao }}º</dd>
-              </div>
-              <div>
-                <dt class="text-ms-text-secondary">Espera</dt>
-                <dd class="text-ms-text-primary">{{ row.espera }}</dd>
+                <dt class="text-ms-text-secondary">Origem</dt>
+                <dd class="text-ms-text-primary">{{ row.pill?.label ?? '—' }}</dd>
               </div>
               <div>
                 <dt class="text-ms-text-secondary">Prioridade</dt>
@@ -410,38 +378,14 @@ const pillDot: Record<StageTone | 'info', string> = {
             </template>
             <template v-else-if="row.stage === 'humano'">
               <div>
-                <dt class="text-ms-text-secondary">Atendente</dt>
-                <dd class="text-ms-text-primary">{{ row.atendente }}</dd>
-              </div>
-              <div>
-                <dt class="text-ms-text-secondary">CPF atendente</dt>
-                <dd class="text-ms-text-primary">{{ row.atendenteCpf ?? '—' }}</dd>
-              </div>
-              <div>
-                <dt class="text-ms-text-secondary">Equipe</dt>
-                <dd class="text-ms-text-primary">{{ row.atendenteEquipe ?? '—' }}</dd>
-              </div>
-              <div>
                 <dt class="text-ms-text-secondary">SLA</dt>
-                <dd class="text-ms-text-primary">{{ row.sla }}</dd>
+                <dd class="text-ms-text-primary">{{ row.sla ?? '—' }}</dd>
               </div>
             </template>
             <template v-else>
               <div>
-                <dt class="text-ms-text-secondary">Concluído</dt>
-                <dd class="text-ms-text-primary">{{ row.concluidoHora }}</dd>
-              </div>
-              <div>
-                <dt class="text-ms-text-secondary">Atendente</dt>
-                <dd class="text-ms-text-primary">{{ row.atendente }}</dd>
-              </div>
-              <div>
-                <dt class="text-ms-text-secondary">Equipe</dt>
-                <dd class="text-ms-text-primary">{{ row.atendenteEquipe ?? '—' }}</dd>
-              </div>
-              <div>
-                <dt class="text-ms-text-secondary">Tempo total</dt>
-                <dd class="text-ms-text-primary">{{ row.total }}</dd>
+                <dt class="text-ms-text-secondary">Avaliação</dt>
+                <dd class="text-ms-text-primary">{{ row.estrelas != null ? `${row.estrelas} ★` : '—' }}</dd>
               </div>
             </template>
           </dl>
