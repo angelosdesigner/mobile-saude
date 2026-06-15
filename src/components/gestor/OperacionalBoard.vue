@@ -7,7 +7,6 @@ import ChannelTag from '@/components/ui/ChannelTag.vue'
 import type { KanbanColumn } from '@/components/ui/kanbanBoard'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
 import { stages, type PillTone, type SlaState, type Prioridade } from '@/types/gestorOcorrencias'
-import type { GestorCard } from '@/types/gestorOcorrencias'
 
 const store = useGestorOcorrenciasStore()
 const { board, headerByStage } = storeToRefs(store)
