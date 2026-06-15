@@ -76,7 +76,31 @@ export const fluxosBot: FluxoBot[] = [
   { fluxo: '2ª via de Boleto', atend: 1845, retencao: 91, transferencia: 7, abandono: 2, tma: '1:08', nps: 4.8, tEspHumano: '0:45', status: 'OK' },
 ]
 
-// ── 4) BOT vs Atendimento Humano (comparativo) ───────────────────────────────
+// ── 4) Correlação operacional (tabela diagnóstica por fluxo) ─────────────────
+export type CorrelStatus = 'Crítico' | 'Alto' | 'Médio' | 'OK'
+export type FluxoCorrel = {
+  fluxo: string
+  volume: number
+  retencao: number
+  abandono: number
+  transbordo: number
+  gargalo: string
+  status: CorrelStatus
+}
+export const correlacaoBot: FluxoCorrel[] = [
+  { fluxo: 'Envio de Documentos', volume: 2847, retencao: 59, abandono: 15, transbordo: 26, gargalo: 'Abandono alto na etapa Documentação', status: 'Crítico' },
+  { fluxo: 'Cancelamento', volume: 892, retencao: 42, abandono: 6, transbordo: 52, gargalo: 'Baixa retenção → BOT não cobre os motivos', status: 'Crítico' },
+  { fluxo: 'Atualização Cadastral', volume: 1247, retencao: 68, abandono: 7, transbordo: 25, gargalo: 'Transbordo elevado (25%)', status: 'Alto' },
+  { fluxo: 'Reembolso Status', volume: 1685, retencao: 78, abandono: 4, transbordo: 18, gargalo: 'NPS baixo (3.7) apesar da retenção', status: 'Médio' },
+  { fluxo: 'Autorização Prévia', volume: 2103, retencao: 72, abandono: 4, transbordo: 24, gargalo: 'Estável; leve transbordo', status: 'Médio' },
+  { fluxo: 'Consulta de Carência', volume: 1428, retencao: 84, abandono: 3, transbordo: 13, gargalo: 'Sem gargalo relevante', status: 'OK' },
+  { fluxo: 'Agendamento', volume: 800, retencao: 88, abandono: 3, transbordo: 9, gargalo: 'Sem gargalo identificado', status: 'OK' },
+  { fluxo: '2ª via de Boleto', volume: 1845, retencao: 91, abandono: 2, transbordo: 7, gargalo: 'Fluxo modelo (alta retenção)', status: 'OK' },
+]
+export const comoInterpretarBot =
+  'Score Crítico = 2+ dimensões fora do limite simultaneamente. Fluxos com baixa retenção (<60%) E abandono alto (>10%) indicam falha de UX na automação. Transbordo alto (>40%) com baixa retenção sugere que o fluxo não deveria permanecer no BOT.'
+
+// ── 5) BOT vs Atendimento Humano (comparativo) ───────────────────────────────
 export interface BotVsHumano {
   metrica: string
   bot: string

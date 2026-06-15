@@ -16,12 +16,15 @@ import {
   evolucao,
   evolucaoMetricas,
   fluxosBot,
+  correlacaoBot,
+  comoInterpretarBot,
   botVsHumano,
   jornadaFluxos,
   diagnosticoBot,
   recomendacoesBot,
   proximoGargalo,
   type FluxoStatus,
+  type CorrelStatus,
 } from '@/data/gestorAutomacaoBot'
 
 // Tela de detalhe "Central de Automação" (Atendimentos → Atendimento
@@ -154,6 +157,24 @@ const statusTone: Record<FluxoStatus, { text: string; dot: string }> = {
 const retencaoTone = (v: number) => (v >= 70 ? 'text-ms-success' : v >= 50 ? 'text-ms-warning' : 'text-ms-danger')
 const abandonoTone = (v: number) => (v >= 10 ? 'text-ms-danger' : v >= 5 ? 'text-ms-warning' : 'text-ms-success')
 
+// ── Correlação operacional (tabela diagnóstica por fluxo) ────────────────────
+const correlStatusOrder: Record<CorrelStatus, number> = { OK: 0, Médio: 1, Alto: 2, Crítico: 3 }
+const correlColumns: DataListColumn[] = [
+  { key: 'fluxo', label: 'Fluxo', minWidth: 180, sortable: true },
+  { key: 'volume', label: 'Volume', align: 'right', width: 100, sortable: true },
+  { key: 'retencao', label: 'Retenção', align: 'right', width: 100, sortBy: (r) => r.retencao as number },
+  { key: 'abandono', label: 'Abandono', align: 'right', width: 100, sortBy: (r) => r.abandono as number },
+  { key: 'transbordo', label: 'Transbordo', align: 'right', width: 110, sortBy: (r) => r.transbordo as number },
+  { key: 'gargalo', label: 'Gargalo', minWidth: 240 },
+  { key: 'status', label: 'Status', width: 120, sortBy: (r) => correlStatusOrder[r.status as CorrelStatus] },
+]
+const correlStatusTone: Record<CorrelStatus, { text: string; dot: string }> = {
+  Crítico: { text: 'text-ms-danger', dot: 'bg-ms-danger' },
+  Alto: { text: 'text-ms-warning', dot: 'bg-ms-warning' },
+  Médio: { text: 'text-ms-warning', dot: 'bg-ms-warning/60' },
+  OK: { text: 'text-ms-success', dot: 'bg-ms-success' },
+}
+
 // ── Jornada do BOT (funil por fluxo) ─────────────────────────────────────────
 const jornadaAtiva = ref(jornadaFluxos[0].key)
 const jornada = computed(() => jornadaFluxos.find((j) => j.key === jornadaAtiva.value) ?? jornadaFluxos[0])
@@ -244,22 +265,6 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
       />
     </div>
 
-    <!-- 3) Evolução -->
-    <ChartCard
-      title="Evolução dos indicadores do BOT"
-      subtitle="Comparativo período anterior · Meta"
-      class="mb-5"
-    >
-      <div class="mb-2">
-        <el-select v-model="metrica" size="small" class="!w-40">
-          <el-option v-for="m in evolucaoMetricas" :key="m" :label="m" :value="m" />
-        </el-select>
-      </div>
-      <div class="h-72 w-full">
-        <VChart class="h-full w-full" :option="evolucaoOption" autoresize />
-      </div>
-    </ChartCard>
-
     <!-- 2) Todos os fluxos do BOT -->
     <ChartCard
       title="Todos os fluxos BOT · ordenados por abandono"
@@ -295,7 +300,65 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
       </DataList>
     </ChartCard>
 
-    <!-- 4) BOT vs Atendimento Humano -->
+    <!-- 3) Evolução -->
+    <ChartCard
+      title="Evolução dos indicadores do BOT"
+      subtitle="Comparativo período anterior · Meta"
+      class="mb-5"
+    >
+      <div class="mb-2">
+        <el-select v-model="metrica" size="small" class="!w-40">
+          <el-option v-for="m in evolucaoMetricas" :key="m" :label="m" :value="m" />
+        </el-select>
+      </div>
+      <div class="h-72 w-full">
+        <VChart class="h-full w-full" :option="evolucaoOption" autoresize />
+      </div>
+    </ChartCard>
+
+    <!-- 4) Correlação operacional -->
+    <ChartCard
+      title="Correlação operacional"
+      subtitle="Volume × Retenção × Abandono × Transbordo · Por fluxo · Identificação de gargalos"
+      class="mb-3"
+    >
+      <DataList
+        :columns="correlColumns"
+        :rows="correlacaoBot"
+        row-key="fluxo"
+        :selectable="false"
+        :expandable="false"
+        :actions="false"
+        count-label="fluxos"
+      >
+        <template #cell-retencao="{ row }">
+          <span class="font-medium" :class="retencaoTone(row.retencao)">{{ row.retencao }}%</span>
+        </template>
+        <template #cell-abandono="{ row }">
+          <span class="font-medium" :class="abandonoTone(row.abandono)">{{ row.abandono }}%</span>
+        </template>
+        <template #cell-transbordo="{ row }">{{ row.transbordo }}%</template>
+        <template #cell-gargalo="{ row }">
+          <span class="text-xs text-ms-text-regular">{{ row.gargalo }}</span>
+        </template>
+        <template #cell-status="{ row }">
+          <span class="flex items-center gap-1.5 text-xs font-semibold" :class="correlStatusTone[row.status].text">
+            <span class="h-2 w-2 rounded-full" :class="correlStatusTone[row.status].dot" />{{ row.status }}
+          </span>
+        </template>
+      </DataList>
+    </ChartCard>
+    <div
+      class="mb-5 flex items-start gap-2 rounded-lg border border-ms-primary/20 bg-ms-primary/5 px-3 py-2.5"
+    >
+      <span class="text-ms-primary">ℹ</span>
+      <div class="text-xs text-ms-text-regular">
+        <span class="font-semibold text-ms-text-primary">Como interpretar</span>
+        <p class="mt-0.5 leading-relaxed">{{ comoInterpretarBot }}</p>
+      </div>
+    </div>
+
+    <!-- 5) BOT vs Atendimento Humano -->
     <div class="mb-1 text-xs font-bold uppercase tracking-wide text-ms-text-secondary">
       BOT vs Atendimento Humano
     </div>
