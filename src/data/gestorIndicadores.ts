@@ -196,70 +196,121 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
 
 export { dias }
 
-// ── Segmentação (dispersão): Volume × TME, tamanho = volume da equipe, COR = fila.
+// ── Segmentação (dispersão): Volume × indicador ativo, tamanho = volume da
+// equipe, COR = fila. Cada segmento (canal × fila × equipe) carrega o valor de
+// TODOS os indicadores, então o eixo Y reflete o indicador selecionado e os
+// rótulos/críticos ficam coerentes em qualquer ?ind=.
 export type FilaCor = 'duvidas' | 'reembolso' | 'autoriz'
 
-export interface BolhaSegmento {
-  nome: string
-  volume: number // eixo X
-  tme: number // eixo Y (min)
-  size: number
-  fila: FilaCor
-  caption: string
-  critico?: boolean
+// Direção "melhor": FCR/Resolução/NPS = maior melhor; TME/TMEF/TMA/Abandono = menor.
+export const indicadorMaiorMelhor: Record<IndicadorKey, boolean> = {
+  fcr: true,
+  resolucao: true,
+  nps: true,
+  tme: false,
+  tmef: false,
+  tma: false,
+  abandono: false,
 }
 
-export const segmentacao: BolhaSegmento[] = [
+// Unidade de cada indicador (sufixo dos rótulos/eixo Y da dispersão).
+export const indicadorUnidade: Record<IndicadorKey, string> = {
+  fcr: '%',
+  resolucao: '%',
+  tme: 'min',
+  tmef: 'min',
+  tma: 'min',
+  nps: '',
+  abandono: '%',
+}
+
+// Rótulo curto do eixo Y por indicador.
+export const indicadorEixoY: Record<IndicadorKey, string> = {
+  fcr: 'FCR %',
+  resolucao: 'Resolução %',
+  tme: 'TME (min)',
+  tmef: 'TMEF (min)',
+  tma: 'TMA (min)',
+  nps: 'NPS',
+  abandono: 'Abandono %',
+}
+
+export interface SegmentoBase {
+  nome: string // rótulo completo (canal · fila · equipe)
+  equipe: string // rótulo curto exibido na bolha (Eq. A…)
+  volume: number // eixo X
+  size: number // diâmetro da bolha (∝ volume)
+  fila: FilaCor
+  metrics: Record<IndicadorKey, number> // valor de cada indicador no segmento
+}
+
+// 8 segmentos reais. Os valores são internamente coerentes: o pior segmento
+// (Tel·Dúv.Adm·Renata) é o pior em TODOS os indicadores; os de Balcão/Financeiro
+// são os melhores; chat supera telefone, etc.
+export const segmentosBase: SegmentoBase[] = [
   {
-    nome: 'Eq.A · Chat/WhatsApp·Dúv.Adm',
+    nome: 'WhatsApp · Dúvidas Adm. · Eq. A',
+    equipe: 'Eq. A',
     volume: 1800,
-    tme: 7,
     size: 42,
     fila: 'duvidas',
-    caption: '88% · 1.800 atend',
+    metrics: { fcr: 88, resolucao: 94, tme: 6, tmef: 3.5, tma: 11, nps: 58, abandono: 4.2 },
   },
   {
-    nome: 'Eq.B · Telefone·Dúv.Adm',
-    volume: 620,
-    tme: 16,
-    size: 28,
+    nome: 'Telefone · Dúvidas Adm. · Eq. B',
+    equipe: 'Eq. B',
+    volume: 1170,
+    size: 30,
     fila: 'duvidas',
-    caption: '71%',
+    metrics: { fcr: 71, resolucao: 86, tme: 16, tmef: 5.8, tma: 17, nps: 42, abandono: 11.5 },
   },
   {
-    nome: 'Eq.C · Chat/WhatsApp·Reembolso',
+    nome: 'Chat · Reembolso · Eq. C',
+    equipe: 'Eq. C',
     volume: 760,
-    tme: 8,
-    size: 30,
+    size: 28,
     fila: 'reembolso',
-    caption: '82%',
+    metrics: { fcr: 82, resolucao: 90, tme: 8, tmef: 4.0, tma: 13, nps: 50, abandono: 6.0 },
   },
   {
-    nome: 'Eq.A · Balcão·Autorizações',
-    volume: 300,
-    tme: 4,
-    size: 22,
+    nome: 'Balcão · Autorizações · Eq. A',
+    equipe: 'Eq. A',
+    volume: 2050,
+    size: 24,
     fila: 'autoriz',
-    caption: '95%',
+    metrics: { fcr: 95, resolucao: 97, tme: 4, tmef: 2.5, tma: 9, nps: 66, abandono: 2.0 },
   },
-  { nome: 'Eq.D · WA·Financeiro', volume: 2600, tme: 6, size: 48, fila: 'autoriz', caption: '98%' },
   {
-    nome: 'Eq.B · Tel·Dúv.Adm·Renata',
-    volume: 660,
-    tme: 18,
+    nome: 'WhatsApp · Financeiro · Eq. D',
+    equipe: 'Eq. D',
+    volume: 2200,
+    size: 48,
+    fila: 'autoriz',
+    metrics: { fcr: 98, resolucao: 98, tme: 6, tmef: 3.0, tma: 10, nps: 70, abandono: 3.0 },
+  },
+  {
+    nome: 'Telefone · Dúvidas Adm. · Renata · Eq. B',
+    equipe: 'Eq. B',
+    volume: 720,
     size: 30,
     fila: 'duvidas',
-    caption: 'CRÍTICO 65%',
-    critico: true,
+    metrics: { fcr: 65, resolucao: 82, tme: 18, tmef: 6.5, tma: 19, nps: 36, abandono: 18.2 },
   },
-  { nome: 'Eq.C · Chat/WhatsApp·Reemb.', volume: 1150, tme: 9, size: 36, fila: 'reembolso', caption: '82%' },
   {
-    nome: 'Eq.A · Tel·Autorizações',
-    volume: 2350,
-    tme: 12,
+    nome: 'Chat · Reembolso · Eq. D',
+    equipe: 'Eq. D',
+    volume: 1420,
+    size: 36,
+    fila: 'reembolso',
+    metrics: { fcr: 82, resolucao: 91, tme: 9, tmef: 4.2, tma: 14, nps: 48, abandono: 6.4 },
+  },
+  {
+    nome: 'Telefone · Autorizações · Eq. A',
+    equipe: 'Eq. A',
+    volume: 1650,
     size: 46,
     fila: 'autoriz',
-    caption: '84%',
+    metrics: { fcr: 84, resolucao: 92, tme: 12, tmef: 4.5, tma: 16, nps: 52, abandono: 7.5 },
   },
 ]
 

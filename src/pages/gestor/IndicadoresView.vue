@@ -10,9 +10,12 @@ import {
   indicadorKpis,
   detalhePorIndicador,
   dias,
-  segmentacao,
+  segmentosBase,
   segmentacaoLegenda,
   segmentosCriticos,
+  indicadorMaiorMelhor,
+  indicadorUnidade,
+  indicadorEixoY,
   diagnostico,
   recomendacoes,
   type IndicadorKey,
@@ -151,44 +154,85 @@ const evolucaoOption = computed(() => ({
   ],
 }))
 
-const segmentacaoOption = computed(() => ({
-  tooltip: {
-    trigger: 'item',
-    formatter: (p: { data: [number, number, number, string, string] }) =>
-      `${p.data[3]}<br/>Volume: ${p.data[0]} · TME ${p.data[1]}min<br/>${p.data[4]}`,
-  },
-  grid: { left: 40, right: 16, top: 16, bottom: 40 },
-  xAxis: {
-    type: 'value',
-    name: 'Volume de Atendimentos',
-    nameLocation: 'middle',
-    nameGap: 26,
-    nameTextStyle: { color: C.axis, fontSize: 10 },
-    axisLabel: { color: C.axis, fontSize: 10 },
-    splitLine: { lineStyle: { color: C.split } },
-  },
-  yAxis: {
-    type: 'value',
-    axisLabel: { color: C.axis, fontSize: 10 },
-    splitLine: { lineStyle: { color: C.split } },
-  },
-  series: [
-    {
-      type: 'scatter',
-      symbolSize: (d: number[]) => d[2],
-      data: segmentacao.map((s) => ({
-        value: [s.volume, s.tme, s.size, s.nome, s.caption],
-        itemStyle: { color: filaColor.value[s.fila], opacity: 0.75 },
-      })),
-      markLine: {
-        silent: true,
-        symbol: 'none',
-        lineStyle: { color: C.success, type: 'dashed' },
-        data: [{ yAxis: detalhe.value.meta, label: { formatter: 'Meta', color: C.success } }],
-      },
+// Formata o valor de um indicador (sufixo de unidade; pt-BR usa vírgula decimal).
+function fmtIndicador(ind: IndicadorKey, v: number): string {
+  const u = indicadorUnidade[ind]
+  const n = Number.isInteger(v) ? String(v) : v.toFixed(1).replace('.', ',')
+  return u ? `${n}${u}` : n
+}
+
+// Segmento "crítico" = pior que a meta (direção depende do indicador).
+function segmentoCritico(ind: IndicadorKey, v: number, meta: number): boolean {
+  return indicadorMaiorMelhor[ind] ? v < meta : v > meta
+}
+
+const segmentacaoSubtitulo = computed(
+  () =>
+    `Volume × ${indicadorEixoY[active.value]} por canal, fila e equipe — identifique gargalos em 1 view`,
+)
+
+const segmentacaoOption = computed(() => {
+  const ind = active.value
+  const meta = detalhe.value.meta
+  return {
+    tooltip: {
+      trigger: 'item',
+      formatter: (p: { data: { value: [number, number, number, string, string] } }) =>
+        `${p.data.value[3]}<br/>Volume: ${p.data.value[0]} atend.<br/>${indicadorEixoY[ind]}: ${p.data.value[4]}`,
     },
-  ],
-}))
+    grid: { left: 44, right: 16, top: 16, bottom: 40 },
+    xAxis: {
+      type: 'value',
+      name: 'Volume de Atendimentos',
+      nameLocation: 'middle',
+      nameGap: 26,
+      nameTextStyle: { color: C.axis, fontSize: 10 },
+      axisLabel: { color: C.axis, fontSize: 10 },
+      splitLine: { lineStyle: { color: C.split } },
+    },
+    yAxis: {
+      type: 'value',
+      name: indicadorEixoY[ind],
+      nameTextStyle: { color: C.axis, fontSize: 10, align: 'left' },
+      axisLabel: { color: C.axis, fontSize: 10 },
+      splitLine: { lineStyle: { color: C.split } },
+    },
+    series: [
+      {
+        type: 'scatter',
+        symbolSize: (d: number[]) => d[2],
+        label: {
+          show: true,
+          position: 'inside',
+          formatter: (p: { data: { equipe: string } }) => p.data.equipe,
+          color: C.axis,
+          fontSize: 9,
+          fontWeight: 600,
+        },
+        data: segmentosBase.map((s) => {
+          const v = s.metrics[ind]
+          const critico = segmentoCritico(ind, v, meta)
+          return {
+            value: [s.volume, v, s.size, s.nome, fmtIndicador(ind, v)],
+            equipe: s.equipe,
+            itemStyle: {
+              color: filaColor.value[s.fila],
+              opacity: 0.78,
+              borderColor: critico ? C.danger : 'transparent',
+              borderWidth: critico ? 2 : 0,
+            },
+          }
+        }),
+        markLine: {
+          silent: true,
+          symbol: 'none',
+          lineStyle: { color: C.success, type: 'dashed' },
+          data: [{ yAxis: meta, label: { formatter: 'Meta', color: C.success } }],
+        },
+      },
+    ],
+  }
+})
 
 function tendTone(t: string): string {
   if (t.startsWith('Piorando')) return 'text-ms-danger'
@@ -282,9 +326,12 @@ const segmentoColumns: DataListColumn[] = [
         </div>
       </ChartCard>
 
-      <div class="space-y-4">
+      <!-- Comparações + Piores segmentos dividem a altura da Evolução temporal
+           (grid de 2 linhas iguais) — evita que o card transborde sobre a
+           Segmentação abaixo. -->
+      <div class="grid grid-rows-2 gap-4">
         <ChartCard title="Comparações">
-          <div class="space-y-2">
+          <div class="flex flex-1 flex-col justify-center gap-2">
             <div
               v-for="c in detalhe.comparacoes"
               :key="c.label"
@@ -300,7 +347,7 @@ const segmentoColumns: DataListColumn[] = [
           </div>
         </ChartCard>
         <ChartCard title="Piores segmentos">
-          <div class="space-y-2">
+          <div class="flex flex-1 flex-col justify-center gap-2">
             <div
               v-for="s in detalhe.pioresSegmentos"
               :key="s.label"
@@ -315,11 +362,7 @@ const segmentoColumns: DataListColumn[] = [
     </div>
 
     <!-- Segmentação -->
-    <ChartCard
-      title="Segmentação"
-      subtitle="Volume × TME por canal, fila, equipe e supervisor — identifique gargalos em 1 view"
-      class="mb-5"
-    >
+    <ChartCard title="Segmentação" :subtitle="segmentacaoSubtitulo" class="mb-5">
       <div class="h-72 w-full">
         <VChart class="h-full w-full" :option="segmentacaoOption" autoresize />
       </div>
