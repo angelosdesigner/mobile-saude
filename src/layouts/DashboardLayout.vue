@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppTopbar from '@/components/layout/AppTopbar.vue'
 import FilaFab from '@/components/fila/FilaFab.vue'
@@ -6,7 +8,12 @@ import EquipeStatusFloating from '@/components/gestor/EquipeStatusFloating.vue'
 import { useProfileStore } from '@/stores/profile'
 import { storeToRefs } from 'pinia'
 
-const { hasQueue, isGestor } = storeToRefs(useProfileStore())
+const { hasQueue } = storeToRefs(useProfileStore())
+const route = useRoute()
+
+// Mostra o status das equipes em todas as telas do gestor (/gestor/*),
+// independente do role selecionado no switcher — garante persistência.
+const showEquipeStatus = computed(() => route.path.startsWith('/gestor'))
 </script>
 
 <template>
@@ -28,7 +35,7 @@ const { hasQueue, isGestor } = storeToRefs(useProfileStore())
     <!-- Fila flutuante global — só para perfis que atendem a quente. -->
     <FilaFab v-if="hasQueue" />
 
-    <!-- Status das equipes — ação flutuante global do gestor (arrastável). -->
-    <EquipeStatusFloating v-if="isGestor" />
+    <!-- Status das equipes — fixo em todas as telas /gestor/* (arrastável). -->
+    <EquipeStatusFloating v-if="showEquipeStatus" />
   </div>
 </template>
