@@ -505,9 +505,9 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string;
         >← Voltar ao Dashboard</router-link
       >
       <button
-        v-if="ctxKey !== 'mensageria'"
+        v-if="ctxKey !== canalSaudavel.contexto"
         class="text-ms-text-secondary hover:underline"
-        @click="selecionar('mensageria')"
+        @click="selecionar(canalSaudavel.contexto)"
       >
         Canal saudável:
         <span class="font-medium text-ms-success"

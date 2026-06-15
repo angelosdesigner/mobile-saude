@@ -152,7 +152,7 @@ export const contextos: Record<CanalContexto, ContextoCanal> = {
       { titulo: 'Ampliar BOT de triagem', corpo: 'Aumentar a cobertura do BOT para FAQs e 2ª via, reduzindo o volume que chega ao humano.', impacto: 'Volume humano -18%', acao: 'Detalhar' },
       { titulo: 'Respostas rápidas para FAQ', corpo: 'Habilitar templates de resposta rápida para as 10 dúvidas mais frequentes.', impacto: 'TMA -25%', acao: 'Detalhar' },
     ],
-    canaisDestaque: ['WhatsApp', 'Chat'],
+    canaisDestaque: ['Chat/WhatsApp'],
   },
   telefone: {
     label: 'Telefone',
@@ -242,9 +242,11 @@ export type CanalLinha = {
   esperaTone?: 'danger'
 }
 
+// Chat e WhatsApp são o MESMO tipo de canal (mensageria) → linha única
+// "Chat/WhatsApp" (atendentes/espera/atend./finalizados somados; TME e SLA
+// ponderados pelo volume: TME (2.1·384+1.8·218)/602 ≈ 2.0min; SLA ≈ 86%).
 export const operacaoAgora: CanalLinha[] = [
-  { canal: 'WhatsApp', atendentes: 14, emEspera: 12, emAtendimento: 47, finalizados: 384, tme: '2.1 min', sla: 84, slaTone: 'warning' },
-  { canal: 'Chat', atendentes: 8, emEspera: 4, emAtendimento: 21, finalizados: 218, tme: '1.8 min', sla: 92, slaTone: 'success' },
+  { canal: 'Chat/WhatsApp', atendentes: 22, emEspera: 16, emAtendimento: 68, finalizados: 602, tme: '2.0 min', sla: 86, slaTone: 'warning' },
   { canal: 'Telefone', atendentes: 12, emEspera: 47, emAtendimento: 38, finalizados: 156, tme: '2.4 min', sla: 71, slaTone: 'danger', esperaTone: 'danger' },
   { canal: 'Balcão', atendentes: 3, emEspera: 5, emAtendimento: 8, finalizados: 89, tme: '4.2 min', sla: 88, slaTone: 'success' },
   { canal: 'Portal Web', atendentes: 2, emEspera: 1, emAtendimento: 4, finalizados: 42, tme: '1.2 min', sla: 95, slaTone: 'success' },
@@ -265,10 +267,11 @@ export type CorrelLinha = {
   status: CorrelStatus
 }
 
+// Chat/WhatsApp unificados (volume somado 1456+920=2376; SLA/TME/ocup./espera
+// ponderados pelo volume: SLA ≈ 75%, TME ≈ 6:50, ocup. ≈ 81%, espera ≈ 8:38).
 export const correlacao: CorrelLinha[] = [
   { canal: 'Telefone', volume: 276, sla: 61, tme: '9:23', ocupacao: 95, espera: '12:41', gargalo: 'Alta ocupação → TME elevado', status: 'Crítico' },
-  { canal: 'WhatsApp', volume: 1456, sla: 79, tme: '6:14', ocupacao: 83, espera: '8:02', gargalo: 'Volume alto → fila crescente', status: 'Alto' },
-  { canal: 'Chat', volume: 920, sla: 68, tme: '7:48', ocupacao: 78, espera: '9:34', gargalo: 'SLA < meta; espera > 9min', status: 'Alto' },
+  { canal: 'Chat/WhatsApp', volume: 2376, sla: 75, tme: '6:50', ocupacao: 81, espera: '8:38', gargalo: 'Volume alto → SLA e espera pressionados', status: 'Alto' },
   { canal: 'App', volume: 89, sla: 55, tme: '12:40', ocupacao: 91, espera: '18:20', gargalo: 'Baixo vol., alta ocup. → gargalo', status: 'Crítico' },
   { canal: 'Portal Web', volume: 412, sla: 74, tme: '5:17', ocupacao: 62, espera: '4:48', gargalo: 'Estável; ligeira piora no TME', status: 'Médio' },
   { canal: 'Balcão', volume: 143, sla: 96, tme: '2:34', ocupacao: 58, espera: '1:12', gargalo: 'Sem gargalo identificado', status: 'OK' },
@@ -277,5 +280,5 @@ export const correlacao: CorrelLinha[] = [
 export const comoInterpretar =
   'Score Crítico = 2+ dimensões acima do limite simultaneamente. Canais com Alta Ocupação (>85%) E TME elevado (>8min) indicam subdimensionamento da equipe. Canais com SLA < meta E T. Espera alta indicam problema de roteamento ou fila mal configurada.'
 
-// Rodapé: canal saudável de referência.
-export const canalSaudavel = { nome: 'Chat', sla: 92 }
+// Rodapé: tipo de canal saudável de referência (atalho para o contexto).
+export const canalSaudavel = { nome: 'Balcão', sla: 88, contexto: 'balcao' as CanalContexto }
