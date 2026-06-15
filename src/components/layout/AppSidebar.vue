@@ -4,6 +4,8 @@ import { useRoute } from 'vue-router'
 import BrandLogo from './BrandLogo.vue'
 import { useProfileStore } from '@/stores/profile'
 import { storeToRefs } from 'pinia'
+import { ocupacaoFila, chamadasNaFila, demandaCapacidade } from '@/data/gestorTempoReal'
+import { porCanal as abandonoPorCanal } from '@/data/gestorAbandonos'
 
 const route = useRoute()
 const { hasQueue, isGestor } = storeToRefs(useProfileStore())
@@ -53,6 +55,23 @@ const gestorItems: NavItem[] = [
 const items = computed<NavItem[]>(() => (isGestor.value ? gestorItems : atendenteItems.value))
 
 const isActive = (to: string) => route.path === to || route.path.startsWith(to + '/')
+
+// ── Indicadores gestor (rodapé da sidebar) ────────────────────────────────────
+// Visíveis em qualquer rota /gestor/*, independente do role switcher.
+const showIndicadores = computed(() => route.path.startsWith('/gestor'))
+
+// Cor das barras de ocupação
+function barCor(v: number) {
+  return v >= 85 ? 'bg-ms-danger' : v >= 70 ? 'bg-ms-warning' : 'bg-ms-success'
+}
+function textCor(v: number) {
+  return v >= 85 ? 'text-ms-danger' : v >= 70 ? 'text-ms-warning' : 'text-ms-success'
+}
+
+// Demanda × Capacidade: pico do dia
+const peakDemanda = Math.max(...demandaCapacidade.demanda)
+const peakHora = demandaCapacidade.horas[demandaCapacidade.demanda.indexOf(peakDemanda)]
+const excesso = peakDemanda - demandaCapacidade.capacidade
 </script>
 
 <template>
@@ -156,5 +175,174 @@ const isActive = (to: string) => route.path === to || route.path.startsWith(to +
         </component>
       </el-tooltip>
     </nav>
+
+    <!-- ── Indicadores rápidos (gestor) ───────────────────────────────────── -->
+    <div v-if="showIndicadores" class="mt-auto border-t border-ms-border p-2">
+      <!-- Label da seção (só quando expandido) -->
+      <div v-if="expanded" class="mb-1 px-3 text-2xs font-semibold uppercase tracking-wide text-ms-text-placeholder">
+        Indicadores
+      </div>
+
+      <!-- 1. Ocupação por Fila -->
+      <el-popover
+        trigger="hover"
+        placement="right"
+        :width="248"
+        :show-after="250"
+        :hide-after="100"
+        popper-class="!p-0 !rounded-xl !border-ms-border-light !shadow-xl"
+      >
+        <template #reference>
+          <router-link
+            :to="{ path: '/gestor/tempo-real', query: { tab: 'filas' } }"
+            class="relative flex h-10 items-center rounded-lg no-underline transition text-ms-text-regular hover:bg-ms-fill-light hover:text-ms-primary"
+            :class="expanded ? 'gap-3 px-3' : 'justify-center'"
+          >
+            <span class="relative shrink-0">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="9" width="4" height="12" rx="1" />
+                <rect x="10" y="5" width="4" height="16" rx="1" />
+                <rect x="17" y="2" width="4" height="19" rx="1" />
+              </svg>
+              <span class="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-ms-danger ring-2 ring-ms-surface" />
+            </span>
+            <span v-if="expanded" class="flex-1 truncate text-sm">Ocupação por Fila</span>
+          </router-link>
+        </template>
+        <!-- Preview -->
+        <div class="p-3">
+          <div class="mb-2.5 text-xs font-semibold text-ms-text-primary">Ocupação por Fila</div>
+          <div class="space-y-2">
+            <div v-for="q in ocupacaoFila" :key="q.label">
+              <div class="mb-0.5 flex items-center justify-between">
+                <span class="text-2xs text-ms-text-regular truncate pr-2">{{ q.label }}</span>
+                <span class="shrink-0 text-2xs font-semibold" :class="textCor(q.value)">{{ q.value }}%</span>
+              </div>
+              <div class="h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
+                <div class="h-full rounded-full" :class="barCor(q.value)" :style="{ width: q.value + '%' }" />
+              </div>
+            </div>
+          </div>
+          <router-link
+            :to="{ path: '/gestor/tempo-real', query: { tab: 'filas' } }"
+            class="mt-3 block text-2xs text-ms-primary no-underline hover:underline"
+          >
+            Ver Filas →
+          </router-link>
+        </div>
+      </el-popover>
+
+      <!-- 2. Demanda × Capacidade -->
+      <el-popover
+        trigger="hover"
+        placement="right"
+        :width="248"
+        :show-after="250"
+        :hide-after="100"
+        popper-class="!p-0 !rounded-xl !border-ms-border-light !shadow-xl"
+      >
+        <template #reference>
+          <router-link
+            :to="{ path: '/gestor/tempo-real', query: { tab: 'inicio' } }"
+            class="relative flex h-10 items-center rounded-lg no-underline transition text-ms-text-regular hover:bg-ms-fill-light hover:text-ms-primary"
+            :class="expanded ? 'gap-3 px-3' : 'justify-center'"
+          >
+            <span class="relative shrink-0">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+              <span class="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-ms-warning ring-2 ring-ms-surface" />
+            </span>
+            <span v-if="expanded" class="flex-1 truncate text-sm">Demanda × Capacidade</span>
+          </router-link>
+        </template>
+        <!-- Preview -->
+        <div class="p-3">
+          <div class="mb-2.5 text-xs font-semibold text-ms-text-primary">Demanda × Capacidade</div>
+          <div class="space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-ms-text-secondary">Pico hoje</span>
+              <span class="font-semibold text-ms-danger">{{ peakDemanda }} atend. · {{ peakHora }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-ms-text-secondary">Capacidade</span>
+              <span class="font-semibold text-ms-text-primary">{{ demandaCapacidade.capacidade }} atend.</span>
+            </div>
+            <div class="flex items-center justify-between border-t border-ms-border-lighter pt-2">
+              <span class="text-ms-text-secondary">Excesso no pico</span>
+              <span class="font-semibold text-ms-danger">+{{ excesso }}</span>
+            </div>
+          </div>
+          <div class="mt-2.5 rounded-lg bg-ms-warning/10 px-2.5 py-1.5 text-2xs text-ms-warning">
+            ⚠ Período crítico: 12h–16h
+          </div>
+          <router-link
+            :to="{ path: '/gestor/tempo-real', query: { tab: 'inicio' } }"
+            class="mt-3 block text-2xs text-ms-primary no-underline hover:underline"
+          >
+            Ver gráfico →
+          </router-link>
+        </div>
+      </el-popover>
+
+      <!-- 3. Abandono -->
+      <el-popover
+        trigger="hover"
+        placement="right"
+        :width="248"
+        :show-after="250"
+        :hide-after="100"
+        popper-class="!p-0 !rounded-xl !border-ms-border-light !shadow-xl"
+      >
+        <template #reference>
+          <router-link
+            :to="{ path: '/gestor/tempo-real', query: { tab: 'abandonos' } }"
+            class="relative flex h-10 items-center rounded-lg no-underline transition text-ms-text-regular hover:bg-ms-fill-light hover:text-ms-primary"
+            :class="expanded ? 'gap-3 px-3' : 'justify-center'"
+          >
+            <span class="relative shrink-0">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+                <polyline points="17 18 23 18 23 12" />
+              </svg>
+              <span class="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-ms-danger ring-2 ring-ms-surface" />
+            </span>
+            <span v-if="expanded" class="flex-1 truncate text-sm">Abandono</span>
+          </router-link>
+        </template>
+        <!-- Preview -->
+        <div class="p-3">
+          <div class="mb-2.5 text-xs font-semibold text-ms-text-primary">Abandono</div>
+          <!-- KPI principal -->
+          <div class="mb-3 flex items-end justify-between">
+            <div>
+              <div class="text-2xl font-bold text-ms-danger">{{ chamadasNaFila.abandono }}%</div>
+              <div class="text-2xs text-ms-text-secondary">{{ chamadasNaFila.delta }}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-2xs text-ms-text-placeholder">Meta</div>
+              <div class="text-sm font-semibold text-ms-text-primary">5%</div>
+            </div>
+          </div>
+          <!-- Breakdown por canal -->
+          <div class="mb-1 text-2xs font-semibold uppercase tracking-wide text-ms-text-placeholder">Por canal</div>
+          <div class="space-y-1.5">
+            <div v-for="c in abandonoPorCanal.itens" :key="c.name" class="flex items-center gap-2">
+              <span class="flex-1 text-2xs text-ms-text-regular truncate">{{ c.name }}</span>
+              <div class="h-1.5 w-16 overflow-hidden rounded-full bg-ms-fill-light">
+                <div class="h-full rounded-full bg-ms-danger" :style="{ width: parseFloat(c.pct) * 5 + '%' }" />
+              </div>
+              <span class="w-8 text-right text-2xs font-medium text-ms-danger">{{ c.pct }}</span>
+            </div>
+          </div>
+          <router-link
+            :to="{ path: '/gestor/tempo-real', query: { tab: 'abandonos' } }"
+            class="mt-3 block text-2xs text-ms-primary no-underline hover:underline"
+          >
+            Ver Abandonos →
+          </router-link>
+        </div>
+      </el-popover>
+    </div>
   </aside>
 </template>
