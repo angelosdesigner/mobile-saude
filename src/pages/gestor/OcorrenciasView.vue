@@ -63,7 +63,7 @@ const contextBadges = computed(() => {
   if (f.canal) out.push({ key: 'canal', label: `Canal: ${f.canal}` })
   if (f.fila) out.push({ key: 'fila', label: `Fila: ${f.fila}` })
   if (f.atendente) out.push({ key: 'atendente', label: `Atendente: ${f.atendente}` })
-  if (f.stage) out.push({ key: 'stage', label: `Estágio: ${stageMeta[f.stage]?.label ?? f.stage}` })
+  if (f.stage) out.push({ key: 'stage', label: `Etapa atual: ${etapaLabel[f.stage] ?? f.stage}` })
   if (f.prioridade) out.push({ key: 'prioridade', label: `Prioridade: ${f.prioridade}` })
   if (f.tipo) out.push({ key: 'tipo', label: `Tipo: ${f.tipo}` })
   return out
