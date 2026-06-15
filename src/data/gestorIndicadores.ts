@@ -211,7 +211,7 @@ export interface BolhaSegmento {
 
 export const segmentacao: BolhaSegmento[] = [
   {
-    nome: 'Eq.A · WhatsApp·Dúv.Adm',
+    nome: 'Eq.A · Chat/WhatsApp·Dúv.Adm',
     volume: 1800,
     tme: 7,
     size: 42,
@@ -227,7 +227,7 @@ export const segmentacao: BolhaSegmento[] = [
     caption: '71%',
   },
   {
-    nome: 'Eq.C · Chat·Reembolso',
+    nome: 'Eq.C · Chat/WhatsApp·Reembolso',
     volume: 760,
     tme: 8,
     size: 30,
@@ -252,7 +252,7 @@ export const segmentacao: BolhaSegmento[] = [
     caption: 'CRÍTICO 65%',
     critico: true,
   },
-  { nome: 'Eq.C · Chat·Reemb.', volume: 1150, tme: 9, size: 36, fila: 'reembolso', caption: '82%' },
+  { nome: 'Eq.C · Chat/WhatsApp·Reemb.', volume: 1150, tme: 9, size: 36, fila: 'reembolso', caption: '82%' },
   {
     nome: 'Eq.A · Tel·Autorizações',
     volume: 2350,
@@ -330,7 +330,7 @@ export const segmentosCriticos: SegmentoLinha[] = [
     acao: 'Investigar',
   },
   {
-    segmento: 'Chat · Dúvidas Adm. · Eq. B',
+    segmento: 'Chat/WhatsApp · Dúvidas Adm. · Eq. B',
     volume: 412,
     atendidos: 378,
     abandonados: 34,
@@ -344,7 +344,7 @@ export const segmentosCriticos: SegmentoLinha[] = [
     acao: 'Investigar',
   },
   {
-    segmento: 'WhatsApp · Dúvidas Adm. · Eq. A',
+    segmento: 'Chat/WhatsApp · Dúvidas Adm. · Eq. A',
     volume: 528,
     atendidos: 489,
     abandonados: 39,
@@ -358,7 +358,7 @@ export const segmentosCriticos: SegmentoLinha[] = [
     acao: '—',
   },
   {
-    segmento: 'Chat · Reembolso · Eq. C',
+    segmento: 'Chat/WhatsApp · Reembolso · Eq. C',
     volume: 318,
     atendidos: 276,
     abandonados: 42,
@@ -372,7 +372,7 @@ export const segmentosCriticos: SegmentoLinha[] = [
     acao: 'Investigar',
   },
   {
-    segmento: 'WhatsApp · Autorizações · Eq. A',
+    segmento: 'Chat/WhatsApp · Autorizações · Eq. A',
     volume: 245,
     atendidos: 221,
     abandonados: 24,

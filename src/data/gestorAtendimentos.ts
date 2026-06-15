@@ -14,8 +14,7 @@ export const ocupacaoCanal = [
 export const tmeCanal = {
   gauge: { value: 12, max: 20, status: 'Crítico' as const },
   bars: [
-    { label: 'WhatsApp', value: 14 },
-    { label: 'Chat', value: 8 },
+    { label: 'Chat/WhatsApp', value: 12 },
     { label: 'Telefone', value: 4 },
   ],
 }

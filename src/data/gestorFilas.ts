@@ -16,7 +16,7 @@ export const filaMetrics: FilaMetric[] = [
   { label: 'Total em fila', value: '29', sub: 'todos os canais', tone: 'default' },
   { label: 'Espera média', value: '6m 18s', sub: '↑ 2min vs. ontem', tone: 'danger' },
   { label: 'Capacidade livre', value: '22%', sub: '3 de 14 disponíveis', tone: 'warning' },
-  { label: 'Maior espera', value: '14min', sub: 'WhatsApp · Fila N1', tone: 'danger' },
+  { label: 'Maior espera', value: '14min', sub: 'Chat/WhatsApp · Fila N1', tone: 'danger' },
   { label: 'Alertas de fila', value: '8', sub: 'atend. acima do limite de TME', tone: 'danger' },
 ]
 
@@ -45,9 +45,8 @@ export interface FilaPonto {
 export const filaScatter: FilaPonto[] = [
   { nome: 'Reembolso', pessoas: 12, tme: 14, sla: 45 },
   { nome: 'Autorização', pessoas: 8, tme: 9, sla: 62 },
-  { nome: 'Chat', pessoas: 6, tme: 6, sla: 78 },
+  { nome: 'Chat/WhatsApp', pessoas: 10, tme: 5, sla: 85 },
   { nome: 'Telefone', pessoas: 3, tme: 3, sla: 95 },
-  { nome: 'WhatsApp', pessoas: 4, tme: 4, sla: 92 },
 ]
 
 export const bannerFilaWarn =

@@ -22,7 +22,9 @@ export const stages: StageMeta[] = [
   { key: 'concluido', label: 'Concluídos hoje', tone: 'teal' },
 ]
 
-export type Canal = 'WhatsApp' | 'Portal' | 'App' | 'Telefone' | 'Chat'
+// Chat e WhatsApp são o MESMO canal — tratados como "Chat/WhatsApp" nos
+// agregados (ver normalizeCanal). No nível do card usamos 'WhatsApp'.
+export type Canal = 'WhatsApp' | 'Portal' | 'App' | 'Telefone'
 
 // Pílula de status do card (Novo, Chatbot, URA, App, Financeiro…).
 export type PillTone = 'primary' | 'info' | 'warning' | 'success'

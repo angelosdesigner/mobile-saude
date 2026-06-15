@@ -160,7 +160,7 @@ export interface SegmentoCritico {
 
 export const segmentosCriticos: SegmentoCritico[] = [
   {
-    canal: 'WhatsApp',
+    canal: 'Chat/WhatsApp',
     fila: 'Financeiro',
     turno: 'Manhã',
     volume: 842,
@@ -171,7 +171,7 @@ export const segmentosCriticos: SegmentoCritico[] = [
     status: 'CRÍTICO',
   },
   {
-    canal: 'WhatsApp',
+    canal: 'Chat/WhatsApp',
     fila: 'Financeiro',
     turno: 'Tarde',
     volume: 614,
@@ -182,7 +182,7 @@ export const segmentosCriticos: SegmentoCritico[] = [
     status: 'OK',
   },
   {
-    canal: 'Chat',
+    canal: 'Chat/WhatsApp',
     fila: 'Suporte',
     turno: 'Manhã',
     volume: 531,
@@ -193,7 +193,7 @@ export const segmentosCriticos: SegmentoCritico[] = [
     status: 'ALERTA',
   },
   {
-    canal: 'Chat',
+    canal: 'Chat/WhatsApp',
     fila: 'Suporte',
     turno: 'Tarde',
     volume: 389,

@@ -69,7 +69,7 @@ describe('useGestorOcorrenciasStore · filtros de contexto (drill-down)', () => 
     store.setContext({ canal: 'Chat/WhatsApp' })
     expect(store.filtered.length).toBeGreaterThan(0)
     expect(store.filtered.every((c) => normalizeCanal(c.channel) === 'Chat/WhatsApp')).toBe(true)
-    expect(store.filtered.every((c) => c.channel === 'Chat' || c.channel === 'WhatsApp')).toBe(true)
+    expect(store.filtered.every((c) => c.channel === 'WhatsApp')).toBe(true)
   })
 
   it('filtra por atendente (match exato)', () => {
