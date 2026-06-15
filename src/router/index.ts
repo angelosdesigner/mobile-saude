@@ -66,6 +66,14 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Operação por Canal' },
   },
   {
+    // Detalhe "Gestão de Filas e Atendimento Humano" (drill-down da aba Gestão
+    // de filas). Estrutura padrão das telas de detalhe.
+    path: '/gestor/filas-detalhe',
+    name: 'gestor-filas-detalhe',
+    component: () => import('@/pages/gestor/FilasDetalheView.vue'),
+    meta: { title: 'Gestão de Filas · Detalhes' },
+  },
+  {
     // Detalhe "Central de Automação" (drill-down de Atendimentos → Atendimento
     // automatizado) — Figma 7654:104067. Estrutura padrão das telas de detalhe.
     path: '/gestor/automacao-bot',

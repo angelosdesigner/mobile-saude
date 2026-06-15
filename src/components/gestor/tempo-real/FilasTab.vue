@@ -127,7 +127,7 @@ const filaScatterOption = computed(() => ({
     <SectionHeader
       title="Gestão de Filas"
       subtitle="Controle dos tempos de espera, ocupação e riscos operacionais."
-      action-to="/gestor/ocorrencias?view=lista&stage=fila"
+      action-to="/gestor/filas-detalhe"
     />
 
     <!-- Métricas -->
