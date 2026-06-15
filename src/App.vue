@@ -11,21 +11,9 @@ useThemeStore()
 
 <template>
   <el-config-provider :locale="ptBr">
-    <router-view v-slot="{ Component }">
-      <transition name="fade">
-        <component :is="Component" />
-      </transition>
-    </router-view>
+    <!-- Sem <transition> aqui: envolver <component :is> de rotas assíncronas em
+         transição causava bugs de navegação SPA (tela branca com mode="out-in";
+         página anterior presa no DOM com fade simultâneo). Swap direto é confiável. -->
+    <router-view />
   </el-config-provider>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.15s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>
