@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
@@ -43,12 +43,37 @@ const indAlias: Record<string, IndicadorKey> = {
 
 const active = computed<IndicadorKey>(() => indAlias[route.query.ind as string] ?? 'tme')
 const detalhe = computed(() => detalhePorIndicador[active.value])
+const evolucaoSubtitulo = computed(
+  () => `Janela: ${periodoAtivo.value} · comparativo vs período anterior e meta`,
+)
 
 function selecionar(key: IndicadorKey) {
   router.replace({ query: { ...route.query, ind: key } })
 }
 
+// Período ativo (reativo). Cada janela tem seus rótulos de eixo; as séries são
+// reamostradas (interpolação determinística) a partir da base de 7 pontos —
+// mock, mas o controle de fato muda a visualização (não é decorativo).
 const periodos = ['Hoje', '7d', '30d', 'Trimestre']
+const periodoAtivo = ref('7d')
+const periodoLabels: Record<string, string[]> = {
+  Hoje: ['08h', '10h', '12h', '14h', '16h', '18h', '20h'],
+  '7d': dias,
+  '30d': ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+  Trimestre: ['Mês 1', 'Mês 2', 'Mês 3'],
+}
+const eixoLabels = computed(() => periodoLabels[periodoAtivo.value] ?? dias)
+
+// Reamostra `arr` para `n` pontos por interpolação linear (determinístico).
+function resample(arr: number[], n: number): number[] {
+  if (n === arr.length || arr.length < 2) return arr.slice(0, n)
+  return Array.from({ length: n }, (_, i) => {
+    const t = (i / (n - 1)) * (arr.length - 1)
+    const lo = Math.floor(t)
+    const hi = Math.ceil(t)
+    return Number((arr[lo] + (arr[hi] - arr[lo]) * (t - lo)).toFixed(1))
+  })
+}
 
 const statusDot: Record<'ok' | 'warning' | 'danger', string> = {
   ok: 'bg-ms-success',
@@ -86,7 +111,7 @@ const evolucaoOption = computed(() => ({
   grid: { left: 36, right: 12, top: 16, bottom: 36 },
   xAxis: {
     type: 'category',
-    data: dias,
+    data: eixoLabels.value,
     axisLabel: { color: C.axis, fontSize: 10 },
     axisLine: { lineStyle: { color: C.split } },
   },
@@ -101,7 +126,7 @@ const evolucaoOption = computed(() => ({
       type: 'line',
       smooth: true,
       symbol: 'circle',
-      data: detalhe.value.serieAtual,
+      data: resample(detalhe.value.serieAtual, eixoLabels.value.length),
       lineStyle: { color: C.primary, width: 2 },
       itemStyle: { color: C.primary },
     },
@@ -110,7 +135,7 @@ const evolucaoOption = computed(() => ({
       type: 'line',
       smooth: true,
       symbol: 'none',
-      data: detalhe.value.serieAnterior,
+      data: resample(detalhe.value.serieAnterior, eixoLabels.value.length),
       lineStyle: { color: C.axis, type: 'dashed' },
       itemStyle: { color: C.axis },
     },
@@ -118,7 +143,7 @@ const evolucaoOption = computed(() => ({
       name: 'Meta',
       type: 'line',
       symbol: 'none',
-      data: dias.map(() => detalhe.value.meta),
+      data: eixoLabels.value.map(() => detalhe.value.meta),
       lineStyle: { color: C.success, type: 'dashed' },
       itemStyle: { color: C.success },
     },
@@ -207,7 +232,7 @@ const segmentoColumns: DataListColumn[] = [
           Análise temporal, comparativa e por segmento dos KPIs estratégicos da operação.
         </p>
       </div>
-      <el-radio-group :model-value="'7d'" size="small">
+      <el-radio-group v-model="periodoAtivo" size="small">
         <el-radio-button v-for="p in periodos" :key="p" :value="p">{{ p }}</el-radio-button>
       </el-radio-group>
     </div>
@@ -241,7 +266,7 @@ const segmentoColumns: DataListColumn[] = [
 
     <!-- Evolução temporal + comparações -->
     <div class="mb-5 grid gap-4 lg:grid-cols-3">
-      <ChartCard :title="detalhe.titulo" :subtitle="detalhe.subtitulo" class="lg:col-span-2">
+      <ChartCard :title="detalhe.titulo" :subtitle="evolucaoSubtitulo" class="lg:col-span-2">
         <div class="mb-1 flex items-baseline gap-2">
           <span class="text-2xl font-bold text-ms-text-primary">{{ detalhe.valor }}</span>
           <span
