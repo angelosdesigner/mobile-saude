@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { useTabsStore } from '@/stores/tabs'
 
 /**
  * App routes. Each Figma flow/screen becomes a route here so the screens are
@@ -135,10 +136,17 @@ const router = createRouter({
   },
 })
 
-// Atualiza o <title> da aba conforme a rota.
+// Atualiza o <title> da aba conforme a rota e sincroniza as abas da navbar
+// (SplitView). O store de abas é lazy: só é instanciado após o Pinia montar.
 router.afterEach((to) => {
   const base = 'Mobile Saúde'
   document.title = to.meta.title ? `${to.meta.title} · ${base}` : base
+  if (to.name === 'not-found') return
+  try {
+    useTabsStore().syncFromRoute(to)
+  } catch {
+    /* Pinia ainda não montado (improvável após o mount) */
+  }
 })
 
 export default router

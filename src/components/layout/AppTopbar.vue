@@ -5,7 +5,6 @@ import NotificacoesPanel from './NotificacoesPanel.vue'
 import { storeToRefs } from 'pinia'
 import { useNotificacoesStore } from '@/stores/notificacoes'
 import { useThemeStore } from '@/stores/theme'
-import { useActionFeedback } from '@/composables/useActionFeedback'
 import {
   useProfileStore,
   profileLabel,
@@ -14,6 +13,8 @@ import {
   type Profile,
   type Role,
 } from '@/stores/profile'
+import { useTabsStore, type AppTab } from '@/stores/tabs'
+import { appScreens, type AppScreen } from '@/data/appScreens'
 
 const route = useRoute()
 const router = useRouter()
@@ -22,8 +23,6 @@ const notifStore = useNotificacoesStore()
 const { unreadCount } = storeToRefs(notifStore)
 onMounted(() => notifStore.load())
 const notifOpen = ref(false)
-
-const { comingSoon } = useActionFeedback()
 
 const themeStore = useThemeStore()
 const { isDark } = storeToRefs(themeStore)
@@ -46,14 +45,35 @@ function onCommand(cmd: string) {
   }
 }
 
-const activeTitle = computed(() => (route.meta.title as string) ?? 'Início')
+// ── Abas da navbar (SplitView · Fase 1) ──────────────────────────────────────
+const tabsStore = useTabsStore()
+const { tabs, activeId } = storeToRefs(tabsStore)
+const addOpen = ref(false)
+
+// Telas do menu "+ Adicionar", agrupadas por contexto.
+const screenGroups = computed(() => {
+  const groups: Record<string, AppScreen[]> = {}
+  for (const s of appScreens) (groups[s.group] ??= []).push(s)
+  return groups
+})
+
+function activateTab(t: AppTab) {
+  if (t.fullPath !== route.fullPath) router.push(t.fullPath).catch(() => {})
+}
+function closeTab(t: AppTab) {
+  const navTo = tabsStore.closeTab(t.id)
+  if (navTo) router.push(navTo).catch(() => {})
+  else if (tabs.value.length === 0)
+    router.push(isGestor.value ? '/gestor' : '/inicio').catch(() => {})
+}
+function openScreen(s: AppScreen) {
+  addOpen.value = false
+  if (s.path !== route.path) router.push(s.path).catch(() => {})
+}
 
 // Status de disponibilidade (padrão de central de atendimento): Disponível
 // (verde, pronto para receber) ou Ocupado (vermelho, em atendimento).
 const status = ref<'Disponível' | 'Ocupado'>('Disponível')
-
-// "Abas" de protocolos abertos (mock, fiel ao design).
-const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
 </script>
 
 <template>
@@ -66,33 +86,88 @@ const protocolTabs = ['99999999992026031290920', '99999999992026031290923']
         <AppIcon name="chevron-left" class="h-4 w-4" />
       </el-button>
 
-      <div class="flex min-w-0 items-center gap-2 overflow-hidden">
-        <span
-          class="shrink-0 rounded-md border border-ms-primary px-3 py-1 text-sm font-medium text-ms-primary"
+      <!-- Abas abertas: cada uma navega para sua tela; fecháveis -->
+      <div class="flex min-w-0 items-center gap-1.5 overflow-x-auto">
+        <div
+          v-for="t in tabs"
+          :key="t.id"
+          class="group flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1 text-sm transition"
+          :class="
+            t.id === activeId
+              ? 'border-ms-primary font-medium text-ms-primary'
+              : 'border-ms-border-light text-ms-text-secondary hover:bg-ms-fill-light'
+          "
+          role="button"
+          :tabindex="0"
+          @click="activateTab(t)"
+          @keydown.enter="activateTab(t)"
         >
-          {{ activeTitle }}
-        </span>
-        <span
-          v-for="p in protocolTabs"
-          :key="p"
-          class="hidden shrink-0 truncate rounded-md border border-ms-border-light px-3 py-1 text-sm text-ms-text-secondary lg:block"
-        >
-          {{ p }}
-        </span>
+          <span class="max-w-[160px] truncate">{{ t.title }}</span>
+          <button
+            v-if="t.closable"
+            class="-mr-1 flex h-4 w-4 shrink-0 items-center justify-center rounded text-ms-text-placeholder transition hover:bg-ms-fill hover:text-ms-text-primary"
+            :aria-label="`Fechar ${t.title}`"
+            @click.stop="closeTab(t)"
+          >
+            <svg
+              class="h-3 w-3"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
 
-      <el-button text circle size="small" class="!text-ms-text-secondary" aria-label="Avançar">
+      <el-button
+        text
+        circle
+        size="small"
+        class="!text-ms-text-secondary"
+        aria-label="Avançar"
+        @click="router.forward()"
+      >
         <AppIcon name="chevron-right" class="h-4 w-4" />
       </el-button>
-      <el-button
-        type="primary"
-        size="small"
-        class="!px-2"
-        aria-label="Novo"
-        @click="comingSoon('Novo atendimento')"
+
+      <!-- Adicionar tela (atalhos do sistema) -->
+      <el-popover
+        v-model:visible="addOpen"
+        trigger="click"
+        :width="300"
+        placement="bottom-start"
+        popper-class="!p-0"
       >
-        <AppIcon name="plus" class="h-4 w-4" />
-      </el-button>
+        <template #reference>
+          <el-button type="primary" size="small" class="!px-2" aria-label="Adicionar tela">
+            <AppIcon name="plus" class="h-4 w-4" />
+          </el-button>
+        </template>
+        <div class="max-h-[60vh] overflow-y-auto py-2">
+          <div class="px-3 pb-1 text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">
+            Adicionar tela
+          </div>
+          <template v-for="(items, group) in screenGroups" :key="group">
+            <div
+              class="mt-1 px-3 pb-0.5 pt-1 text-2xs font-medium uppercase tracking-wide text-ms-text-placeholder"
+            >
+              {{ group }}
+            </div>
+            <button
+              v-for="s in items"
+              :key="s.path"
+              class="flex w-full items-center px-3 py-1.5 text-left text-sm text-ms-text-regular transition hover:bg-ms-fill-light hover:text-ms-primary"
+              @click="openScreen(s)"
+            >
+              {{ s.label }}
+            </button>
+          </template>
+        </div>
+      </el-popover>
     </div>
 
     <!-- Direita: tema + notificações + status + usuário -->
