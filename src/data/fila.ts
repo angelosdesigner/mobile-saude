@@ -65,4 +65,6 @@ export const filaItems: FilaItem[] = [
 export const filaStats = {
   total: 10,
   abandono: 3,
+  tmef: '8min',
+  maiorEspera: '18min',
 }

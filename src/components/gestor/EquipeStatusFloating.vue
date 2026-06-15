@@ -131,7 +131,7 @@ function verEquipe() {
     :style="
       pos
         ? { left: pos.left + 'px', top: pos.top + 'px' }
-        : { right: '24px', bottom: '24px' }
+        : { right: '24px', top: '68px' }
     "
   >
     <!-- ── Quick panel (aberto) ─────────────────────────────────────────── -->
