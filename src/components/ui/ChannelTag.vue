@@ -9,8 +9,10 @@ const props = defineProps<{ channel: string }>()
 function channelColor(c: string): string {
   if (/whats/i.test(c)) return '#25D366'
   if (/tele|fone|voz/i.test(c)) return 'var(--color-ms-primary)'
+  if (/^ura$/i.test(c)) return 'var(--color-ms-primary)'
   if (/app/i.test(c)) return 'var(--color-ms-teal)'
   if (/chat/i.test(c)) return 'var(--color-ms-warning)'
+  if (/balc|presencial/i.test(c)) return 'var(--color-ms-success)'
   return 'var(--color-ms-text-secondary)' // Portal/Web e demais
 }
 </script>

@@ -8,7 +8,7 @@
 //  - cell-<key>: conteúdo custom de uma célula (recebe { row })
 //  - expand: conteúdo do accordion (recebe { row })
 //  - footer-actions: área opcional no rodapé (ex.: "Criar")
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import ColumnManager from './ColumnManager.vue'
 import type { DataListColumn } from './dataList'
 
@@ -25,6 +25,7 @@ const props = withDefaults(
     paginated?: boolean
     pageSizes?: number[]
     defaultPageSize?: number
+    topScrollbar?: boolean
   }>(),
   {
     rowKey: 'id',
@@ -36,6 +37,7 @@ const props = withDefaults(
     paginated: true,
     pageSizes: () => [10, 20, 50, 100],
     defaultPageSize: 10,
+    topScrollbar: false,
   },
 )
 
@@ -88,10 +90,79 @@ const headerCellStyle = {
   fontWeight: '600',
   fontSize: '12px',
 }
+
+// ── Top scrollbar (mirrors the table body's horizontal scroll) ───────────────
+const tableWrap = ref<HTMLElement>()
+const topBar = ref<HTMLElement>()
+const topInner = ref<HTMLElement>()
+let scrollRo: ResizeObserver | null = null
+let syncLock = false
+
+function getBodyWrapper(): HTMLElement | null {
+  if (!tableWrap.value) return null
+  // EP 2.x wraps table body in el-scrollbar; the scrollable el is .el-scrollbar__wrap
+  return (tableWrap.value.querySelector('.el-table__body-wrapper .el-scrollbar__wrap') ??
+    tableWrap.value.querySelector('.el-table__body-wrapper')) as HTMLElement | null
+}
+
+function syncInnerWidth() {
+  const bw = getBodyWrapper()
+  if (!bw || !topInner.value) return
+  topInner.value.style.width = bw.scrollWidth + 'px'
+}
+
+function onTopScroll() {
+  if (syncLock) return
+  const bw = getBodyWrapper()
+  if (!bw || !topBar.value) return
+  syncLock = true
+  bw.scrollLeft = topBar.value.scrollLeft
+  syncLock = false
+}
+
+function onBodyScroll() {
+  if (syncLock) return
+  const bw = getBodyWrapper()
+  if (!bw || !topBar.value) return
+  syncLock = true
+  topBar.value.scrollLeft = bw.scrollLeft
+  syncLock = false
+}
+
+onMounted(() => {
+  if (!props.topScrollbar) return
+  nextTick(() => {
+    const bw = getBodyWrapper()
+    if (bw) {
+      bw.addEventListener('scroll', onBodyScroll, { passive: true })
+      scrollRo = new ResizeObserver(syncInnerWidth)
+      scrollRo.observe(bw)
+      syncInnerWidth()
+    }
+  })
+})
+
+onBeforeUnmount(() => {
+  scrollRo?.disconnect()
+  const bw = getBodyWrapper()
+  if (bw) bw.removeEventListener('scroll', onBodyScroll)
+})
 </script>
 
 <template>
   <el-card shadow="never" body-class="!p-0" class="!border-ms-border-light">
+    <!-- Top scrollbar — sincronizada com o scroll horizontal do corpo da tabela -->
+    <div
+      v-if="topScrollbar"
+      ref="topBar"
+      class="overflow-x-auto overflow-y-hidden border-b border-ms-border-light"
+      style="height: 12px"
+      @scroll.passive="onTopScroll"
+    >
+      <div ref="topInner" style="height: 1px; min-width: 100%" />
+    </div>
+
+    <div ref="tableWrap">
     <el-table
       :data="pagedRows"
       :row-key="rowKey"
@@ -174,6 +245,7 @@ const headerCellStyle = {
         </template>
       </el-table-column>
     </el-table>
+    </div><!-- /tableWrap -->
 
     <!-- Rodapé: ações + paginação (estilo Jira) -->
     <div

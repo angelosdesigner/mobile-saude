@@ -20,7 +20,7 @@ export const stages: StageMeta[] = [
   { key: 'concluido', label: 'Concluídos hoje', tone: 'teal' },
 ]
 
-export type Canal = 'WhatsApp' | 'Portal' | 'App' | 'Telefone'
+export type Canal = 'WhatsApp' | 'Portal' | 'App' | 'Telefone' | 'Balcão/Presencial' | 'URA'
 
 export type PillTone = 'primary' | 'info' | 'warning' | 'success'
 export interface CardPill {
@@ -37,27 +37,33 @@ export interface GestorCard {
   stage: GestorStage
   beneficiary: string
   channel: Canal
+  // identificação do beneficiário
+  protocolo?: string      // número de 11 dígitos
+  cpf?: string            // CPF do beneficiário (formato "000.000.000-00")
+  perfilTipo?: string     // ex.: "Titular", "Dependente"
   // automatizado
   fluxo?: string
-  no?: string        // nó atual do bot
-  tempoBot?: string  // tempo no atendimento automatizado
+  no?: string             // nó atual do bot
+  tempoBot?: string       // tempo no atendimento automatizado
   flag?: string
   risco?: boolean
   // fila
   filaTipo?: string
   posicao?: number
   espera?: string
-  pill?: CardPill    // origem: Chatbot, App, URA…
+  pill?: CardPill          // origem: Chatbot, App, URA…
   prioridade?: Prioridade
   destaque?: boolean
   // humano
   atendente?: string
+  atendenteCpf?: string   // CPF do atendente
+  atendenteEquipe?: string // equipe do atendente
   tempoAtendimento?: string
   sla?: SlaState
   // concluído
   concluidoHora?: string
   total?: string
-  estrelas?: number  // avaliação de satisfação (NPS/CSAT do card)
+  estrelas?: number        // avaliação de satisfação (NPS/CSAT do card)
 }
 
 export interface StatusPill {

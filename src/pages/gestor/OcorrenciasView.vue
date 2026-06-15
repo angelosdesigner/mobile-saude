@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import OperacionalBoard from '@/components/gestor/OperacionalBoard.vue'
 import DataList from '@/components/ui/DataList.vue'
+import ChannelTag from '@/components/ui/ChannelTag.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import FilterChips from '@/components/ui/FilterChips.vue'
 import { useActionFeedback } from '@/composables/useActionFeedback'
@@ -64,17 +65,32 @@ const contextBadges = computed(() => {
 
 // ── Modo Lista (mesma fonte do Kanban; colunas próprias da visão do gestor) ──
 const listColumns: DataListColumn[] = [
-  { key: 'beneficiary', label: 'Beneficiário', minWidth: 220, sortable: true },
-  { key: 'stage', label: 'Estágio', width: 160 },
-  { key: 'channel', label: 'Canal', width: 120 },
-  { key: 'atendente', label: 'Atendente', minWidth: 160 },
-  { key: 'situacao', label: 'Situação', minWidth: 180 },
+  { key: 'protocolo', label: 'Protocolo', width: 148, locked: true,
+    sortBy: (r) => (r as unknown as GestorCard).protocolo ?? '' },
+  { key: 'contato', label: 'Contato', minWidth: 240,
+    sortBy: (r) => (r as unknown as GestorCard).beneficiary },
+  { key: 'atendente', label: 'Atendente', minWidth: 200,
+    sortBy: (r) => (r as unknown as GestorCard).atendente ?? '' },
+  { key: 'canal', label: 'Canal', width: 160,
+    sortBy: (r) => (r as unknown as GestorCard).channel },
+  { key: 'etapaAtual', label: 'Etapa atual', width: 168 },
+  { key: 'detalheEtapa', label: 'Detalhe da etapa', minWidth: 200 },
+  { key: 'tempoAtual', label: 'Tempo atual', width: 120,
+    sortBy: (r) => parseTempoSec(r as unknown as GestorCard) },
 ]
 
 const stageMeta = Object.fromEntries(stages.map((s) => [s.key, s])) as Record<
   GestorCard['stage'],
   (typeof stages)[number]
 >
+
+// Rótulos da coluna "Etapa atual" (lista) — distintos dos headers do Kanban.
+const etapaLabel: Record<GestorCard['stage'], string> = {
+  automatizado: 'Chatbot',
+  fila: 'Fila',
+  humano: 'Atendimento humano',
+  concluido: 'Concluídos no dia',
+}
 
 const stageTagClass: Record<StageTone, string> = {
   primary: 'bg-ms-primary/10 text-ms-primary',
@@ -83,17 +99,41 @@ const stageTagClass: Record<StageTone, string> = {
   success: 'bg-ms-success/10 text-ms-success',
 }
 
-// "Situação" resumida por estágio (mesma informação dos cards do Kanban).
-function situacao(c: GestorCard): string {
-  if (c.stage === 'automatizado') return c.flag ?? c.fluxo ?? '—'
-  if (c.stage === 'fila') return `Posição ${c.posicao}º · ${c.espera}`
-  if (c.stage === 'humano') return `${c.sla} · ${c.tempoAtendimento}`
-  return `Concluído ${c.concluidoHora} · ${c.total}`
+// Detalhe da etapa por estágio.
+function detalheEtapa(c: GestorCard): string {
+  if (c.stage === 'automatizado') {
+    const parts = [c.fluxo, c.no].filter(Boolean)
+    return parts.length ? parts.join(' / ') : '—'
+  }
+  if (c.stage === 'fila') return `${c.filaTipo ?? '—'} · Posição ${c.posicao ?? '—'}º`
+  if (c.stage === 'humano') return `Em conversa · SLA ${c.sla ?? '—'}`
+  return `Resolvido às ${c.concluidoHora ?? '—'}`
+}
+
+// Tempo atual (campo depende do estágio).
+function tempoAtual(c: GestorCard): string {
+  if (c.stage === 'automatizado') return c.tempoBot ?? '—'
+  if (c.stage === 'fila') return c.espera ?? '—'
+  if (c.stage === 'humano') return c.tempoAtendimento ?? '—'
+  return c.total ?? '—'
+}
+
+// Segundos para ordenação numérica da coluna Tempo atual.
+function parseTempoSec(c: GestorCard): number {
+  const t = tempoAtual(c)
+  if (t === '—') return 0
+  const ms = t.match(/(\d+)m(\d+)s/)
+  if (ms) return parseInt(ms[1]) * 60 + parseInt(ms[2])
+  const min = t.match(/(\d+)min/)
+  if (min) return parseInt(min[1]) * 60
+  const m = t.match(/(\d+)m/)
+  if (m) return parseInt(m[1]) * 60
+  return 0
 }
 
 const { comingSoon } = useActionFeedback()
 
-function onVisualizar(c: GestorCard) {
+function onVisualizar(c: GestorCard): void {
   ElMessage.info(`Visualizar: ${c.beneficiary}`)
 }
 function onEditar(c: GestorCard) {
@@ -241,6 +281,7 @@ const pillDot: Record<StageTone | 'info', string> = {
         :rows="filtered"
         count-label="ocorrências"
         empty-text="Nenhuma ocorrência para os filtros aplicados"
+        top-scrollbar
         @visualizar="onVisualizar"
         @editar="onEditar"
       >
@@ -249,28 +290,82 @@ const pillDot: Record<StageTone | 'info', string> = {
             <AppIcon name="plus" class="mr-1 h-3.5 w-3.5" />Criar
           </el-button>
         </template>
-        <!-- Estágio (tag) -->
-        <template #cell-stage="{ row }">
-          <span
-            class="rounded-full px-2 py-0.5 text-2xs font-medium"
-            :class="stageTagClass[stageMeta[row.stage].tone]"
-            >{{ stageMeta[row.stage].label }}</span
-          >
+
+        <!-- Protocolo -->
+        <template #cell-protocolo="{ row }">
+          <span class="font-mono text-xs tracking-wide text-ms-text-primary">
+            {{ row.protocolo ?? '—' }}
+          </span>
         </template>
-        <!-- Atendente -->
+
+        <!-- Contato: nome + tipo de perfil + CPF -->
+        <template #cell-contato="{ row }">
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-medium leading-tight text-ms-text-primary">{{ row.beneficiary }}</span>
+            <div class="flex items-center gap-1.5">
+              <span
+                v-if="row.perfilTipo"
+                class="rounded px-1 py-px text-2xs font-medium"
+                :class="row.perfilTipo === 'Titular'
+                  ? 'bg-ms-primary/10 text-ms-primary'
+                  : 'bg-ms-teal/10 text-ms-teal'"
+              >{{ row.perfilTipo }}</span>
+              <span class="text-2xs text-ms-text-secondary">{{ row.cpf ?? '—' }}</span>
+            </div>
+          </div>
+        </template>
+
+        <!-- Atendente: nome + CPF + equipe -->
         <template #cell-atendente="{ row }">
-          <span :class="row.atendente ? 'text-ms-text-regular' : 'text-ms-text-placeholder'">{{
-            row.atendente ?? '—'
-          }}</span>
+          <div v-if="row.atendente" class="flex flex-col gap-0.5">
+            <span class="text-sm font-medium leading-tight text-ms-text-primary">{{ row.atendente }}</span>
+            <span class="text-2xs text-ms-text-secondary">
+              {{ row.atendenteCpf ?? '' }}
+              <template v-if="row.atendenteCpf && row.atendenteEquipe"> · </template>
+              {{ row.atendenteEquipe ?? '' }}
+            </span>
+          </div>
+          <span v-else class="text-ms-text-placeholder">—</span>
         </template>
-        <!-- Situação -->
-        <template #cell-situacao="{ row }">
-          <span class="text-ms-text-regular">{{ situacao(row) }}</span>
+
+        <!-- Canal -->
+        <template #cell-canal="{ row }">
+          <ChannelTag :channel="row.channel" />
+        </template>
+
+        <!-- Etapa atual (tag colorida) -->
+        <template #cell-etapaAtual="{ row }">
+          <span
+            class="rounded-full px-2.5 py-0.5 text-2xs font-medium"
+            :class="stageTagClass[stageMeta[row.stage].tone]"
+          >{{ etapaLabel[row.stage] }}</span>
+        </template>
+
+        <!-- Detalhe da etapa -->
+        <template #cell-detalheEtapa="{ row }">
+          <span class="text-xs text-ms-text-regular">{{ detalheEtapa(row) }}</span>
+        </template>
+
+        <!-- Tempo atual -->
+        <template #cell-tempoAtual="{ row }">
+          <span class="text-xs font-medium text-ms-text-primary">{{ tempoAtual(row) }}</span>
         </template>
 
         <!-- Accordion: detalhes completos por estágio -->
         <template #expand="{ row }">
           <dl class="grid grid-cols-2 gap-x-8 gap-y-1 text-xs md:grid-cols-4">
+            <div>
+              <dt class="text-ms-text-secondary">Protocolo</dt>
+              <dd class="font-mono text-ms-text-primary">{{ row.protocolo ?? '—' }}</dd>
+            </div>
+            <div>
+              <dt class="text-ms-text-secondary">CPF</dt>
+              <dd class="text-ms-text-primary">{{ row.cpf ?? '—' }}</dd>
+            </div>
+            <div>
+              <dt class="text-ms-text-secondary">Perfil</dt>
+              <dd class="text-ms-text-primary">{{ row.perfilTipo ?? '—' }}</dd>
+            </div>
             <div>
               <dt class="text-ms-text-secondary">Canal</dt>
               <dd class="text-ms-text-primary">{{ row.channel }}</dd>
@@ -279,6 +374,10 @@ const pillDot: Record<StageTone | 'info', string> = {
               <div>
                 <dt class="text-ms-text-secondary">Fluxo</dt>
                 <dd class="text-ms-text-primary">{{ row.fluxo ?? '—' }}</dd>
+              </div>
+              <div>
+                <dt class="text-ms-text-secondary">Nó</dt>
+                <dd class="text-ms-text-primary">{{ row.no ?? '—' }}</dd>
               </div>
               <div>
                 <dt class="text-ms-text-secondary">Sinalização</dt>
@@ -304,6 +403,10 @@ const pillDot: Record<StageTone | 'info', string> = {
                 <dt class="text-ms-text-secondary">Espera</dt>
                 <dd class="text-ms-text-primary">{{ row.espera }}</dd>
               </div>
+              <div>
+                <dt class="text-ms-text-secondary">Prioridade</dt>
+                <dd class="text-ms-text-primary">{{ row.prioridade ?? '—' }}</dd>
+              </div>
             </template>
             <template v-else-if="row.stage === 'humano'">
               <div>
@@ -311,8 +414,12 @@ const pillDot: Record<StageTone | 'info', string> = {
                 <dd class="text-ms-text-primary">{{ row.atendente }}</dd>
               </div>
               <div>
-                <dt class="text-ms-text-secondary">Tempo</dt>
-                <dd class="text-ms-text-primary">{{ row.tempoAtendimento }}</dd>
+                <dt class="text-ms-text-secondary">CPF atendente</dt>
+                <dd class="text-ms-text-primary">{{ row.atendenteCpf ?? '—' }}</dd>
+              </div>
+              <div>
+                <dt class="text-ms-text-secondary">Equipe</dt>
+                <dd class="text-ms-text-primary">{{ row.atendenteEquipe ?? '—' }}</dd>
               </div>
               <div>
                 <dt class="text-ms-text-secondary">SLA</dt>
@@ -327,6 +434,10 @@ const pillDot: Record<StageTone | 'info', string> = {
               <div>
                 <dt class="text-ms-text-secondary">Atendente</dt>
                 <dd class="text-ms-text-primary">{{ row.atendente }}</dd>
+              </div>
+              <div>
+                <dt class="text-ms-text-secondary">Equipe</dt>
+                <dd class="text-ms-text-primary">{{ row.atendenteEquipe ?? '—' }}</dd>
               </div>
               <div>
                 <dt class="text-ms-text-secondary">Tempo total</dt>
