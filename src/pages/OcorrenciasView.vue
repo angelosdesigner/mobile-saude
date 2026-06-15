@@ -132,7 +132,10 @@ const showAvancados = ref(false)
             </span>
           </el-radio-button>
         </el-radio-group>
-        <el-button @click="showColumns = true">Configurar colunas</el-button>
+        <!-- No modo lista, a configuração de colunas fica no ▥ da própria tabela. -->
+        <el-button v-if="viewMode === 'quadro'" @click="showColumns = true"
+          >Configurar colunas</el-button
+        >
       </div>
     </div>
 

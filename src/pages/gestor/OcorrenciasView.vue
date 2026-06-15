@@ -268,7 +268,10 @@ const pillDot: Record<StageTone | 'info', string> = {
       </template>
       <div class="ml-auto flex items-center gap-2">
         <el-button @click="comingSoon('Status Atendimento')">Status Atendimento</el-button>
-        <el-button @click="comingSoon('Configurar colunas')">Configurar colunas</el-button>
+        <!-- No modo lista, a configuração de colunas fica no ▥ da própria tabela. -->
+        <el-button v-if="viewMode === 'quadro'" @click="comingSoon('Configurar colunas')"
+          >Configurar colunas</el-button
+        >
       </div>
     </div>
 
