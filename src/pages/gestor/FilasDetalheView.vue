@@ -6,6 +6,7 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import KpiStatCard from '@/components/gestor/KpiStatCard.vue'
 import RecomendacoesIA from '@/components/gestor/RecomendacoesIA.vue'
+import IndicadorSelector from '@/components/gestor/IndicadorSelector.vue'
 import DataList from '@/components/ui/DataList.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import { useChartColors } from '@/plugins/echarts'
@@ -45,7 +46,7 @@ const router = useRouter()
 
 const periodoAtivo = ref<string>('Hoje')
 const indicadorAtivo = ref<Indicador>('TME')
-const graficoPeriodo = ref<string>('Hoje')
+const graficoPeriodo = ref<(typeof graficoPeriodos)[number]>('Hoje')
 
 // Filas ativas no gráfico (toggle). Default: as marcadas em `ativoPadrao`.
 const filasAtivas = ref<string[]>(filasEvolucao.filter((f) => f.ativoPadrao).map((f) => f.key))
@@ -382,22 +383,8 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
     >
       <!-- Controles -->
       <div class="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div class="flex items-center gap-2">
-          <span class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary"
-            >Indicador:</span
-          >
-          <el-radio-group v-model="indicadorAtivo" size="small">
-            <el-radio-button v-for="i in indicadores" :key="i" :value="i">{{ i }}</el-radio-button>
-          </el-radio-group>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary"
-            >Período:</span
-          >
-          <el-radio-group v-model="graficoPeriodo" size="small">
-            <el-radio-button v-for="p in graficoPeriodos" :key="p" :value="p">{{ p }}</el-radio-button>
-          </el-radio-group>
-        </div>
+        <IndicadorSelector v-model="indicadorAtivo" label="Indicador:" :options="indicadores" />
+        <IndicadorSelector v-model="graficoPeriodo" label="Período:" :options="graficoPeriodos" />
       </div>
       <!-- Chips de fila (toggle) -->
       <div class="mb-3 flex flex-wrap items-center gap-2">

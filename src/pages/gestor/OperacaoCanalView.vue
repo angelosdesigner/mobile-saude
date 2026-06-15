@@ -6,6 +6,7 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import KpiStatCard from '@/components/gestor/KpiStatCard.vue'
 import RecomendacoesIA from '@/components/gestor/RecomendacoesIA.vue'
+import IndicadorSelector from '@/components/gestor/IndicadorSelector.vue'
 import DataList from '@/components/ui/DataList.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import { useChartColors } from '@/plugins/echarts'
@@ -51,7 +52,7 @@ const isGeral = computed(() => ctxKey.value === 'geral')
 const destacado = (canal: string) => ctx.value.canaisDestaque.includes(canal)
 
 const periodoAtivo = ref<string>('Hoje')
-const metrica = ref<string>('SLA')
+const metrica = ref<(typeof evolucaoMetricas)[number]>('SLA')
 
 const toneText: Record<'success' | 'warning' | 'danger' | 'neutral' | 'primary', string> = {
   success: 'text-ms-success',
@@ -369,9 +370,7 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string;
     <!-- 3) Evolução -->
     <ChartCard :title="evolucaoTitulo" :subtitle="evolucaoSubtitulo" class="mb-5">
       <div class="mb-2">
-        <el-select v-model="metrica" size="small" class="!w-36">
-          <el-option v-for="m in evolucaoMetricas" :key="m" :label="m" :value="m" />
-        </el-select>
+        <IndicadorSelector v-model="metrica" label="Métrica:" :options="evolucaoMetricas" />
       </div>
       <div class="h-72 w-full">
         <VChart class="h-full w-full" :option="evolucaoOption" autoresize />

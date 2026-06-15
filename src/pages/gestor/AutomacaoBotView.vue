@@ -5,6 +5,7 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import KpiStatCard from '@/components/gestor/KpiStatCard.vue'
 import RecomendacoesIA from '@/components/gestor/RecomendacoesIA.vue'
+import IndicadorSelector from '@/components/gestor/IndicadorSelector.vue'
 import DataList from '@/components/ui/DataList.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import { useChartColors } from '@/plugins/echarts'
@@ -34,7 +35,7 @@ const C = useChartColors()
 const { comingSoon } = useActionFeedback()
 
 const periodoAtivo = ref<string>('Hoje')
-const metrica = ref<string>('Retenção')
+const metrica = ref<(typeof evolucaoMetricas)[number]>('Retenção')
 const isAbandono = computed(() => metrica.value === 'Abandono')
 
 // ── Evolução ──────────────────────────────────────────────────────────────────
@@ -307,9 +308,7 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
       class="mb-5"
     >
       <div class="mb-2">
-        <el-select v-model="metrica" size="small" class="!w-40">
-          <el-option v-for="m in evolucaoMetricas" :key="m" :label="m" :value="m" />
-        </el-select>
+        <IndicadorSelector v-model="metrica" label="Indicador:" :options="evolucaoMetricas" />
       </div>
       <div class="h-72 w-full">
         <VChart class="h-full w-full" :option="evolucaoOption" autoresize />

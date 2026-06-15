@@ -81,6 +81,7 @@ declare module 'vue' {
     FloatingDock: typeof import('./src/components/ocorrencias/FloatingDock.vue')['default']
     IndicadoresGerais: typeof import('./src/components/gestor/IndicadoresGerais.vue')['default']
     IndicadoresTab: typeof import('./src/components/gestor/tempo-real/IndicadoresTab.vue')['default']
+    IndicadorSelector: typeof import('./src/components/gestor/IndicadorSelector.vue')['default']
     InicioTab: typeof import('./src/components/gestor/tempo-real/InicioTab.vue')['default']
     KanbanBoard: typeof import('./src/components/ui/KanbanBoard.vue')['default']
     KanbanCard: typeof import('./src/components/ui/KanbanCard.vue')['default']
