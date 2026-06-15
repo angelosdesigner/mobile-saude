@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { filaItems, filaStats } from '@/data/fila'
+import { filaItems, filaStats, type FilaItem } from '@/data/fila'
 import FilaCard from './FilaCard.vue'
+
+const emit = defineEmits<{ select: [item: FilaItem] }>()
 
 const search = ref('')
 const items = computed(() =>
@@ -54,7 +56,7 @@ const items = computed(() =>
 
     <!-- Lista -->
     <div class="flex-1 space-y-2 overflow-y-auto px-4 pb-4 pt-3">
-      <FilaCard v-for="item in items" :key="item.id" :item="item" />
+      <FilaCard v-for="item in items" :key="item.id" :item="item" @select="emit('select', $event)" />
       <p v-if="!items.length" class="py-6 text-center text-xs text-ms-text-secondary">
         Nenhum atendimento encontrado
       </p>

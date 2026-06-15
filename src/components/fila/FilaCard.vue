@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { FilaItem } from '@/data/fila'
 
-defineProps<{ item: FilaItem }>()
+const props = defineProps<{ item: FilaItem }>()
+const emit = defineEmits<{ select: [item: FilaItem] }>()
 </script>
 
 <template>
@@ -12,6 +13,7 @@ defineProps<{ item: FilaItem }>()
         ? 'border-ms-success bg-ms-success/5'
         : 'border-ms-border-light bg-ms-surface'
     "
+    @click="emit('select', props.item)"
   >
     <!-- Linha 1: nome + unread + hora -->
     <div class="flex items-start justify-between gap-2">
