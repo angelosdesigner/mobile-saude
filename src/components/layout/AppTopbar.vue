@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import NotificacoesPanel from './NotificacoesPanel.vue'
 import { storeToRefs } from 'pinia'
@@ -71,6 +71,43 @@ function openScreen(s: AppScreen) {
   if (s.path !== route.path) router.push(s.path).catch(() => {})
 }
 
+// ── Rolagem horizontal das abas (sem scrollbar; setas + fade nas bordas) ──────
+const tabStrip = ref<HTMLElement>()
+const canLeft = ref(false)
+const canRight = ref(false)
+
+function updateEdges() {
+  const el = tabStrip.value
+  if (!el) return
+  canLeft.value = el.scrollLeft > 1
+  canRight.value = Math.ceil(el.scrollLeft + el.clientWidth) < el.scrollWidth
+}
+function scrollTabs(dir: -1 | 1) {
+  tabStrip.value?.scrollBy({ left: dir * 220, behavior: 'smooth' })
+}
+// Fade (máscara) nas bordas só do lado onde há conteúdo escondido sob as setas.
+const maskStyle = computed(() => {
+  const l = canLeft.value ? 'transparent' : '#000'
+  const r = canRight.value ? 'transparent' : '#000'
+  const img = `linear-gradient(to right, ${l}, #000 28px, #000 calc(100% - 28px), ${r})`
+  return { maskImage: img, WebkitMaskImage: img }
+})
+// Garante que a aba ativa fique visível (ex.: ao adicionar uma aba fora da área).
+function revealActive() {
+  nextTick(() => {
+    const el = tabStrip.value?.querySelector('[data-active="true"]') as HTMLElement | null
+    el?.scrollIntoView({ inline: 'nearest', block: 'nearest' })
+    updateEdges()
+  })
+}
+onMounted(() => {
+  revealActive()
+  window.addEventListener('resize', updateEdges)
+})
+onBeforeUnmount(() => window.removeEventListener('resize', updateEdges))
+watch(() => tabs.value.length, revealActive)
+watch(activeId, revealActive)
+
 // Status de disponibilidade (padrão de central de atendimento): Disponível
 // (verde, pronto para receber) ou Ocupado (vermelho, em atendimento).
 const status = ref<'Disponível' | 'Ocupado'>('Disponível')
@@ -82,15 +119,29 @@ const status = ref<'Disponível' | 'Ocupado'>('Disponível')
   >
     <!-- Esquerda: navegação em abas -->
     <div class="flex min-w-0 items-center gap-2">
-      <el-button text circle size="small" aria-label="Voltar" @click="router.back()">
+      <el-button
+        text
+        circle
+        size="small"
+        aria-label="Rolar abas à esquerda"
+        :disabled="!canLeft"
+        @click="scrollTabs(-1)"
+      >
         <AppIcon name="chevron-left" class="h-4 w-4" />
       </el-button>
 
-      <!-- Abas abertas: cada uma navega para sua tela; fecháveis -->
-      <div class="flex min-w-0 items-center gap-1.5 overflow-x-auto">
+      <!-- Abas abertas: cada uma navega para sua tela; fecháveis. Sem scrollbar;
+           rolagem pelas setas + fade nas bordas (continuidade sob as setas). -->
+      <div
+        ref="tabStrip"
+        class="tab-strip flex min-w-0 items-center gap-1.5 overflow-x-auto"
+        :style="maskStyle"
+        @scroll="updateEdges"
+      >
         <div
           v-for="t in tabs"
           :key="t.id"
+          :data-active="t.id === activeId"
           class="group flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1 text-sm transition"
           :class="
             t.id === activeId
@@ -128,8 +179,9 @@ const status = ref<'Disponível' | 'Ocupado'>('Disponível')
         circle
         size="small"
         class="!text-ms-text-secondary"
-        aria-label="Avançar"
-        @click="router.forward()"
+        aria-label="Rolar abas à direita"
+        :disabled="!canRight"
+        @click="scrollTabs(1)"
       >
         <AppIcon name="chevron-right" class="h-4 w-4" />
       </el-button>
@@ -325,3 +377,14 @@ const status = ref<'Disponível' | 'Ocupado'>('Disponível')
     </div>
   </header>
 </template>
+
+<style scoped>
+/* Oculta o scrollbar da régua de abas (rolagem via setas + fade nas bordas). */
+.tab-strip {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.tab-strip::-webkit-scrollbar {
+  display: none;
+}
+</style>
