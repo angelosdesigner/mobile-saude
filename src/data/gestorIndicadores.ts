@@ -56,7 +56,7 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
     serieAtual: [78, 77, 76, 75, 74, 73, 73],
     serieAnterior: [80, 79, 79, 78, 77, 76, 76],
     comparacoes: [
-      { label: 'vs Meta (80%)', value: '-8 pp', tone: 'down' },
+      { label: 'vs Meta (80%)', value: '-7 pp', tone: 'down' },
       { label: 'vs Semana anterior', value: '-3,2 pp', tone: 'down' },
       { label: 'vs Mesmo dia mês passado', value: '-2,5 pp', tone: 'down' },
     ],
@@ -77,7 +77,7 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
     serieAtual: [93, 93, 92, 92, 91, 91, 91],
     serieAnterior: [94, 94, 93, 93, 93, 93, 93],
     comparacoes: [
-      { label: 'vs Meta (95%)', value: '-8 pp', tone: 'down' },
+      { label: 'vs Meta (95%)', value: '-4 pp', tone: 'down' },
       { label: 'vs Semana anterior', value: '-1,8 pp', tone: 'down' },
       { label: 'vs Mesmo dia mês passado', value: '-2,5 pp', tone: 'down' },
     ],
@@ -92,15 +92,15 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
     subtitulo: '7 dias com comparativo vs período anterior e vs meta',
     valor: '12min',
     delta: '-4,1min',
-    deltaSub: 'vs período anterior · meta 12',
-    deltaTone: 'down',
+    deltaSub: 'vs período anterior · meta 12min',
+    deltaTone: 'up',
     meta: 12,
     serieAtual: [16, 15, 14, 13, 13, 12, 12],
     serieAnterior: [17, 17, 16, 16, 16, 16, 16],
     comparacoes: [
-      { label: 'vs Meta (90%)', value: '-8 pp', tone: 'down' },
-      { label: 'vs Semana anterior', value: '-4,1 pp', tone: 'down' },
-      { label: 'vs Mesmo dia mês passado', value: '-2,5 pp', tone: 'down' },
+      { label: 'vs Meta (12min)', value: 'no alvo', tone: 'up' },
+      { label: 'vs Semana anterior', value: '-4,1min', tone: 'up' },
+      { label: 'vs Mesmo dia mês passado', value: '-2,5min', tone: 'up' },
     ],
     pioresSegmentos: [
       { label: 'Fila: Dúvidas Adm.', value: '15min' },
@@ -119,9 +119,9 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
     serieAtual: [3.8, 3.9, 4.0, 4.1, 4.2, 4.2, 4.2],
     serieAnterior: [3.6, 3.7, 3.8, 3.9, 3.9, 3.9, 3.9],
     comparacoes: [
-      { label: 'vs Meta (4min)', value: '-8 pp', tone: 'down' },
+      { label: 'vs Meta (4min)', value: '+0,2min', tone: 'down' },
       { label: 'vs Semana anterior', value: '+0,3min', tone: 'down' },
-      { label: 'vs Mesmo dia mês passado', value: '-2,5 pp', tone: 'down' },
+      { label: 'vs Mesmo dia mês passado', value: '+0,4min', tone: 'down' },
     ],
     pioresSegmentos: [
       { label: 'Fila: Dúvidas Adm.', value: '6,8min' },
@@ -140,9 +140,9 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
     serieAtual: [58, 56, 54, 53, 52, 51, 50],
     serieAnterior: [60, 60, 59, 59, 58, 58, 58],
     comparacoes: [
-      { label: 'vs Meta (65)', value: '-8 pp', tone: 'down' },
+      { label: 'vs Meta (65)', value: '-15', tone: 'down' },
       { label: 'vs Semana anterior', value: '-8', tone: 'down' },
-      { label: 'vs Mesmo dia mês passado', value: '-2,5 pp', tone: 'down' },
+      { label: 'vs Mesmo dia mês passado', value: '-6', tone: 'down' },
     ],
     pioresSegmentos: [
       { label: 'Fila: Reembolso', value: '38' },
@@ -182,9 +182,9 @@ export const detalhePorIndicador: Record<IndicadorKey, IndicadorDetalhe> = {
     serieAtual: [4.8, 5.2, 5.6, 6.0, 6.2, 6.4, 6.4],
     serieAnterior: [4.5, 4.6, 4.8, 5.0, 5.0, 5.0, 5.0],
     comparacoes: [
-      { label: 'vs Meta (5%)', value: '-8 pp', tone: 'down' },
+      { label: 'vs Meta (5%)', value: '+1,4 pp', tone: 'down' },
       { label: 'vs Semana anterior', value: '+1,4 pp', tone: 'down' },
-      { label: 'vs Mesmo dia mês passado', value: '-2,5 pp', tone: 'down' },
+      { label: 'vs Mesmo dia mês passado', value: '+0,9 pp', tone: 'down' },
     ],
     pioresSegmentos: [
       { label: 'Fila: Reembolso', value: '18,2%' },
