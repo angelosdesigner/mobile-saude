@@ -30,7 +30,7 @@ export interface CardPill {
 
 export type SlaState = 'Dentro' | 'Atenção' | 'Limite' | 'Estourou'
 
-export type Prioridade = 'Alta' | 'Média' | 'Normal'
+export type Prioridade = 'Alta' | 'Média' | 'Baixa'
 
 export interface GestorCard {
   id: number
@@ -41,6 +41,9 @@ export interface GestorCard {
   protocolo?: string      // número de 11 dígitos
   cpf?: string            // CPF do beneficiário (formato "000.000.000-00")
   perfilTipo?: string     // ex.: "Titular", "Dependente"
+  // classificação (aplica-se a todas as etapas)
+  tipo?: string           // tipo de ocorrência (Reembolso, Autorização…)
+  prioridade?: Prioridade // prioridade (Alta/Média/Baixa)
   // automatizado
   fluxo?: string
   no?: string             // nó atual do bot
@@ -52,7 +55,6 @@ export interface GestorCard {
   posicao?: number
   espera?: string
   pill?: CardPill          // origem: Chatbot, App, URA…
-  prioridade?: Prioridade
   destaque?: boolean
   // humano
   atendente?: string

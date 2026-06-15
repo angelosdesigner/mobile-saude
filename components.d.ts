@@ -101,6 +101,7 @@ declare module 'vue' {
     OcorrenciasList: typeof import('./src/components/ocorrencias/OcorrenciasList.vue')['default']
     OperacionalBoard: typeof import('./src/components/gestor/OperacionalBoard.vue')['default']
     PerformanceTab: typeof import('./src/components/gestor/tempo-real/PerformanceTab.vue')['default']
+    PrioridadeTag: typeof import('./src/components/ui/PrioridadeTag.vue')['default']
     QueueCard: typeof import('./src/components/atendimento/QueueCard.vue')['default']
     RankHint: typeof import('./src/components/gestor/RankHint.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

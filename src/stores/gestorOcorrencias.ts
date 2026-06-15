@@ -73,6 +73,8 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     fila?: string
     atendente?: string
     stage?: GestorStage
+    prioridade?: string
+    tipo?: string
   }
   const contextFilters = ref<ContextFilters>({})
 
@@ -83,6 +85,8 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
       fila: ctx.fila || undefined,
       atendente: ctx.atendente || undefined,
       stage: ctx.stage || undefined,
+      prioridade: ctx.prioridade || undefined,
+      tipo: ctx.tipo || undefined,
     }
   }
 
@@ -142,6 +146,8 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
       if (normalizeFila(c.filaTipo ?? '') !== alvo && normalizeFila(c.fluxo ?? '') !== alvo)
         return false
     }
+    if (f.prioridade && c.prioridade !== f.prioridade) return false
+    if (f.tipo && c.tipo !== f.tipo) return false
     return true
   }
 

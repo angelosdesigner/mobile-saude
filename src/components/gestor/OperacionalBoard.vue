@@ -5,6 +5,7 @@ import { ElMessage } from 'element-plus'
 import KanbanBoard from '@/components/ui/KanbanBoard.vue'
 import KanbanCard from '@/components/ui/KanbanCard.vue'
 import ChannelTag from '@/components/ui/ChannelTag.vue'
+import PrioridadeTag from '@/components/ui/PrioridadeTag.vue'
 import type { KanbanColumn } from '@/components/ui/kanbanBoard'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
 import { stages, type GestorStage, type PillTone, type SlaState, type Prioridade } from '@/types/gestorOcorrencias'
@@ -40,11 +41,6 @@ const slaDot: Record<SlaState, string> = {
   Atenção: 'bg-ms-warning',
   Limite: 'bg-ms-warning',
   Estourou: 'bg-ms-danger',
-}
-const prioClass: Record<Prioridade, string> = {
-  Alta: 'bg-ms-danger/10 text-ms-danger',
-  Média: 'bg-ms-warning/10 text-ms-warning',
-  Normal: 'bg-ms-success/10 text-ms-success',
 }
 
 // ── Filtros por coluna ────────────────────────────────────────────────────────
@@ -233,7 +229,7 @@ function cancelTransfer() {
             <el-select v-model="filterFila.prioridade" size="small" clearable placeholder="Todas">
               <el-option label="Alta" value="Alta" />
               <el-option label="Média" value="Média" />
-              <el-option label="Normal" value="Normal" />
+              <el-option label="Baixa" value="Baixa" />
             </el-select>
           </div>
         </div>
@@ -331,7 +327,10 @@ function cancelTransfer() {
         <template v-if="item.stage === 'automatizado'">
           <div class="flex items-start justify-between gap-2">
             <span class="text-sm font-semibold leading-snug text-ms-text-primary">{{ item.beneficiary }}</span>
-            <span v-if="item.tempoBot" class="shrink-0 text-2xs font-medium text-ms-text-secondary">{{ item.tempoBot }}</span>
+            <div class="flex shrink-0 items-center gap-1.5">
+              <PrioridadeTag v-if="item.prioridade" :prioridade="item.prioridade" />
+              <span v-if="item.tempoBot" class="text-2xs font-medium text-ms-text-secondary">{{ item.tempoBot }}</span>
+            </div>
           </div>
           <div class="mt-2 space-y-1 text-xs text-ms-text-regular">
             <div>Fluxo: <span class="text-ms-text-secondary">{{ item.fluxo }}</span></div>
@@ -351,11 +350,7 @@ function cancelTransfer() {
         <template v-else-if="item.stage === 'fila'">
           <div class="flex items-start justify-between gap-2">
             <span class="text-sm font-semibold leading-snug text-ms-text-primary">{{ item.beneficiary }}</span>
-            <span
-              v-if="item.prioridade"
-              class="shrink-0 rounded-full px-2 py-0.5 text-2xs font-medium"
-              :class="prioClass[item.prioridade]"
-            >{{ item.prioridade }}</span>
+            <PrioridadeTag v-if="item.prioridade" :prioridade="item.prioridade" class="shrink-0" />
           </div>
           <div class="mt-2 space-y-0.5 text-xs text-ms-text-regular">
             <div>Fila: <span class="text-ms-text-secondary">{{ item.filaTipo }}</span></div>
@@ -376,13 +371,16 @@ function cancelTransfer() {
         <template v-else-if="item.stage === 'humano'">
           <div class="flex items-start justify-between gap-2">
             <span class="text-sm font-semibold leading-snug text-ms-text-primary">{{ item.beneficiary }}</span>
-            <span
-              v-if="item.sla"
-              class="flex shrink-0 items-center gap-1 text-2xs font-medium"
-              :class="slaClass[item.sla]"
-            >
-              <span class="h-1.5 w-1.5 rounded-full" :class="slaDot[item.sla]" />{{ item.sla }}
-            </span>
+            <div class="flex shrink-0 items-center gap-1.5">
+              <PrioridadeTag v-if="item.prioridade" :prioridade="item.prioridade" />
+              <span
+                v-if="item.sla"
+                class="flex items-center gap-1 text-2xs font-medium"
+                :class="slaClass[item.sla]"
+              >
+                <span class="h-1.5 w-1.5 rounded-full" :class="slaDot[item.sla]" />{{ item.sla }}
+              </span>
+            </div>
           </div>
           <div class="mt-2 space-y-0.5 text-xs text-ms-text-regular">
             <div>Atendente: <span class="text-ms-text-secondary">{{ item.atendente }}</span></div>
@@ -394,7 +392,10 @@ function cancelTransfer() {
         <template v-else>
           <div class="flex items-start justify-between gap-2">
             <span class="text-sm font-semibold leading-snug text-ms-text-primary">{{ item.beneficiary }}</span>
-            <span class="shrink-0 text-2xs text-ms-text-secondary">Concluído {{ item.concluidoHora }}</span>
+            <div class="flex shrink-0 items-center gap-1.5">
+              <PrioridadeTag v-if="item.prioridade" :prioridade="item.prioridade" />
+              <span class="text-2xs text-ms-text-secondary">Concluído {{ item.concluidoHora }}</span>
+            </div>
           </div>
           <div class="mt-2 space-y-0.5 text-xs text-ms-text-regular">
             <div>Atendente: <span class="text-ms-text-secondary">{{ item.atendente }}</span></div>

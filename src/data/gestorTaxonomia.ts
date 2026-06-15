@@ -99,3 +99,18 @@ export const FILAS_CANONICAS = [
   'Financeiro',
   'Dúvidas Administrativas',
 ] as const
+
+// ── Tipo de ocorrência ────────────────────────────────────────────────────────
+/** Tipos de ocorrência canônicos — usados na coluna e no filtro. */
+export const TIPOS_OCORRENCIA = [
+  'Reembolso',
+  'Autorização',
+  '2ª via de boleto',
+  'Carência',
+  'Dúvida contratual',
+  'Financeiro',
+] as const
+
+// ── Prioridade ────────────────────────────────────────────────────────────────
+/** Prioridades canônicas (estilo Jira) — usadas na coluna, no kanban e no filtro. */
+export const PRIORIDADES = ['Alta', 'Média', 'Baixa'] as const

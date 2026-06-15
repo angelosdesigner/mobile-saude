@@ -6,12 +6,13 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import OperacionalBoard from '@/components/gestor/OperacionalBoard.vue'
 import DataList from '@/components/ui/DataList.vue'
 import ChannelTag from '@/components/ui/ChannelTag.vue'
+import PrioridadeTag from '@/components/ui/PrioridadeTag.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import FilterChips from '@/components/ui/FilterChips.vue'
 import { useActionFeedback } from '@/composables/useActionFeedback'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
-import { FILAS_CANONICAS, CANAIS_CANONICOS } from '@/data/gestorTaxonomia'
-import { stages, type StageTone, type GestorStage, type GestorCard } from '@/types/gestorOcorrencias'
+import { FILAS_CANONICAS, CANAIS_CANONICOS, TIPOS_OCORRENCIA, PRIORIDADES } from '@/data/gestorTaxonomia'
+import { stages, type StageTone, type GestorStage, type GestorCard, type Prioridade } from '@/types/gestorOcorrencias'
 
 const route = useRoute()
 const router = useRouter()
@@ -29,6 +30,8 @@ function syncContextFromRoute() {
     fila: typeof q.fila === 'string' ? q.fila : undefined,
     atendente: typeof q.atendente === 'string' ? q.atendente : undefined,
     stage: typeof q.stage === 'string' ? (q.stage as GestorStage) : undefined,
+    prioridade: typeof q.prioridade === 'string' ? q.prioridade : undefined,
+    tipo: typeof q.tipo === 'string' ? q.tipo : undefined,
   })
 }
 
@@ -48,7 +51,8 @@ function removeContext(key: keyof typeof contextFilters.value) {
 // Limpa todos os filtros de contexto de uma vez.
 function clearAllContext() {
   store.clearContext()
-  const { canal: _c, fila: _f, atendente: _a, stage: _s, ...rest } = route.query
+  const { canal: _c, fila: _f, atendente: _a, stage: _s, prioridade: _p, tipo: _t, ...rest } =
+    route.query
   router.replace({ query: rest })
 }
 
@@ -60,6 +64,8 @@ const contextBadges = computed(() => {
   if (f.fila) out.push({ key: 'fila', label: `Fila: ${f.fila}` })
   if (f.atendente) out.push({ key: 'atendente', label: `Atendente: ${f.atendente}` })
   if (f.stage) out.push({ key: 'stage', label: `Estágio: ${stageMeta[f.stage]?.label ?? f.stage}` })
+  if (f.prioridade) out.push({ key: 'prioridade', label: `Prioridade: ${f.prioridade}` })
+  if (f.tipo) out.push({ key: 'tipo', label: `Tipo: ${f.tipo}` })
   return out
 })
 
@@ -73,11 +79,21 @@ const listColumns: DataListColumn[] = [
     sortBy: (r) => (r as unknown as GestorCard).atendente ?? '' },
   { key: 'canal', label: 'Canal', width: 160,
     sortBy: (r) => (r as unknown as GestorCard).channel },
+  { key: 'tipo', label: 'Tipo de ocorrência', width: 178,
+    sortBy: (r) => (r as unknown as GestorCard).tipo ?? '' },
+  { key: 'prioridade', label: 'Prioridade', width: 132,
+    sortBy: (r) => prioRankOf((r as unknown as GestorCard).prioridade) },
   { key: 'etapaAtual', label: 'Etapa atual', width: 168 },
   { key: 'detalheEtapa', label: 'Detalhe da etapa', minWidth: 200 },
   { key: 'tempoAtual', label: 'Tempo atual', width: 120,
     sortBy: (r) => parseTempoSec(r as unknown as GestorCard) },
 ]
+
+// Severidade da prioridade para ordenação (Alta > Média > Baixa).
+const prioRank: Record<Prioridade, number> = { Alta: 3, Média: 2, Baixa: 1 }
+function prioRankOf(p?: Prioridade): number {
+  return p ? prioRank[p] : 0
+}
 
 const stageMeta = Object.fromEntries(stages.map((s) => [s.key, s])) as Record<
   GestorCard['stage'],
@@ -148,13 +164,13 @@ const viewMode = computed({
 // Filtros. Canal/Fila/Atendente têm `ctxKey` e ficam atrelados ao contexto de
 // drill-down (store + URL). Prioridade/Tipo são visuais (lógica futura).
 const filterDefs = [
-  { label: 'Prioridade', options: ['Alta', 'Média', 'Baixa'] },
+  { label: 'Prioridade', ctxKey: 'prioridade' as const, options: [...PRIORIDADES] },
   {
     label: 'Fila',
     ctxKey: 'fila' as const,
     options: [...FILAS_CANONICAS],
   },
-  { label: 'Tipo de ocorrência', options: ['Reembolso', 'Autorização', 'Dúvida'] },
+  { label: 'Tipo de ocorrência', ctxKey: 'tipo' as const, options: [...TIPOS_OCORRENCIA] },
   {
     label: 'Canal',
     ctxKey: 'canal' as const,
@@ -165,7 +181,8 @@ const filterDefs = [
 
 // Lê/escreve o valor de um filtro de contexto a partir do select (sincroniza
 // store + query param). Mantém a URL como fonte de verdade do drill-down.
-function ctxModel(key: 'canal' | 'fila' | 'atendente') {
+type CtxKey = 'canal' | 'fila' | 'atendente' | 'prioridade' | 'tipo'
+function ctxModel(key: CtxKey) {
   return computed<string | undefined>({
     get: () => contextFilters.value[key],
     set: (v) => {
@@ -177,10 +194,13 @@ function ctxModel(key: 'canal' | 'fila' | 'atendente') {
     },
   })
 }
-const canalModel = ctxModel('canal')
-const filaModel = ctxModel('fila')
-const atendenteModel = ctxModel('atendente')
-const ctxModels = { canal: canalModel, fila: filaModel, atendente: atendenteModel }
+const ctxModels: Record<CtxKey, ReturnType<typeof ctxModel>> = {
+  canal: ctxModel('canal'),
+  fila: ctxModel('fila'),
+  atendente: ctxModel('atendente'),
+  prioridade: ctxModel('prioridade'),
+  tipo: ctxModel('tipo'),
+}
 
 const pillDot: Record<StageTone | 'info', string> = {
   primary: 'bg-ms-primary',
@@ -250,22 +270,17 @@ const pillDot: Record<StageTone | 'info', string> = {
 
     <!-- Filtros -->
     <div class="mb-4 flex flex-wrap items-center gap-2">
-      <template v-for="f in filterDefs" :key="f.label">
-        <!-- Canal/Fila/Atendente: atrelados ao contexto (store + URL). -->
-        <el-select
-          v-if="f.ctxKey"
-          v-model="ctxModels[f.ctxKey].value"
-          :placeholder="f.label"
-          class="!w-40"
-          clearable
-        >
-          <el-option v-for="o in f.options" :key="o" :label="o" :value="o" />
-        </el-select>
-        <!-- Prioridade/Tipo: visuais (lógica futura). -->
-        <el-select v-else :placeholder="f.label" class="!w-40" clearable>
-          <el-option v-for="o in f.options" :key="o" :label="o" :value="o" />
-        </el-select>
-      </template>
+      <!-- Todos os filtros atrelados ao contexto (store + URL). -->
+      <el-select
+        v-for="f in filterDefs"
+        :key="f.label"
+        v-model="ctxModels[f.ctxKey].value"
+        :placeholder="f.label"
+        class="!w-40"
+        clearable
+      >
+        <el-option v-for="o in f.options" :key="o" :label="o" :value="o" />
+      </el-select>
       <div class="ml-auto flex items-center gap-2">
         <el-button @click="comingSoon('Status Atendimento')">Status Atendimento</el-button>
         <!-- No modo lista, a configuração de colunas fica no ▥ da própria tabela. -->
@@ -336,6 +351,17 @@ const pillDot: Record<StageTone | 'info', string> = {
           <ChannelTag :channel="row.channel" />
         </template>
 
+        <!-- Tipo de ocorrência -->
+        <template #cell-tipo="{ row }">
+          <span class="text-xs text-ms-text-regular">{{ row.tipo ?? '—' }}</span>
+        </template>
+
+        <!-- Prioridade (ícone estilo Jira + rótulo) -->
+        <template #cell-prioridade="{ row }">
+          <PrioridadeTag v-if="row.prioridade" :prioridade="row.prioridade" show-label />
+          <span v-else class="text-ms-text-placeholder">—</span>
+        </template>
+
         <!-- Etapa atual (tag colorida) -->
         <template #cell-etapaAtual="{ row }">
           <span
@@ -373,10 +399,6 @@ const pillDot: Record<StageTone | 'info', string> = {
               <div>
                 <dt class="text-ms-text-secondary">Origem</dt>
                 <dd class="text-ms-text-primary">{{ row.pill?.label ?? '—' }}</dd>
-              </div>
-              <div>
-                <dt class="text-ms-text-secondary">Prioridade</dt>
-                <dd class="text-ms-text-primary">{{ row.prioridade ?? '—' }}</dd>
               </div>
             </template>
             <template v-else-if="row.stage === 'humano'">
