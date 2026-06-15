@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
-import RankHint from '@/components/gestor/RankHint.vue'
+import BarList from '@/components/gestor/BarList.vue'
 import {
   equipeMetrics,
   eficiencia,
@@ -27,17 +27,6 @@ const metricTone: Record<EquipeTone, string> = {
   success: 'text-ms-success',
   danger: 'text-ms-danger',
 }
-
-// Cor por posição no ranking (pior → melhor): 1º crítico, último saudável.
-const rankColors = ['bg-ms-danger', 'bg-ms-warning', 'bg-ms-border', 'bg-ms-border', 'bg-ms-success']
-const rankText = ['text-ms-danger', 'text-ms-warning', 'text-ms-text-regular', 'text-ms-text-regular', 'text-ms-success']
-const rankBadge = [
-  'bg-ms-danger text-ms-on-danger',
-  'bg-ms-warning text-ms-on-warning',
-  'bg-ms-fill-light text-ms-text-secondary',
-  'bg-ms-fill-light text-ms-text-secondary',
-  'bg-ms-success text-ms-on-success',
-]
 
 const toneColor = computed<Record<'danger' | 'warning' | 'neutral' | 'success', string>>(() => ({
   danger: C.danger,
@@ -115,19 +104,19 @@ const scatterOption = computed(() => ({
       action-to="/gestor/ocorrencias?view=lista"
     />
 
-    <!-- Métricas -->
+    <!-- Métricas (alinhadas à esquerda, padrão da aba Gestão de filas) -->
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <el-card
         v-for="m in equipeMetrics"
         :key="m.label"
         shadow="never"
         body-class="!p-4"
-        class="!border-ms-border-light text-center"
+        class="!border-ms-border-light"
       >
         <div class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">
           {{ m.label }}
         </div>
-        <div class="mt-1 text-3xl font-bold" :class="metricTone[m.tone]">{{ m.value }}</div>
+        <div class="mt-1 text-2xl font-bold" :class="metricTone[m.tone]">{{ m.value }}</div>
         <div class="mt-0.5 text-xs text-ms-text-secondary">{{ m.sub }}</div>
       </el-card>
     </div>
@@ -144,40 +133,14 @@ const scatterOption = computed(() => ({
     </div>
     <div class="grid gap-4 lg:grid-cols-3">
       <ChartCard v-for="r in rankings" :key="r.titulo" :title="r.titulo" :subtitle="r.subtitulo">
-        <div class="space-y-3">
-          <div
-            v-for="(it, i) in r.itens"
-            :key="it.nome"
-            class="-mx-2 flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-0.5 transition hover:bg-ms-fill-light"
-            role="button"
-            tabindex="0"
-            @click="abrirAtendente(it.nome)"
-            @keydown.enter="abrirAtendente(it.nome)"
-          >
-            <span
-              class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-2xs font-bold"
-              :class="rankBadge[i]"
-              >{{ i + 1 }}</span
-            >
-            <div class="min-w-0 flex-1">
-              <div class="flex items-baseline justify-between gap-2">
-                <span class="truncate text-sm text-ms-text-regular">{{ it.nome }}</span>
-                <span class="text-sm font-bold" :class="rankText[i]">{{ it.display }}</span>
-              </div>
-              <div v-if="it.sub" class="text-2xs text-ms-text-secondary">{{ it.sub }}</div>
-              <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
-                <div
-                  class="h-full rounded-full"
-                  :class="rankColors[i]"
-                  :style="{ width: `${(it.valor / r.max) * 100}%` }"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="border-t border-ms-border-lighter pt-2">
-            <RankHint />
-          </div>
-        </div>
+        <BarList
+          :items="r.itens"
+          :max="r.max"
+          rank
+          rank-hint
+          clickable
+          @item-click="abrirAtendente"
+        />
       </ChartCard>
     </div>
 

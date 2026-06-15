@@ -6,15 +6,9 @@
 // `thresholdLegend` e `rankHint` são opcionais e centralizam aqui (fonte única)
 // a legenda de limiares e o rodapé "Pior/Melhor" — antes duplicados nas telas.
 import RankHint from '@/components/gestor/RankHint.vue'
+import type { BarItem } from '@/components/gestor/barList'
 
-interface BarItem {
-  label: string
-  value: number // 0–100
-  caption?: string // ex.: "92% (20min)" / "95% (34)"
-  avatar?: string // iniciais opcionais
-}
-
-withDefaults(
+const props = withDefaults(
   defineProps<{
     items: BarItem[]
     thresholdLegend?: boolean
@@ -23,17 +17,29 @@ withDefaults(
     rank?: boolean
     /** Torna cada linha clicável (drill-down); emite `item-click` com o label. */
     clickable?: boolean
+    /** Valor que corresponde a 100% da barra (métricas não-%: reabertura, CSAT). */
+    max?: number
   }>(),
-  { thresholdLegend: false, rankHint: false, rank: false, clickable: false },
+  { thresholdLegend: false, rankHint: false, rank: false, clickable: false, max: 100 },
 )
 
 const emit = defineEmits<{ 'item-click': [label: string] }>()
 
-function tone(v: number): string {
-  if (v >= 90) return 'bg-ms-danger'
-  if (v >= 70) return 'bg-ms-warning'
+const toneClass: Record<'success' | 'warning' | 'danger' | 'neutral', string> = {
+  success: 'bg-ms-success',
+  warning: 'bg-ms-warning',
+  danger: 'bg-ms-danger',
+  neutral: 'bg-ms-border',
+}
+
+// Cor da barra: explícita (it.tone) ou derivada do valor (faixas de %).
+function barClass(it: BarItem): string {
+  if (it.tone) return toneClass[it.tone]
+  if (it.value >= 90) return 'bg-ms-danger'
+  if (it.value >= 70) return 'bg-ms-warning'
   return 'bg-ms-success'
 }
+const barWidth = (v: number) => Math.min(100, (v / props.max) * 100)
 </script>
 
 <template>
@@ -58,8 +64,8 @@ function tone(v: number): string {
         <div class="h-2 flex-1 overflow-hidden rounded-full bg-ms-fill-light">
           <div
             class="h-full rounded-full"
-            :class="tone(it.value)"
-            :style="{ width: `${Math.min(100, it.value)}%` }"
+            :class="barClass(it)"
+            :style="{ width: `${barWidth(it.value)}%` }"
           />
         </div>
         <span class="w-20 shrink-0 text-right text-xs font-medium text-ms-text-primary">{{

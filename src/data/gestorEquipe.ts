@@ -17,55 +17,58 @@ export const equipeMetrics: EquipeMetric[] = [
 
 export const eficiencia = 89
 
-// Rankings — ordenados do pior para o melhor (índice 0 = pior).
-export interface RankingItem {
-  nome: string
-  sub?: string
-  valor: number
-  display: string
-}
+// Rankings — ordenados do pior para o melhor (índice 0 = pior). Renderizados
+// pelo BarList (mesmo componente da "Ocupação por atendente" da Início):
+// número sem cor, badge neutro, rodapé Pior/Melhor.
+import type { BarItem } from '@/components/gestor/barList'
+
 export interface Ranking {
   titulo: string
   subtitulo: string
   max: number
-  itens: RankingItem[]
+  itens: BarItem[]
 }
+
+// Reabertura e CSAT não são métricas em %: a cor da barra vem da posição
+// (pior → melhor), não do valor.
+const tonePorPosicao: BarItem['tone'][] = ['danger', 'warning', 'neutral', 'neutral', 'success']
 
 export const rankings: Ranking[] = [
   {
     titulo: 'Maior Ocupação',
-    subtitulo: '% de uso de capacidade',
+    subtitulo: '% de uso de capacidade · clique para detalhar',
     max: 100,
+    // Ocupação é %: a cor da barra é derivada do valor (mesma regra da Início).
     itens: [
-      { nome: 'Fernanda Paz', sub: '34 atend. ativos', valor: 95, display: '95%' },
-      { nome: 'Paula Reis', sub: '27 atend. ativos', valor: 78, display: '78%' },
-      { nome: 'Carlos Lima', sub: '21 atend. ativos', valor: 72, display: '72%' },
-      { nome: 'Ana Souza', sub: '18 atend. ativos', valor: 60, display: '60%' },
-      { nome: 'João Melo', sub: '15 atend. ativos', valor: 58, display: '58%' },
+      { label: 'Fernanda Paz', value: 95, caption: '95% (34)' },
+      { label: 'Paula Reis', value: 78, caption: '78% (27)' },
+      { label: 'Carlos Lima', value: 72, caption: '72% (21)' },
+      { label: 'Ana Souza', value: 60, caption: '60% (18)' },
+      { label: 'João Melo', value: 58, caption: '58% (15)' },
     ],
   },
   {
     titulo: 'Maior Reabertura',
-    subtitulo: 'casos retornam à fila',
+    subtitulo: 'casos retornam à fila · clique para detalhar',
     max: 8,
     itens: [
-      { nome: 'Fernanda Paz', valor: 8, display: '8' },
-      { nome: 'Paula Reis', valor: 5, display: '5' },
-      { nome: 'Carlos Lima', valor: 4, display: '4' },
-      { nome: 'Ana Souza', valor: 2, display: '2' },
-      { nome: 'João Melo', valor: 1, display: '1' },
+      { label: 'Fernanda Paz', value: 8, caption: '8', tone: tonePorPosicao[0] },
+      { label: 'Paula Reis', value: 5, caption: '5', tone: tonePorPosicao[1] },
+      { label: 'Carlos Lima', value: 4, caption: '4', tone: tonePorPosicao[2] },
+      { label: 'Ana Souza', value: 2, caption: '2', tone: tonePorPosicao[3] },
+      { label: 'João Melo', value: 1, caption: '1', tone: tonePorPosicao[4] },
     ],
   },
   {
     titulo: 'Menor CSAT',
-    subtitulo: 'satisfação do beneficiário',
+    subtitulo: 'satisfação do beneficiário · clique para detalhar',
     max: 5,
     itens: [
-      { nome: 'Fernanda Paz', valor: 3.9, display: '3.9' },
-      { nome: 'Paula Reis', valor: 4.3, display: '4.3' },
-      { nome: 'Carlos Lima', valor: 4.5, display: '4.5' },
-      { nome: 'Ana Souza', valor: 4.8, display: '4.8' },
-      { nome: 'João Melo', valor: 4.9, display: '4.9' },
+      { label: 'Fernanda Paz', value: 3.9, caption: '3.9', tone: tonePorPosicao[0] },
+      { label: 'Paula Reis', value: 4.3, caption: '4.3', tone: tonePorPosicao[1] },
+      { label: 'Carlos Lima', value: 4.5, caption: '4.5', tone: tonePorPosicao[2] },
+      { label: 'Ana Souza', value: 4.8, caption: '4.8', tone: tonePorPosicao[3] },
+      { label: 'João Melo', value: 4.9, caption: '4.9', tone: tonePorPosicao[4] },
     ],
   },
 ]
