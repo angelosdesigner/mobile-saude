@@ -47,20 +47,20 @@ export const chartColors = {
   split: 'rgba(144,147,153,0.15)',
 }
 
-// Sobrescritas para o tema escuro: o ECharts não lê CSS vars, então alternamos
-// aqui. `ink` é o caso crítico (#303133 some no fundo escuro). As cores
-// semânticas ganham variantes mais SUAVES (menos neon) p/ não estourar contraste
-// sobre o fundo escuro — mantendo a identidade de cada cor.
+// Sobrescritas para o tema escuro: o ECharts não lê CSS vars, então espelhamos
+// aqui os MESMOS tokens soft já calibrados em src/style.css (--ms-*-soft e
+// --ms-dark-text-*), p/ os gráficos baterem com a UI (badges/dots) no escuro.
+// `ink` (#303133) era o caso crítico — sumia no fundo escuro.
 const chartColorsDark = {
-  axis: '#a3a6ad',
-  ink: '#e5e7eb',
+  axis: '#a3a6ad', // --ms-dark-text-secondary
+  ink: '#e5eaf3', // --ms-dark-text-primary
   split: 'rgba(144,147,153,0.24)',
-  primary: '#3b82c9',
-  success: '#58a83f',
-  warning: '#cf9239',
-  danger: '#d96666',
-  teal: '#1aa3a3',
-  purple: '#7163cc',
+  primary: '#4f93d6', // --ms-blue-soft
+  success: '#5da654', // --ms-green-soft
+  warning: '#d99a45', // --ms-amber-soft
+  danger: '#e07070', // --ms-red-soft
+  teal: '#2aa3a3', // --ms-teal-soft
+  purple: '#8478d6', // soft (sem token UI; harmoniza com os demais)
 }
 
 /**
