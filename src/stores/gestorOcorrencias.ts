@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { GestorCard, GestorStage, StatusPill, StageHeader } from '@/types/gestorOcorrencias'
 import { stages } from '@/types/gestorOcorrencias'
-import { normalizeFila } from '@/data/gestorTaxonomia'
+import { normalizeFila, normalizeCanal } from '@/data/gestorTaxonomia'
 import { fetchGestorBoard } from '@/services/gestorService'
 import type { ChipTone } from '@/components/ui/filterChips'
 
@@ -130,7 +130,8 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
 
   function passesContext(c: GestorCard): boolean {
     const f = contextFilters.value
-    if (f.canal && c.channel !== f.canal) return false
+    // Canal normalizado: "Chat/WhatsApp" casa cards com channel 'Chat' ou 'WhatsApp'.
+    if (f.canal && normalizeCanal(c.channel) !== normalizeCanal(f.canal)) return false
     if (f.stage && c.stage !== f.stage) return false
     if (f.atendente && c.atendente !== f.atendente) return false
     // "Fila" casa tanto o tipo de fila quanto o fluxo (Reembolso, Autorização…),

@@ -9,7 +9,7 @@ import type { DataListColumn } from '@/components/ui/dataList'
 import FilterChips from '@/components/ui/FilterChips.vue'
 import { useActionFeedback } from '@/composables/useActionFeedback'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
-import { FILAS_CANONICAS } from '@/data/gestorTaxonomia'
+import { FILAS_CANONICAS, CANAIS_CANONICOS } from '@/data/gestorTaxonomia'
 import { stages, type StageTone, type GestorStage, type GestorCard } from '@/types/gestorOcorrencias'
 
 const route = useRoute()
@@ -118,7 +118,7 @@ const filterDefs = [
   {
     label: 'Canal',
     ctxKey: 'canal' as const,
-    options: ['WhatsApp', 'App', 'Portal', 'Telefone', 'Chat'],
+    options: [...CANAIS_CANONICOS],
   },
   { label: 'Atendente', ctxKey: 'atendente' as const, options: ['Ana Silva', 'Lucas Mendes', 'Ana Souza'] },
 ]

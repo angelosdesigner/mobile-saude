@@ -27,17 +27,34 @@ import {
 } from '@/data/gestorTempoReal'
 import { chartColors as C } from '@/plugins/echarts'
 import { canalCor, atendimentoCor } from '@/data/gestorTaxonomia'
+import type { GestorStage } from '@/types/gestorOcorrencias'
 
 const router = useRouter()
 
-// Redireciona o usuário conforme o alvo do card (indicador ou atendimentos).
-function goTarget(t: CardTarget) {
-  if (t.type === 'indicador') router.push({ path: '/gestor/indicadores', query: { ind: t.ind } })
-  else router.push({ path: '/gestor/tempo-real', query: { tab: 'atendimentos', filtro: t.filtro } })
+// Drill-down unificado: todo card operacional leva à listagem de ocorrências
+// (OcorrenciasView), com o estágio pré-filtrado quando aplicável. Antes alguns
+// cards iam para a aba Atendimentos (que não tem lista) — destino inconsistente.
+const STAGE_DE_FILTRO: Record<string, GestorStage | undefined> = {
+  todos: undefined,
+  automatizado: 'automatizado',
+  fila: 'fila',
+  humano: 'humano',
+}
+function abrirLista(filtro: string) {
+  const stage = STAGE_DE_FILTRO[filtro]
+  router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', ...(stage ? { stage } : {}) } })
 }
 
-function goAtendimentos(filtro: string) {
-  router.push({ path: '/gestor/tempo-real', query: { tab: 'atendimentos', filtro } })
+// Alvo do card: indicador (Centro de Indicadores) ou listagem de atendimentos.
+function goTarget(t: CardTarget) {
+  if (t.type === 'indicador') router.push({ path: '/gestor/indicadores', query: { ind: t.ind } })
+  else abrirLista(t.filtro)
+}
+
+// Clique numa fatia do donut de canal → listagem filtrada por aquele canal.
+function abrirCanal(params: { name?: string }) {
+  if (params?.name)
+    router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', canal: params.name } })
 }
 
 const andamentoTone: Record<'primary' | 'warning' | 'teal' | 'success', string> = {
@@ -272,7 +289,7 @@ const segmentoColumns: DataListColumn[] = [
         :meta="`Atendidas: ${ptNum(chamadasNaFila.atendidas)}%`"
         tone="danger"
         clickable
-        @click="goAtendimentos('fila')"
+        @click="abrirLista('fila')"
       />
     </div>
 
@@ -299,7 +316,7 @@ const segmentoColumns: DataListColumn[] = [
             :key="a.label"
             class="flex cursor-pointer items-center justify-between rounded-lg border px-3 py-2 transition hover:brightness-95"
             :class="andamentoTone[a.tone]"
-            @click="goAtendimentos(a.filtro)"
+            @click="abrirLista(a.filtro)"
           >
             <span class="text-xs font-semibold uppercase">{{ a.label }}</span>
             <span class="text-xl font-bold">{{ a.value }}</span>
@@ -320,10 +337,15 @@ const segmentoColumns: DataListColumn[] = [
     <div class="grid gap-4 lg:grid-cols-3">
       <ChartCard
         title="Distribuição de atendimentos por canal"
-        subtitle="Total: 118 atendimentos ativos"
+        subtitle="Total: 118 atendimentos ativos · clique numa fatia para detalhar"
       >
         <div class="relative h-44 w-full">
-          <VChart class="h-full w-full" :option="canalOption" autoresize />
+          <VChart
+            class="h-full w-full cursor-pointer"
+            :option="canalOption"
+            autoresize
+            @click="abrirCanal"
+          />
           <div
             class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
           >

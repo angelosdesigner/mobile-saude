@@ -24,6 +24,36 @@ export function canalCor(nome: string): string {
   return CANAL_CORES[nome.trim().toLowerCase()] ?? C.neutral
 }
 
+// Grupo canônico de canal (casa as várias grafias e o canal combinado
+// "Chat/WhatsApp" com os valores `channel` dos cards: 'Chat'/'WhatsApp').
+const CANAL_CANONICO: Record<string, string> = {
+  'chat/whatsapp': 'Chat/WhatsApp',
+  whatsapp: 'Chat/WhatsApp',
+  chat: 'Chat/WhatsApp',
+  telefone: 'Telefone',
+  'telefone/voz': 'Telefone',
+  'balcão/presencial': 'Balcão/Presencial',
+  balcão: 'Balcão/Presencial',
+  presencial: 'Balcão/Presencial',
+  portal: 'Portal',
+  app: 'App',
+}
+
+/** Grupo canônico de um canal (tolerante à grafia). Sem match: retorna o original. */
+export function normalizeCanal(nome: string): string {
+  const s = nome.trim()
+  return CANAL_CANONICO[s.toLowerCase()] ?? s
+}
+
+/** Canais canônicos — usados em selects/filtros. */
+export const CANAIS_CANONICOS = [
+  'Chat/WhatsApp',
+  'Telefone',
+  'Balcão/Presencial',
+  'Portal',
+  'App',
+] as const
+
 // ── Atendimento: BOT vs Humano + IA ──────────────────────────────────────────
 // Convenção de identidade (não severidade): BOT = azul, Humano = verde.
 // Insights de IA = roxo.
