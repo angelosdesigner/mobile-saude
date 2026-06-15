@@ -74,5 +74,53 @@ export const automatizado: AutomatizadoMetric[] = [
   { label: 'Tempo médio no fluxo', value: '4min', pct: null, tone: 'neutral' },
 ]
 
+// Fluxos mais acessados no BOT (sessões ativas, média 24h).
+export const fluxosMaisAcessados = {
+  itens: [
+    { label: 'Reembolsos', value: 42 },
+    { label: 'Negativas e Exames', value: 26 },
+    { label: 'Ouvidoria e Reanálise', value: 18 },
+    { label: 'Alta Complex.', value: 10 },
+  ],
+  totalSessoes: 96,
+  atendimentosDia: '1.247',
+  delta: '↑ 12% vs semana anterior',
+}
+
+// Setores onde o BOT é mais eficiente (% resolvidos sem transbordo).
+export const setoresBotEficiente = {
+  meta: 70,
+  itens: [
+    { label: 'Ouvidoria e Reanálise', value: 80 },
+    { label: 'Negativas e Exames', value: 75 },
+    { label: 'Reembolsos', value: 60 },
+    { label: 'Alta Complexidade', value: 40 },
+  ],
+  resumo: 'Setores acima da meta: 2/4 · revisar fluxos abaixo',
+}
+
+// Fluxos com maior taxa de abandono dentro do BOT (%).
+export interface FluxoAbandono {
+  label: string
+  value: number
+  tone: 'danger' | 'warning' | 'success'
+}
+export const fluxosMaiorAbandono: FluxoAbandono[] = [
+  { label: 'Reembolsos Envio Docs', value: 15, tone: 'danger' },
+  { label: 'Alta Complex.', value: 12, tone: 'warning' },
+  { label: 'Negativas e Exames', value: 8, tone: 'warning' },
+  { label: 'Autorizações', value: 5, tone: 'success' },
+]
+export const fluxosMaiorAbandonoResumo = {
+  gargalo: 'Maior gargalo: nó "Envio de Documentos"',
+  acao: 'Revisar UX de captura para reduzir abandono',
+}
+
+// Insights da automação (diagnóstico textual).
+export const insightsAutomatizado = [
+  'Taxa de retenção de 72% com tempo médio de 1m 45s indica automação eficiente em demandas simples — porém o abandono de 15% no nó de "Envio de Documentos" do fluxo de Reembolsos sugere falha na ferramenta de captura ou falta de clareza nas instruções.',
+  'Alta Complexidade apresenta 58% de transbordo humano — considere revisar se esse fluxo deve permanecer no bot ou ser roteado diretamente para atendimento especializado, reduzindo tempo médio de espera na fila humana.',
+]
+
 export const bannerAutomatizado =
   'Usuários abandonam após etapa de envio de documentos — principal causa de transferência para atendente.'

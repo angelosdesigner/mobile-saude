@@ -11,6 +11,11 @@ import {
   automatizado,
   bannerAutomatizado,
   indicadoresGerais,
+  fluxosMaisAcessados,
+  setoresBotEficiente,
+  fluxosMaiorAbandono,
+  fluxosMaiorAbandonoResumo,
+  insightsAutomatizado,
 } from '@/data/gestorAtendimentos'
 import { useChartColors } from '@/plugins/echarts'
 import { canalCor } from '@/data/gestorTaxonomia'
@@ -94,6 +99,64 @@ const tmeOption = computed(() => ({
 }))
 
 const tmeMax = Math.max(...tmeCanal.bars.map((b) => b.value)) * 1.15
+
+// Fluxos mais acessados — barras verticais (BOT = primary/azul).
+const fluxosOption = computed(() => ({
+  tooltip: { trigger: 'axis' },
+  grid: { left: 30, right: 8, top: 24, bottom: 40 },
+  xAxis: {
+    type: 'category',
+    data: fluxosMaisAcessados.itens.map((i) => i.label),
+    axisLabel: { color: C.axis, fontSize: 10, interval: 0, width: 70, overflow: 'break' },
+    axisLine: { lineStyle: { color: C.split } },
+  },
+  yAxis: { type: 'value', axisLabel: { color: C.axis }, splitLine: { lineStyle: { color: C.split } } },
+  series: [
+    {
+      type: 'bar',
+      data: fluxosMaisAcessados.itens.map((i) => i.value),
+      barWidth: '46%',
+      itemStyle: { color: C.primary, borderRadius: [4, 4, 0, 0] },
+      label: { show: true, position: 'top', color: C.ink, fontSize: 11, fontWeight: 700 },
+    },
+  ],
+}))
+
+// Fluxos com maior abandono — barras verticais coloridas por severidade.
+const abandonoBotOption = computed(() => ({
+  tooltip: { trigger: 'axis', valueFormatter: (v: number) => `${v}%` },
+  grid: { left: 30, right: 8, top: 24, bottom: 48 },
+  xAxis: {
+    type: 'category',
+    data: fluxosMaiorAbandono.map((i) => i.label),
+    axisLabel: { color: C.axis, fontSize: 10, interval: 0, width: 64, overflow: 'break' },
+    axisLine: { lineStyle: { color: C.split } },
+  },
+  yAxis: {
+    type: 'value',
+    axisLabel: { color: C.axis, formatter: '{value}%' },
+    splitLine: { lineStyle: { color: C.split } },
+  },
+  series: [
+    {
+      type: 'bar',
+      barWidth: '46%',
+      data: fluxosMaiorAbandono.map((i) => ({
+        value: i.value,
+        itemStyle: {
+          color: i.tone === 'danger' ? C.danger : i.tone === 'warning' ? C.warning : C.success,
+          borderRadius: [4, 4, 0, 0],
+        },
+      })),
+      label: { show: true, position: 'top', formatter: '{c}%', color: C.ink, fontSize: 11, fontWeight: 700 },
+    },
+  ],
+}))
+
+// Barra de eficiência do BOT: acima da meta = verde; abaixo = âmbar.
+const eficienteBar = (v: number) => (v >= setoresBotEficiente.meta ? 'bg-ms-success' : 'bg-ms-warning')
+const eficienteText = (v: number) =>
+  v >= setoresBotEficiente.meta ? 'text-ms-success' : 'text-ms-warning'
 
 const autoBar: Record<'success' | 'warning' | 'danger' | 'neutral', string> = {
   success: 'bg-ms-success',
@@ -215,6 +278,59 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
           />
         </div>
       </el-card>
+    </div>
+
+    <!-- Detalhamento dos fluxos do BOT -->
+    <div class="grid gap-4 lg:grid-cols-3">
+      <ChartCard title="Fluxos Mais Acessados" subtitle="sessões ativas (média 24h)">
+        <div class="h-44 w-full">
+          <VChart class="h-full w-full" :option="fluxosOption" autoresize />
+        </div>
+        <div class="mt-auto border-t border-ms-border-lighter pt-2 text-2xs text-ms-text-secondary">
+          Total: {{ fluxosMaisAcessados.totalSessoes }} sessões · Atendimentos/dia (média):
+          {{ fluxosMaisAcessados.atendimentosDia }}
+          <div class="mt-0.5 font-medium text-ms-success">{{ fluxosMaisAcessados.delta }}</div>
+        </div>
+      </ChartCard>
+
+      <ChartCard title="Setores onde o BOT é Mais Eficiente" subtitle="% resolvidos sem transbordo">
+        <div class="space-y-2.5">
+          <div v-for="s in setoresBotEficiente.itens" :key="s.label">
+            <div class="flex items-center justify-between text-xs">
+              <span class="truncate pr-2 text-ms-text-regular">{{ s.label }}</span>
+              <span class="font-medium" :class="eficienteText(s.value)">{{ s.value }}%</span>
+            </div>
+            <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
+              <div
+                class="h-full rounded-full"
+                :class="eficienteBar(s.value)"
+                :style="{ width: `${s.value}%` }"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="mt-auto border-t border-ms-border-lighter pt-2 text-2xs text-ms-text-secondary">
+          Meta de eficiência ≥ {{ setoresBotEficiente.meta }}%
+          <div class="mt-0.5">{{ setoresBotEficiente.resumo }}</div>
+        </div>
+      </ChartCard>
+
+      <ChartCard title="Fluxos com Maior Taxa de Abandono" subtitle="% de abandono dentro do bot">
+        <div class="h-44 w-full">
+          <VChart class="h-full w-full" :option="abandonoBotOption" autoresize />
+        </div>
+        <div class="mt-auto border-t border-ms-border-lighter pt-2 text-2xs">
+          <div class="font-medium text-ms-danger">{{ fluxosMaiorAbandonoResumo.gargalo }}</div>
+          <div class="mt-0.5 text-ms-text-secondary">{{ fluxosMaiorAbandonoResumo.acao }}</div>
+        </div>
+      </ChartCard>
+    </div>
+
+    <!-- Insights da automação -->
+    <div class="space-y-2 rounded-lg border border-ms-primary/20 bg-ms-primary/5 px-4 py-3">
+      <p v-for="(ins, i) in insightsAutomatizado" :key="i" class="text-sm text-ms-text-regular">
+        <span class="font-semibold text-ms-text-primary">Insight:</span> {{ ins }}
+      </p>
     </div>
 
     <div
