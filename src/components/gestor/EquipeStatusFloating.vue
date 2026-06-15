@@ -14,6 +14,20 @@ import {
 const router = useRouter()
 const open = ref(false)
 
+// Minimizado = só um ícone flutuante; restaura ao clicar. A escolha persiste
+// (o widget remonta a cada navegação de rota).
+const MIN_KEY = 'ms.fab.equipe.min'
+const minimized = ref(false)
+function setMinimized(v: boolean) {
+  minimized.value = v
+  if (v) open.value = false
+  try {
+    localStorage.setItem(MIN_KEY, v ? '1' : '0')
+  } catch {
+    /* ignore */
+  }
+}
+
 // ── Drag (reusa o padrão do FloatingDock) ───────────────────────────────────
 const el = ref<HTMLElement>()
 const pos = ref<{ left: number; top: number } | null>(null)
@@ -54,7 +68,14 @@ function onUp() {
 function onResize() {
   if (pos.value) pos.value = clamp(pos.value.left, pos.value.top)
 }
-onMounted(() => window.addEventListener('resize', onResize))
+onMounted(() => {
+  window.addEventListener('resize', onResize)
+  try {
+    if (localStorage.getItem(MIN_KEY) === '1') minimized.value = true
+  } catch {
+    /* ignore */
+  }
+})
 onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize)
   window.removeEventListener('pointermove', onMove)
@@ -134,9 +155,24 @@ function verEquipe() {
         : { right: '24px', bottom: '24px' }
     "
   >
+    <!-- ── Minimizado (só ícone) ────────────────────────────────────────── -->
+    <button
+      v-if="minimized"
+      class="relative flex h-12 w-12 items-center justify-center rounded-full border border-ms-border-light bg-ms-surface text-ms-primary shadow-xl transition hover:shadow-2xl"
+      title="Mostrar status das equipes"
+      aria-label="Mostrar status das equipes"
+      @click="setMinimized(false)"
+    >
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    </button>
+
     <!-- ── Quick panel (aberto) ─────────────────────────────────────────── -->
     <div
-      v-if="open"
+      v-else-if="open"
       class="w-[360px] overflow-hidden rounded-2xl border border-ms-border-light bg-ms-surface shadow-xl"
     >
       <!-- Header (arrastável pela alça) -->
@@ -159,6 +195,16 @@ function verEquipe() {
             {{ equipeStatusResumo.totalAgentes }} agentes · Atualizado {{ equipeStatusResumo.atualizado }}
           </div>
         </div>
+        <button
+          class="shrink-0 rounded-md p-1 text-ms-text-secondary transition hover:bg-ms-fill-light hover:text-ms-text-primary"
+          title="Minimizar"
+          aria-label="Minimizar"
+          @click="setMinimized(true)"
+        >
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M5 12h14" />
+          </svg>
+        </button>
         <button
           class="shrink-0 rounded-md p-1 text-ms-text-secondary transition hover:bg-ms-fill-light hover:text-ms-text-primary"
           title="Fechar"
@@ -304,6 +350,19 @@ function verEquipe() {
           </svg>
         </span>
         <span class="flex-1 text-xs font-semibold text-ms-text-primary">Status atual das Equipes</span>
+        <span
+          role="button"
+          tabindex="0"
+          class="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded text-ms-text-secondary transition hover:bg-ms-fill-light hover:text-ms-text-primary"
+          title="Minimizar"
+          aria-label="Minimizar"
+          @click.stop="setMinimized(true)"
+          @keydown.enter.stop="setMinimized(true)"
+        >
+          <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M5 12h14" />
+          </svg>
+        </span>
         <svg class="h-4 w-4 text-ms-text-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="m6 15 6-6 6 6" />
         </svg>
