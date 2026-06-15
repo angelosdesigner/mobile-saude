@@ -176,6 +176,14 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     ]
   })
 
+  /** Move um card para outro estágio. Retorna false se nenhuma mudança ocorreu. */
+  function moveCard(id: number | string, toStage: GestorStage): boolean {
+    const card = cards.value.find((c) => c.id === id)
+    if (!card || card.stage === toStage) return false
+    card.stage = toStage
+    return true
+  }
+
   return {
     loading,
     error,
@@ -195,5 +203,6 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     board,
     headerByStage,
     stats,
+    moveCard,
   }
 })

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
+import { ElMessage } from 'element-plus'
 import KanbanBoard from '@/components/ui/KanbanBoard.vue'
 import KanbanCard from '@/components/ui/KanbanCard.vue'
 import ChannelTag from '@/components/ui/ChannelTag.vue'
 import type { KanbanColumn } from '@/components/ui/kanbanBoard'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
-import { stages, type PillTone, type SlaState, type Prioridade } from '@/types/gestorOcorrencias'
+import { stages, type GestorStage, type PillTone, type SlaState, type Prioridade } from '@/types/gestorOcorrencias'
 
 const store = useGestorOcorrenciasStore()
 const { board, headerByStage } = storeToRefs(store)
@@ -106,10 +107,50 @@ function clearFilter(col: string) {
   else if (col === 'humano') filterHumano.value = { beneficiario: '', atendente: '', sla: '' }
   else if (col === 'concluido') filterConcluido.value = { beneficiario: '', atendente: '' }
 }
+
+// ── Drag-and-drop com modal de transferência ──────────────────────────────────
+const stageLabel = (key: string) => stages.find((s) => s.key === key)?.label ?? key
+
+interface TransferPending {
+  id: number | string
+  fromKey: GestorStage
+  toKey: GestorStage
+}
+
+const transferPending = ref<TransferPending | null>(null)
+const transferMotivo = ref('')
+const transferLoading = ref(false)
+
+const transferVisible = computed({
+  get: () => transferPending.value !== null,
+  set: (v) => { if (!v) cancelTransfer() },
+})
+
+function onCardMove(id: number | string, toKey: string) {
+  const card = store.cards.find((c) => c.id === id)
+  if (!card || card.stage === (toKey as GestorStage)) return
+  transferPending.value = { id, fromKey: card.stage, toKey: toKey as GestorStage }
+  transferMotivo.value = ''
+}
+
+function confirmTransfer() {
+  if (!transferPending.value || !transferMotivo.value.trim()) return
+  transferLoading.value = true
+  store.moveCard(transferPending.value.id, transferPending.value.toKey)
+  ElMessage.success(`Atendimento transferido para ${stageLabel(transferPending.value.toKey)}`)
+  transferPending.value = null
+  transferMotivo.value = ''
+  transferLoading.value = false
+}
+
+function cancelTransfer() {
+  transferPending.value = null
+  transferMotivo.value = ''
+}
 </script>
 
 <template>
-  <KanbanBoard :columns="columns" :groups="filteredBoard">
+  <KanbanBoard :columns="columns" :groups="filteredBoard" :draggable="true" @move="onCardMove">
     <!-- ── Botões de filtro por coluna ───────────────────────────────────── -->
     <template #column-action="{ col }">
       <!-- Automatizado -->
@@ -376,4 +417,49 @@ function clearFilter(col: string) {
       </KanbanCard>
     </template>
   </KanbanBoard>
+
+  <!-- ── Modal de transferência ──────────────────────────────────────────── -->
+  <el-dialog
+    v-model="transferVisible"
+    title="Transferir atendimento"
+    width="420px"
+    :close-on-click-modal="false"
+    @closed="cancelTransfer"
+  >
+    <div v-if="transferPending" class="space-y-4">
+      <p class="text-sm text-ms-text-regular">
+        Movendo de
+        <span class="font-semibold text-ms-text-primary">{{ stageLabel(transferPending.fromKey) }}</span>
+        para
+        <span class="font-semibold text-ms-text-primary">{{ stageLabel(transferPending.toKey) }}</span>.
+      </p>
+      <div class="space-y-1.5">
+        <label class="block text-xs font-medium text-ms-text-primary">
+          Motivo da transferência <span class="text-ms-danger">*</span>
+        </label>
+        <el-input
+          v-model="transferMotivo"
+          type="textarea"
+          :rows="4"
+          placeholder="Descreva o motivo da transferência deste atendimento..."
+          maxlength="500"
+          show-word-limit
+          resize="none"
+        />
+      </div>
+    </div>
+    <template #footer>
+      <div class="flex justify-end gap-2">
+        <el-button @click="cancelTransfer">Cancelar</el-button>
+        <el-button
+          type="primary"
+          :disabled="!transferMotivo.trim()"
+          :loading="transferLoading"
+          @click="confirmTransfer"
+        >
+          Confirmar transferência
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
