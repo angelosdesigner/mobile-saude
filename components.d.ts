@@ -71,6 +71,7 @@ declare module 'vue' {
     EmptyState: typeof import('./src/components/ui/EmptyState.vue')['default']
     EquipeStatusFloating: typeof import('./src/components/gestor/EquipeStatusFloating.vue')['default']
     EquipeTab: typeof import('./src/components/gestor/tempo-real/EquipeTab.vue')['default']
+    FilaCard: typeof import('./src/components/fila/FilaCard.vue')['default']
     FilaFab: typeof import('./src/components/fila/FilaFab.vue')['default']
     FilaPanel: typeof import('./src/components/fila/FilaPanel.vue')['default']
     FilasTab: typeof import('./src/components/gestor/tempo-real/FilasTab.vue')['default']
