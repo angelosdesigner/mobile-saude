@@ -24,34 +24,38 @@ const isEmbed = computed(() => route.query.embed === '1')
 const splitStore = useSplitStore()
 const { secondary, width, isSplit, isDragging } = storeToRefs(splitStore)
 
-// URL do painel secundário com o flag de embed preservando query existente.
-const embedSrc = computed(() => {
-  const p = secondary.value?.path
-  if (!p) return ''
+function withEmbed(p: string) {
   return p.includes('?') ? `${p}&embed=1` : `${p}?embed=1`
-})
+}
+// Quando dividido, o painel PRINCIPAL também vira um iframe embutido da rota
+// ativa: assim a "viewport" de cada painel = a largura dele e o conteúdo fica
+// responsivo à largura do painel (não à do navegador). Sem split, usa o slot.
+const primarySrc = computed(() => withEmbed(route.fullPath))
+const embedSrc = computed(() => (secondary.value ? withEmbed(secondary.value.path) : ''))
 
 function onDrop() {
   if (splitStore.dragPane) splitStore.openSplit(splitStore.dragPane)
   splitStore.endDrag()
 }
 
-// Resizer do divisor entre os painéis.
+// Resizer do divisor entre os painéis. Durante o arraste, os iframes ficam com
+// pointer-events:none — senão eles "engolem" os eventos de ponteiro e o resize
+// trava ao passar o cursor sobre um painel.
 const contentRow = ref<HTMLElement>()
-let resizing = false
+const resizing = ref(false)
 function onResizeDown(e: PointerEvent) {
   e.preventDefault()
-  resizing = true
+  resizing.value = true
   window.addEventListener('pointermove', onResizeMove)
   window.addEventListener('pointerup', onResizeUp)
 }
 function onResizeMove(e: PointerEvent) {
-  if (!resizing || !contentRow.value) return
+  if (!resizing.value || !contentRow.value) return
   const r = contentRow.value.getBoundingClientRect()
   splitStore.setWidth(((r.right - e.clientX) / r.width) * 100)
 }
 function onResizeUp() {
-  resizing = false
+  resizing.value = false
   window.removeEventListener('pointermove', onResizeMove)
   window.removeEventListener('pointerup', onResizeUp)
 }
@@ -70,12 +74,28 @@ function onResizeUp() {
       <AppTopbar />
 
       <!-- Linha de conteúdo: painel principal (+ divisor + painel secundário) -->
-      <div ref="contentRow" class="relative flex min-h-0 flex-1">
-        <main v-drag-scroll class="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
+      <div
+        ref="contentRow"
+        class="relative flex min-h-0 flex-1"
+        :class="resizing ? 'cursor-col-resize select-none' : ''"
+      >
+        <!-- Principal: slot normal; quando dividido, vira iframe (responsivo). -->
+        <main
+          v-if="!isSplit"
+          v-drag-scroll
+          class="min-w-0 flex-1 overflow-y-auto overflow-x-hidden"
+        >
           <div class="min-w-0 px-6 py-6">
             <slot />
           </div>
         </main>
+        <iframe
+          v-else
+          :src="primarySrc"
+          class="min-w-0 flex-1 border-0"
+          :style="{ pointerEvents: resizing ? 'none' : 'auto' }"
+          title="Painel principal"
+        />
 
         <!-- Divisor redimensionável + painel secundário (split) -->
         <template v-if="isSplit && secondary">
@@ -112,7 +132,12 @@ function onResizeUp() {
                 </svg>
               </button>
             </header>
-            <iframe :src="embedSrc" class="min-h-0 flex-1 border-0" title="Painel dividido" />
+            <iframe
+              :src="embedSrc"
+              class="min-h-0 flex-1 border-0"
+              :style="{ pointerEvents: resizing ? 'none' : 'auto' }"
+              title="Painel dividido"
+            />
           </section>
         </template>
 
