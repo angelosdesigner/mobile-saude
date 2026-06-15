@@ -267,7 +267,7 @@ const segmentoColumns: DataListColumn[] = [
     <!-- Breadcrumb (interativo) -->
     <el-breadcrumb separator="/" class="mb-2">
       <el-breadcrumb-item :to="{ path: '/gestor/tempo-real' }">Dashboard</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/gestor/indicadores' }"
+      <el-breadcrumb-item :to="{ path: '/gestor/tempo-real', query: { tab: 'indicadores' } }"
         >Indicadores Gerais</el-breadcrumb-item
       >
       <el-breadcrumb-item>Centro de Indicadores Operacionais</el-breadcrumb-item>
