@@ -6,6 +6,7 @@ import ChartCard from '@/components/gestor/ChartCard.vue'
 import KpiStatCard from '@/components/gestor/KpiStatCard.vue'
 import RecomendacoesIA from '@/components/gestor/RecomendacoesIA.vue'
 import IndicadorSelector from '@/components/gestor/IndicadorSelector.vue'
+import PeriodoSelector from '@/components/gestor/PeriodoSelector.vue'
 import DataList from '@/components/ui/DataList.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import { useChartColors } from '@/plugins/echarts'
@@ -240,9 +241,7 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
           </h1>
           <p class="mt-1 text-sm text-ms-text-secondary">{{ contexto.subtitulo }}</p>
         </div>
-        <el-radio-group v-model="periodoAtivo" size="small">
-          <el-radio-button v-for="p in periodos" :key="p" :value="p">{{ p }}</el-radio-button>
-        </el-radio-group>
+        <PeriodoSelector v-model="periodoAtivo" :options="periodos" />
       </div>
     </el-card>
 

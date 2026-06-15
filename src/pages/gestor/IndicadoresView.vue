@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import ChartCard from '@/components/gestor/ChartCard.vue'
+import PeriodoSelector from '@/components/gestor/PeriodoSelector.vue'
 import DataList from '@/components/ui/DataList.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import {
@@ -281,9 +282,7 @@ const segmentoColumns: DataListColumn[] = [
           Análise temporal, comparativa e por segmento dos KPIs estratégicos da operação.
         </p>
       </div>
-      <el-radio-group v-model="periodoAtivo" size="small">
-        <el-radio-button v-for="p in periodos" :key="p" :value="p">{{ p }}</el-radio-button>
-      </el-radio-group>
+      <PeriodoSelector v-model="periodoAtivo" :options="periodos" />
     </div>
 
     <!-- Seletor de indicadores -->

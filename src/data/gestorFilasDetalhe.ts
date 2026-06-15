@@ -5,7 +5,7 @@
 // beneficiários · 6) Recomendações IA.
 import type { RecomendacaoIA } from '@/components/gestor/recomendacoesIA'
 
-export const periodos = ['Tempo real', 'Hoje', '7 dias', '30 dias', 'Customizado'] as const
+export const periodos = ['Tempo real', 'Hoje', '7 dias', '30 dias'] as const
 
 // ── Cabeçalho/contexto ────────────────────────────────────────────────────────
 export const contexto = {
