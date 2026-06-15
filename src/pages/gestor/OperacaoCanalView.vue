@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import ChartCard from '@/components/gestor/ChartCard.vue'
@@ -10,43 +11,96 @@ import { useChartColors } from '@/plugins/echarts'
 import { useActionFeedback } from '@/composables/useActionFeedback'
 import {
   periodos,
-  contexto,
-  canalPills,
-  indicadoresCanal,
+  chips,
+  contextos,
   operacaoAgora,
-  evolucao,
+  evolucaoBase,
   evolucaoMetricas,
   correlacao,
   comoInterpretar,
-  alertas,
-  diagnosticoCanal,
-  recomendacoesCanal,
   canalSaudavel,
+  type CanalContexto,
   type CorrelStatus,
 } from '@/data/gestorOperacaoCanal'
 
 // Tela de detalhe "Operação por Canal" (drill-down da aba Atendimentos) —
-// Figma 7651:98838. Estrutura padrão das telas de detalhe do gestor.
+// Figma 7651:98838. Os chips no topo selecionam o TIPO de canal (Geral por
+// padrão; Chat/WhatsApp agrupados) e reconfiguram tudo abaixo, exceto as
+// tabelas comparativas (mantêm todos os canais, com o tipo ativo destacado).
 const C = useChartColors()
 const { comingSoon } = useActionFeedback()
+const route = useRoute()
+const router = useRouter()
+
+const chaveValida = (v: unknown): v is CanalContexto =>
+  typeof v === 'string' && v in contextos
+
+const ctxKey = ref<CanalContexto>(chaveValida(route.query.canal) ? route.query.canal : 'geral')
+watch(
+  () => route.query.canal,
+  (v) => {
+    if (chaveValida(v)) ctxKey.value = v
+  },
+)
+function selecionar(key: CanalContexto) {
+  ctxKey.value = key
+  router.replace({ query: { ...route.query, canal: key } })
+}
+
+const ctx = computed(() => contextos[ctxKey.value])
+const isGeral = computed(() => ctxKey.value === 'geral')
+const destacado = (canal: string) => ctx.value.canaisDestaque.includes(canal)
 
 const periodoAtivo = ref<string>('Hoje')
 const metrica = ref<string>('SLA')
 
-const pillTone: Record<'success' | 'warning' | 'danger', string> = {
+const toneText: Record<'success' | 'warning' | 'danger' | 'neutral' | 'primary', string> = {
   success: 'text-ms-success',
   warning: 'text-ms-warning',
   danger: 'text-ms-danger',
+  neutral: 'text-ms-text-secondary',
+  primary: 'text-ms-primary',
 }
+const toneDot: Record<'success' | 'warning' | 'danger' | 'neutral' | 'primary', string> = {
+  success: 'bg-ms-success',
+  warning: 'bg-ms-warning',
+  danger: 'bg-ms-danger',
+  neutral: 'bg-ms-text-placeholder',
+  primary: 'bg-ms-primary',
+}
+const toneBar: Record<'success' | 'warning' | 'danger' | 'primary', string> = {
+  success: 'bg-ms-success',
+  warning: 'bg-ms-warning',
+  danger: 'bg-ms-danger',
+  primary: 'bg-ms-primary',
+}
+
+// Títulos de seção e textos dependem de ser visão geral ou de um canal.
+const kpiTitulo = computed(() =>
+  isGeral.value ? 'Indicadores da operação · Hoje' : 'Indicadores do canal · Hoje',
+)
+const evolucaoTitulo = computed(() =>
+  isGeral.value ? 'Evolução da operação · últimas 12h' : 'Evolução do canal · últimas 12h',
+)
+const evolucaoSubtitulo = computed(() =>
+  isGeral.value
+    ? `Volume total vs ${metrica.value} consolidado · janela ${periodoAtivo.value}`
+    : `Volume vs ${metrica.value} · janela ${periodoAtivo.value}`,
+)
+const iaSubtitulo = computed(() =>
+  isGeral.value
+    ? 'Ações para recuperar a performance da operação'
+    : `Ações para recuperar performance do canal ${ctx.value.label}`,
+)
 
 // ── Evolução: período reescala a janela (Hoje = 12h; demais agregam). ─────────
 const periodoLabels: Record<string, string[]> = {
-  Hoje: evolucao.horas,
+  Hoje: evolucaoBase.horas,
   '7d': ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
   '30d': ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
   Trimestre: ['Mês 1', 'Mês 2', 'Mês 3'],
 }
-const eixoLabels = computed(() => periodoLabels[periodoAtivo.value] ?? evolucao.horas)
+const eixoLabels = computed(() => periodoLabels[periodoAtivo.value] ?? evolucaoBase.horas)
 const isHoje = computed(() => periodoAtivo.value === 'Hoje')
 
 // Reamostra `arr` para `n` pontos por interpolação linear (determinístico).
@@ -60,16 +114,20 @@ function resample(arr: number[], n: number): number[] {
   })
 }
 
-const evolucaoSubtitulo = computed(() =>
-  isHoje.value
-    ? 'Volume vs SLA · onde a fila telefônica entrou em colapso'
-    : `Volume vs ${metrica.value} · janela ${periodoAtivo.value}`,
-)
+// Métricas da linha derivadas da série de SLA do contexto (determinístico):
+// Retenção ≈ 85% do SLA; TME inversamente proporcional (mock para o seletor).
+const linhaSerie = computed<number[]>(() => {
+  const sla = ctx.value.sla
+  if (metrica.value === 'Retenção') return sla.map((v) => Math.round(v * 0.85))
+  if (metrica.value === 'TME') return sla.map((v) => Math.max(40, Math.round(118 - v)))
+  return sla
+})
 
 const evolucaoOption = computed(() => {
   const n = eixoLabels.value.length
-  const volume = resample(evolucao.volume, n)
-  const linha = resample(evolucao.series[metrica.value] ?? evolucao.series.SLA, n)
+  const volume = resample(ctx.value.volume, n)
+  const linha = resample(linhaSerie.value, n)
+  const volMax = Math.max(...volume) * 1.1
   return {
     tooltip: { trigger: 'axis' },
     grid: { left: 40, right: 48, top: 20, bottom: 36 },
@@ -91,7 +149,7 @@ const evolucaoOption = computed(() => {
       {
         type: 'value',
         min: 0,
-        max: 100,
+        max: Math.ceil(volMax),
         axisLabel: { color: C.axis, fontSize: 10 },
         splitLine: { lineStyle: { color: C.split } },
       },
@@ -120,7 +178,6 @@ const evolucaoOption = computed(() => {
         symbol: 'circle',
         symbolSize: 5,
         data: linha,
-        // Cor por segmento: degrada para vermelho quando cai abaixo da meta.
         lineStyle: { color: C.warning, width: 2.5 },
         itemStyle: { color: C.warning },
         markLine: isHoje.value
@@ -130,12 +187,12 @@ const evolucaoOption = computed(() => {
               label: { fontSize: 10 },
               data: [
                 {
-                  xAxis: evolucao.horas[evolucao.picoIdx],
+                  xAxis: evolucaoBase.horas[evolucaoBase.picoIdx],
                   lineStyle: { color: C.warning, type: 'solid', width: 1 },
-                  label: { formatter: evolucao.picoLabel, color: C.warning, position: 'insideEndTop' },
+                  label: { formatter: evolucaoBase.picoLabel, color: C.warning, position: 'insideEndTop' },
                 },
                 {
-                  xAxis: evolucao.horas[evolucao.agoraIdx],
+                  xAxis: evolucaoBase.horas[evolucaoBase.agoraIdx],
                   lineStyle: { color: C.danger, type: 'solid', width: 1.5 },
                   label: { formatter: 'AGORA', color: C.danger, position: 'insideEndTop' },
                 },
@@ -148,7 +205,7 @@ const evolucaoOption = computed(() => {
         type: 'line',
         yAxisIndex: 1,
         symbol: 'none',
-        data: eixoLabels.value.map(() => evolucao.meta),
+        data: eixoLabels.value.map(() => evolucaoBase.meta),
         lineStyle: { color: C.success, type: 'dashed', width: 1.5 },
         itemStyle: { color: C.success },
       },
@@ -168,6 +225,10 @@ const operacaoColumns: DataListColumn[] = [
 ]
 
 // ── Tabela "Correlação operacional" ──────────────────────────────────────────
+const tmeSeg = (s: string) => {
+  const [m, sec] = s.split(':').map(Number)
+  return (m || 0) * 60 + (sec || 0)
+}
 const correlStatusOrder: Record<CorrelStatus, number> = { OK: 0, Médio: 1, Alto: 2, Crítico: 3 }
 const correlColumns: DataListColumn[] = [
   { key: 'canal', label: 'Canal', minWidth: 130, sortable: true },
@@ -179,24 +240,24 @@ const correlColumns: DataListColumn[] = [
   { key: 'gargalo', label: 'Gargalo', minWidth: 240 },
   { key: 'status', label: 'Status', width: 120, sortBy: (r) => correlStatusOrder[r.status as CorrelStatus] },
 ]
-const tmeSeg = (s: string) => {
-  const [m, sec] = s.split(':').map(Number)
-  return (m || 0) * 60 + (sec || 0)
-}
 
+const pillTone: Record<'success' | 'warning' | 'danger', string> = {
+  success: 'text-ms-success',
+  warning: 'text-ms-warning',
+  danger: 'text-ms-danger',
+}
 const statusTone: Record<CorrelStatus, { text: string; dot: string }> = {
   Crítico: { text: 'text-ms-danger', dot: 'bg-ms-danger' },
   Alto: { text: 'text-ms-warning', dot: 'bg-ms-warning' },
   Médio: { text: 'text-ms-warning', dot: 'bg-ms-warning/60' },
   OK: { text: 'text-ms-success', dot: 'bg-ms-success' },
 }
-// SLA/Ocupação: limiar simples para cor (SLA<80 ruim; ocup>85 ruim).
 const slaTone = (v: number) => (v >= 90 ? 'text-ms-success' : v >= 80 ? 'text-ms-warning' : 'text-ms-danger')
 const ocupTone = (v: number) => (v > 90 ? 'text-ms-danger' : v >= 85 ? 'text-ms-warning' : 'text-ms-success')
 
-const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string }> = {
-  CRÍTICO: { bar: 'border-l-ms-danger', badge: 'text-ms-danger' },
-  ATENÇÃO: { bar: 'border-l-ms-warning', badge: 'text-ms-warning' },
+const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string; dot: string }> = {
+  CRÍTICO: { bar: 'border-l-ms-danger', badge: 'text-ms-danger', dot: 'bg-ms-danger' },
+  ATENÇÃO: { bar: 'border-l-ms-warning', badge: 'text-ms-warning', dot: 'bg-ms-warning' },
 }
 </script>
 
@@ -208,55 +269,63 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string 
       <el-breadcrumb-item :to="{ path: '/gestor/tempo-real', query: { tab: 'atendimentos' } }"
         >Operação de Atendimento</el-breadcrumb-item
       >
-      <el-breadcrumb-item>Operação por Canal · {{ contexto.canalAtivo }}</el-breadcrumb-item>
+      <el-breadcrumb-item>Operação por Canal · {{ ctx.label }}</el-breadcrumb-item>
     </el-breadcrumb>
 
     <!-- Cabeçalho/contexto -->
     <el-card shadow="never" body-class="!p-5" class="mb-5 overflow-hidden !border-ms-border-light">
-      <div class="-mx-5 -mt-5 mb-4 h-1 bg-ms-danger" />
+      <div class="-mx-5 -mt-5 mb-4 h-1" :class="toneBar[ctx.badgeTone]" />
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div class="min-w-0">
           <div class="flex items-center gap-2 text-xs">
-            <span class="flex items-center gap-1.5 font-bold uppercase tracking-wide text-ms-danger">
-              <span class="h-2 w-2 rounded-full bg-ms-danger" />{{ contexto.badge }}
+            <span
+              class="flex items-center gap-1.5 font-bold uppercase tracking-wide"
+              :class="toneText[ctx.badgeTone]"
+            >
+              <span class="h-2 w-2 rounded-full" :class="toneDot[ctx.badgeTone]" />{{ ctx.badge }}
             </span>
-            <span class="text-ms-text-secondary">· {{ contexto.resumoSla }}</span>
+            <span class="text-ms-text-secondary">· {{ ctx.resumoSla }}</span>
           </div>
           <h1 class="mt-2 flex items-center gap-2 text-2xl font-bold text-ms-text-primary">
-            <span class="text-ms-text-secondary">⊞</span>{{ contexto.titulo }}
+            <span class="text-ms-text-secondary">⊞</span>Operação por Canal
           </h1>
-          <p class="mt-1 text-sm text-ms-text-secondary">{{ contexto.subtitulo }}</p>
+          <p class="mt-1 text-sm text-ms-text-secondary">{{ ctx.subtitulo }}</p>
         </div>
         <el-radio-group v-model="periodoAtivo" size="small">
           <el-radio-button v-for="p in periodos" :key="p" :value="p">{{ p }}</el-radio-button>
         </el-radio-group>
       </div>
-      <!-- Pills de canal -->
+
+      <!-- Chips de tipo de canal (clicáveis · filtro global) -->
       <div class="mt-4 flex flex-wrap gap-2">
-        <span
-          v-for="c in canalPills"
-          :key="c.nome"
-          class="flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs"
+        <button
+          v-for="c in chips"
+          :key="c.key"
+          type="button"
+          class="flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs transition"
           :class="
-            c.ativo ? 'border-ms-primary bg-ms-primary/5 font-semibold' : 'border-ms-border-light'
+            ctxKey === c.key
+              ? '!border-ms-primary bg-ms-primary/5 font-semibold ring-1 ring-ms-primary'
+              : 'border-ms-border-light hover:border-ms-primary/40 hover:bg-ms-fill-light'
           "
+          @click="selecionar(c.key)"
         >
-          <span class="text-ms-text-regular">{{ c.nome }}</span>
-          <span class="font-semibold" :class="pillTone[c.tone]">{{ c.sla }}%</span>
-        </span>
+          <span class="text-ms-text-regular">{{ c.label }}</span>
+          <span v-if="c.key !== 'geral'" class="font-semibold" :class="pillTone[c.tone === 'neutral' ? 'success' : c.tone]">{{ c.sla }}%</span>
+        </button>
       </div>
     </el-card>
 
-    <!-- 1) Indicadores do canal -->
+    <!-- 1) Indicadores -->
     <div class="mb-1 text-xs font-bold uppercase tracking-wide text-ms-text-secondary">
-      Indicadores do canal · Hoje
+      {{ kpiTitulo }}
     </div>
     <p class="mb-3 text-xs text-ms-text-secondary">
-      Volume, tempo de resposta e capacidade · vs canal anterior
+      Volume, tempo de resposta e capacidade · vs período anterior
     </p>
     <div class="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <KpiStatCard
-        v-for="k in indicadoresCanal"
+        v-for="k in ctx.kpis"
         :key="k.label"
         :label="k.label"
         :value="k.value"
@@ -267,10 +336,10 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string 
       />
     </div>
 
-    <!-- 2) Operação por canal · agora -->
+    <!-- 2) Operação por canal · agora (comparativo) -->
     <ChartCard
       title="Operação por canal · agora"
-      subtitle="Volume, espera e desempenho por canal de atendimento"
+      subtitle="Volume, espera e desempenho por canal · todos os canais para comparação"
       class="mb-5"
     >
       <DataList
@@ -283,7 +352,9 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string 
         count-label="canais"
       >
         <template #cell-canal="{ row }">
-          <span :class="row.ativo ? 'font-semibold text-ms-text-primary' : ''">{{ row.canal }}</span>
+          <span class="flex items-center gap-1.5" :class="destacado(row.canal) ? 'font-semibold text-ms-text-primary' : ''">
+            <span v-if="destacado(row.canal)" class="h-1.5 w-1.5 rounded-full bg-ms-primary" />{{ row.canal }}
+          </span>
         </template>
         <template #cell-emEspera="{ row }">
           <span :class="row.esperaTone === 'danger' ? 'font-semibold text-ms-danger' : ''">{{
@@ -296,12 +367,8 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string 
       </DataList>
     </ChartCard>
 
-    <!-- 3) Evolução do canal -->
-    <ChartCard
-      title="Evolução do canal · últimas 12h"
-      :subtitle="evolucaoSubtitulo"
-      class="mb-5"
-    >
+    <!-- 3) Evolução -->
+    <ChartCard :title="evolucaoTitulo" :subtitle="evolucaoSubtitulo" class="mb-5">
       <div class="mb-2">
         <el-select v-model="metrica" size="small" class="!w-36">
           <el-option v-for="m in evolucaoMetricas" :key="m" :label="m" :value="m" />
@@ -312,7 +379,7 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string 
       </div>
     </ChartCard>
 
-    <!-- 4) Correlação operacional -->
+    <!-- 4) Correlação operacional (comparativo) -->
     <ChartCard
       title="Correlação operacional"
       subtitle="Volume × SLA × TME × Ocupação × Espera · Por canal · Identificação de gargalos"
@@ -327,6 +394,11 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string 
         :actions="false"
         count-label="canais"
       >
+        <template #cell-canal="{ row }">
+          <span class="flex items-center gap-1.5" :class="destacado(row.canal) ? 'font-semibold text-ms-text-primary' : ''">
+            <span v-if="destacado(row.canal)" class="h-1.5 w-1.5 rounded-full bg-ms-primary" />{{ row.canal }}
+          </span>
+        </template>
         <template #cell-sla="{ row }">
           <span class="font-medium" :class="slaTone(row.sla)">{{ row.sla }}%</span>
         </template>
@@ -355,14 +427,14 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string 
       </div>
     </div>
 
-    <!-- 5) Alertas do canal · ativos -->
+    <!-- 5) Alertas -->
     <div class="mb-1 text-xs font-bold uppercase tracking-wide text-ms-text-secondary">
-      Alertas do canal · ativos
+      Alertas {{ isGeral ? 'da operação' : 'do canal' }} · ativos
     </div>
     <p class="mb-3 text-xs text-ms-text-secondary">Sinais detectados nas últimas 4 horas</p>
     <div class="mb-5 grid gap-4 lg:grid-cols-3">
       <el-card
-        v-for="a in alertas"
+        v-for="a in ctx.alertas"
         :key="a.titulo"
         shadow="never"
         body-class="!p-4"
@@ -371,7 +443,7 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string 
       >
         <div class="flex items-center justify-between">
           <span class="flex items-center gap-1.5 text-2xs font-bold uppercase tracking-wide" :class="alertaTone[a.severidade].badge">
-            <span class="h-1.5 w-1.5 rounded-full" :class="a.severidade === 'CRÍTICO' ? 'bg-ms-danger' : 'bg-ms-warning'" />{{ a.severidade }}
+            <span class="h-1.5 w-1.5 rounded-full" :class="alertaTone[a.severidade].dot" />{{ a.severidade }}
           </span>
           <span class="text-2xs text-ms-text-secondary">{{ a.tempo }}</span>
         </div>
@@ -381,24 +453,23 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string 
     </div>
 
     <!-- 6) Recomendações IA -->
-    <ChartCard
-      title="Recomendações IA"
-      :subtitle="`Ações para recuperar performance do canal ${contexto.canalAtivo}`"
-    >
+    <ChartCard title="Recomendações IA" :subtitle="iaSubtitulo">
       <div class="mb-3 rounded-lg border border-ms-primary/20 bg-ms-primary/5 p-3">
         <div class="mb-1 flex flex-wrap items-center gap-2">
-          <span class="text-sm font-bold text-ms-text-primary">Diagnóstico do canal</span>
+          <span class="text-sm font-bold text-ms-text-primary">{{
+            isGeral ? 'Diagnóstico da operação' : 'Diagnóstico do canal'
+          }}</span>
           <span class="rounded bg-ms-primary px-1.5 py-0.5 text-2xs font-bold uppercase text-white"
             >IA</span
           >
-          <span class="ml-auto text-2xs text-ms-text-secondary">{{ diagnosticoCanal.confianca }}</span>
+          <span class="ml-auto text-2xs text-ms-text-secondary">{{ ctx.diagnostico.confianca }}</span>
         </div>
-        <p class="text-xs leading-relaxed text-ms-text-regular">{{ diagnosticoCanal.texto }}</p>
+        <p class="text-xs leading-relaxed text-ms-text-regular">{{ ctx.diagnostico.texto }}</p>
       </div>
 
       <div class="grid gap-3 lg:grid-cols-3">
         <div
-          v-for="(r, i) in recomendacoesCanal"
+          v-for="(r, i) in ctx.recomendacoes"
           :key="r.titulo"
           class="flex flex-col rounded-lg border p-3"
           :class="r.destaque ? 'border-ms-primary/40 bg-ms-primary/5' : 'border-ms-border-light'"
@@ -433,12 +504,16 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string 
         class="text-ms-primary no-underline hover:underline"
         >← Voltar ao Dashboard</router-link
       >
-      <span class="text-ms-text-secondary">
+      <button
+        v-if="ctxKey !== 'mensageria'"
+        class="text-ms-text-secondary hover:underline"
+        @click="selecionar('mensageria')"
+      >
         Canal saudável:
         <span class="font-medium text-ms-success"
           >{{ canalSaudavel.nome }} · SLA {{ canalSaudavel.sla }}% →</span
         >
-      </span>
+      </button>
     </div>
   </DashboardLayout>
 </template>
