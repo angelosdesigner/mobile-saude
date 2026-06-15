@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
 import MetricCard from '@/components/gestor/MetricCard.vue'
@@ -8,8 +8,6 @@ import BarList from '@/components/gestor/BarList.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
 import KpiRingCard from '@/components/indicadores/KpiRingCard.vue'
 import ChartLegend from '@/components/ui/ChartLegend.vue'
-import DataList from '@/components/ui/DataList.vue'
-import type { DataListColumn } from '@/components/ui/dataList'
 import {
   kpiGauges,
   chamadasNaFila,
@@ -21,8 +19,6 @@ import {
   canalResumo,
   abandonoFluxo,
   demandaCapacidade,
-  segmentosCriticos,
-  type SegmentoCritico,
   type CardTarget,
 } from '@/data/gestorTempoReal'
 import { useChartColors } from '@/plugins/echarts'
@@ -200,73 +196,6 @@ const demandaOption = computed(() => ({
   ],
 }))
 
-const statusTone: Record<SegmentoCritico['status'], string> = {
-  OK: 'text-ms-success',
-  ALERTA: 'text-ms-warning',
-  CRÍTICO: 'text-ms-danger',
-}
-
-// ── Segmentos críticos: filtros (canal/fila/turno) + tabela padrão (DataList) ──
-const uniq = (vals: string[]) => [...new Set(vals)]
-const canalOpts = uniq(segmentosCriticos.map((s) => s.canal))
-const filaOpts = uniq(segmentosCriticos.map((s) => s.fila))
-const turnoOpts = uniq(segmentosCriticos.map((s) => s.turno))
-
-const fCanal = ref('')
-const fFila = ref('')
-const fTurno = ref('')
-
-const segmentosFiltrados = computed(() =>
-  segmentosCriticos
-    .filter(
-      (s) =>
-        (!fCanal.value || s.canal === fCanal.value) &&
-        (!fFila.value || s.fila === fFila.value) &&
-        (!fTurno.value || s.turno === fTurno.value),
-    )
-    // id sintético único (não há id no mock) p/ row-key do DataList.
-    .map((s) => ({ ...s, id: `${s.canal}·${s.fila}·${s.turno}` })),
-)
-const limparFiltros = () => {
-  fCanal.value = ''
-  fFila.value = ''
-  fTurno.value = ''
-}
-
-// "6:14" (m:ss) → segundos, para ordenar o TME corretamente.
-const tmeSeg = (s: string) => {
-  const [m, sec] = s.split(':').map(Number)
-  return (m || 0) * 60 + (sec || 0)
-}
-// "5/12" → razão de disponibilidade (livres/total).
-const dispRatio = (s: string) => {
-  const [a, b] = s.split('/').map(Number)
-  return b ? (a || 0) / b : 0
-}
-const statusSeveridade: Record<SegmentoCritico['status'], number> = { OK: 0, ALERTA: 1, CRÍTICO: 2 }
-
-const segmentoColumns: DataListColumn[] = [
-  { key: 'canal', label: 'Canal', minWidth: 120, sortable: true },
-  { key: 'fila', label: 'Fila', minWidth: 120, sortable: true },
-  { key: 'turno', label: 'Turno', width: 100, sortable: true },
-  { key: 'volume', label: 'Vol. atendido', align: 'right', width: 130, sortable: true },
-  { key: 'abandonados', label: 'Abandonados', align: 'right', width: 130, sortable: true },
-  {
-    key: 'atendDisp',
-    label: 'Atend. disp.',
-    align: 'center',
-    width: 120,
-    sortBy: (r) => dispRatio(r.atendDisp as string),
-  },
-  { key: 'sla', label: 'SLA', align: 'right', width: 100, sortable: true },
-  { key: 'tme', label: 'TME', align: 'right', width: 100, sortBy: (r) => tmeSeg(r.tme as string) },
-  {
-    key: 'status',
-    label: 'Status',
-    width: 110,
-    sortBy: (r) => statusSeveridade[r.status as SegmentoCritico['status']],
-  },
-]
 </script>
 
 <template>
@@ -331,9 +260,14 @@ const segmentoColumns: DataListColumn[] = [
           <div
             v-for="a in andamento"
             :key="a.label"
+            role="button"
+            :tabindex="0"
+            :aria-label="`${a.label}: ${a.value} — abrir lista`"
             class="flex cursor-pointer items-center justify-between rounded-lg border px-3 py-2 transition hover:brightness-95"
             :class="andamentoTone[a.tone]"
             @click="abrirLista(a.filtro)"
+            @keydown.enter.prevent="abrirLista(a.filtro)"
+            @keydown.space.prevent="abrirLista(a.filtro)"
           >
             <span class="text-xs font-semibold uppercase">{{ a.label }}</span>
             <span class="text-xl font-bold">{{ a.value }}</span>
@@ -403,60 +337,5 @@ const segmentoColumns: DataListColumn[] = [
         <ChartLegend :items="demandaLegend" class="mt-3" />
       </ChartCard>
     </div>
-
-    <!-- Segmentos críticos -->
-    <ChartCard
-      title="Segmentos críticos · Canal × Fila × Turno"
-      subtitle="Cruzamento de volume, SLA e TME por segmento operacional · clique no cabeçalho para ordenar"
-    >
-      <!-- Filtros (canal / fila / turno) -->
-      <div class="mb-3 flex flex-wrap items-center gap-2">
-        <el-select v-model="fCanal" placeholder="Canal" class="!w-40" clearable>
-          <el-option v-for="o in canalOpts" :key="o" :label="o" :value="o" />
-        </el-select>
-        <el-select v-model="fFila" placeholder="Fila" class="!w-40" clearable>
-          <el-option v-for="o in filaOpts" :key="o" :label="o" :value="o" />
-        </el-select>
-        <el-select v-model="fTurno" placeholder="Turno" class="!w-36" clearable>
-          <el-option v-for="o in turnoOpts" :key="o" :label="o" :value="o" />
-        </el-select>
-        <el-button
-          v-if="fCanal || fFila || fTurno"
-          text
-          type="primary"
-          size="small"
-          @click="limparFiltros"
-          >Limpar filtros</el-button
-        >
-      </div>
-
-      <DataList
-        :columns="segmentoColumns"
-        :rows="segmentosFiltrados"
-        row-key="id"
-        :selectable="false"
-        :expandable="false"
-        :actions="false"
-        count-label="segmentos"
-        empty-text="Nenhum segmento para os filtros aplicados"
-      >
-        <template #cell-abandonados="{ row }">
-          <span class="text-ms-danger">{{ row.abandonados }}</span>
-        </template>
-        <template #cell-sla="{ row }">
-          <span
-            :class="
-              row.sla < 70 ? 'text-ms-danger' : row.sla < 90 ? 'text-ms-warning' : 'text-ms-success'
-            "
-            >{{ row.sla }}%</span
-          >
-        </template>
-        <template #cell-status="{ row }">
-          <span class="text-xs font-semibold" :class="statusTone[row.status as SegmentoCritico['status']]">{{
-            row.status
-          }}</span>
-        </template>
-      </DataList>
-    </ChartCard>
   </div>
 </template>

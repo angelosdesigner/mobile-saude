@@ -37,6 +37,7 @@ const fillTokens = [
   { name: 'ms-warning', cls: 'bg-ms-warning' },
   { name: 'ms-danger', cls: 'bg-ms-danger' },
   { name: 'ms-teal', cls: 'bg-ms-teal' },
+  { name: 'ms-purple', cls: 'bg-ms-purple' },
 ]
 const surfaceTokens = [
   { name: 'ms-surface', cls: 'bg-ms-surface' },
@@ -55,10 +56,11 @@ const onColors = [
   { name: 'on-warning', fill: 'bg-ms-warning', text: 'text-ms-on-warning' },
   { name: 'on-danger', fill: 'bg-ms-danger', text: 'text-ms-on-danger' },
   { name: 'on-teal', fill: 'bg-ms-teal', text: 'text-ms-on-teal' },
+  { name: 'on-purple', fill: 'bg-ms-purple', text: 'text-ms-on-purple' },
 ]
 
 const typeScale = [
-  { cls: 'text-2xs', label: 'text-2xs · 11px (piso)' },
+  { cls: 'text-2xs', label: 'text-2xs · 12px (piso a11y)' },
   { cls: 'text-xs', label: 'text-xs · 12px' },
   { cls: 'text-sm', label: 'text-sm · 14px' },
   { cls: 'text-base', label: 'text-base · 16px' },

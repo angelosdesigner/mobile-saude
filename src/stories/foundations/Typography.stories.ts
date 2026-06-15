@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-// Escala tipográfica do produto (Inter). text-2xs (11px) é o piso; abaixo disso
-// não usar. Pesos: 400 (regular), 500 (medium), 600 (semibold), 700 (bold).
+// Escala tipográfica do produto (Inter). Piso de acessibilidade = 12px: nada
+// renderiza abaixo disso. `text-2xs` foi elevado a 12px (= text-xs) por isso.
+// Pesos: 400 (regular), 500 (medium), 600 (semibold), 700 (bold).
 const scale = [
-  { cls: 'text-2xs', label: 'text-2xs · 11px (piso)' },
+  { cls: 'text-2xs', label: 'text-2xs · 12px (piso a11y)' },
   { cls: 'text-xs', label: 'text-xs · 12px' },
   { cls: 'text-sm', label: 'text-sm · 14px' },
   { cls: 'text-base', label: 'text-base · 16px' },

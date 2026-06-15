@@ -33,7 +33,7 @@ withDefaults(
     :stripe="stripe"
     :border="border"
     header-cell-class-name="ms-th"
-    style="width: 100%"
+    class="w-full"
   >
     <el-table-column
       v-for="col in columns"

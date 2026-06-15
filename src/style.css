@@ -62,6 +62,8 @@
   --ms-amber-500: #e6a23c;
   --ms-red-500: #f56c6c;
   --ms-teal-500: #13c2c2;
+  /* Roxo do projeto (NPS, insights de IA). Antes só existia cru no echarts.ts. */
+  --ms-purple-500: #7c6cf2;
   /* Versões "soft" calibradas p/ fundo escuro (menos saturação/"vibração").
      Usadas só no html.dark; light continua com os tons cheios acima. */
   --ms-blue-soft: #4f93d6;
@@ -69,6 +71,7 @@
   --ms-amber-soft: #d99a45;
   --ms-red-soft: #e07070;
   --ms-teal-soft: #2aa3a3;
+  --ms-purple-soft: #8478d6;
 
   /* Neutros — tema claro (cinzas frios, alinhados ao Element Plus) */
   --ms-gray-0: #ffffff;
@@ -115,6 +118,8 @@
   --color-ms-danger: var(--ms-red-500);
   /* Acento do estágio "Atendimento Humano" no board do gestor. */
   --color-ms-teal: var(--ms-teal-500);
+  /* Roxo: NPS e insights de IA. */
+  --color-ms-purple: var(--ms-purple-500);
 
   /* "On-color": cor de texto/ícone SOBRE um preenchimento de cor (contraste AA).
      on-warning é escuro de propósito — branco sobre âmbar reprova AA. Fixos
@@ -124,6 +129,7 @@
   --color-ms-on-warning: var(--ms-gray-800);
   --color-ms-on-danger: var(--ms-gray-0);
   --color-ms-on-teal: var(--ms-gray-0);
+  --color-ms-on-purple: var(--ms-gray-0);
 
   /* Bordas */
   --color-ms-border: var(--ms-gray-300);
@@ -135,8 +141,10 @@
   --color-ms-surface: var(--ms-gray-0);
   --color-ms-bg: var(--ms-gray-50);
 
-  /* Tipografia: preenche o piso de 11px (Tailwind não tem) → utilitária text-2xs. */
-  --text-2xs: 0.6875rem;
+  /* Tipografia: piso de acessibilidade = 12px (igual ao text-xs do Tailwind,
+     mas mantido como token nomeado p/ as ~49 telas que já usam text-2xs).
+     Nada deve renderizar abaixo de 12px. */
+  --text-2xs: 0.75rem;
   --text-2xs--line-height: 1rem;
 }
 
@@ -190,6 +198,7 @@ html.dark {
   --color-ms-warning: var(--ms-amber-soft);
   --color-ms-danger: var(--ms-red-soft);
   --color-ms-teal: var(--ms-teal-soft);
+  --color-ms-purple: var(--ms-purple-soft);
   --color-ms-primary-light: var(--ms-dark-accent-subtle);
   --color-ms-border: var(--ms-dark-border);
   --color-ms-border-light: var(--ms-dark-border-light);

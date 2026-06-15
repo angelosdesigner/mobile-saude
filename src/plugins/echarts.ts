@@ -60,7 +60,7 @@ const chartColorsDark = {
   warning: '#d99a45', // --ms-amber-soft
   danger: '#e07070', // --ms-red-soft
   teal: '#2aa3a3', // --ms-teal-soft
-  purple: '#8478d6', // soft (sem token UI; harmoniza com os demais)
+  purple: '#8478d6', // espelha --ms-purple-soft (token UI --color-ms-purple)
 }
 
 /**

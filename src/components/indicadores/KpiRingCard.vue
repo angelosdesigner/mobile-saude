@@ -36,7 +36,7 @@ const ringVar: Record<KpiRingTone, string> = {
   success: 'var(--color-ms-success)',
   danger: 'var(--color-ms-danger)',
   warning: 'var(--color-ms-warning)',
-  purple: '#7c6cf2',
+  purple: 'var(--color-ms-purple)',
 }
 const deltaClass: Record<KpiRingDeltaTone, string> = {
   up: 'text-ms-success',

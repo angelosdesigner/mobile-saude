@@ -54,7 +54,7 @@ function ligar() {
 
       <div class="flex flex-col items-center gap-2 rounded-xl bg-ms-fill-light py-6">
         <div
-          class="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#7C6CF2] to-[#5B4BD6] text-2xl font-semibold text-white"
+          class="flex h-20 w-20 items-center justify-center rounded-full bg-ms-purple text-2xl font-semibold text-ms-on-purple"
         >
           {{ initials }}
         </div>
@@ -63,7 +63,7 @@ function ligar() {
       </div>
 
       <button
-        class="flex w-full items-center justify-center gap-2 rounded-lg bg-ms-success py-3 font-semibold text-white transition hover:bg-[#5daf34]"
+        class="flex w-full items-center justify-center gap-2 rounded-lg bg-ms-success py-3 font-semibold text-ms-on-success transition hover:brightness-95"
         @click="ligar"
       >
         <svg

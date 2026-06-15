@@ -23,7 +23,11 @@ const tintClass: Record<NotifType, string> = {
       notif.unread ? 'bg-ms-primary/5' : '',
       $attrs.onClick ? 'cursor-pointer hover:bg-ms-fill-light' : '',
     ]"
+    :role="$attrs.onClick ? 'button' : undefined"
+    :tabindex="$attrs.onClick ? 0 : undefined"
     @click="$emit('click')"
+    @keydown.enter.prevent="$attrs.onClick && $emit('click')"
+    @keydown.space.prevent="$attrs.onClick && $emit('click')"
   >
     <div
       class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"

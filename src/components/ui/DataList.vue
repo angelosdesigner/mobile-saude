@@ -319,7 +319,7 @@ onBeforeUnmount(() => {
 .top-scrollbar-bar {
   height: 8px;
   scrollbar-width: thin;                          /* Firefox */
-  scrollbar-color: #909399 transparent;           /* Firefox: thumb / track */
+  scrollbar-color: var(--ms-gray-500) transparent; /* Firefox: thumb / track */
 }
 .top-scrollbar-bar::-webkit-scrollbar {
   height: 6px;
@@ -328,7 +328,7 @@ onBeforeUnmount(() => {
   background: transparent;
 }
 .top-scrollbar-bar::-webkit-scrollbar-thumb {
-  background-color: #909399;
+  background-color: var(--ms-gray-500);
   border-radius: 4px;
 }
 

@@ -51,8 +51,8 @@ function iniciar() {
         class="rounded-xl border py-5 text-center transition"
         :class="
           tipo === 'video'
-            ? 'border-ms-danger bg-[#FEF0F0]'
-            : 'border-ms-border-light hover:border-[#C6E2FF]'
+            ? 'border-ms-danger bg-ms-danger/10'
+            : 'border-ms-border-light hover:border-ms-primary/40'
         "
         @click="tipo = 'video'"
       >
@@ -76,7 +76,7 @@ function iniciar() {
         :class="
           tipo === 'audio'
             ? 'border-ms-primary bg-ms-primary-light'
-            : 'border-ms-border-light hover:border-[#C6E2FF]'
+            : 'border-ms-border-light hover:border-ms-primary/40'
         "
         @click="tipo = 'audio'"
       >
@@ -102,7 +102,7 @@ function iniciar() {
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span
-            class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#7C6CF2] to-[#5B4BD6] text-sm font-semibold text-white"
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-ms-purple text-sm font-semibold text-ms-on-purple"
             >{{ initials }}</span
           >
           <div>

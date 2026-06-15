@@ -21,7 +21,11 @@ defineSlots<{ default: () => unknown; footer?: () => unknown }>()
       highlight ? 'border-ms-danger' : 'border-ms-border-light',
       clickable ? 'cursor-pointer' : '',
     ]"
+    :role="clickable ? 'button' : undefined"
+    :tabindex="clickable ? 0 : undefined"
     @click="clickable && emit('click')"
+    @keydown.enter.prevent="clickable && emit('click')"
+    @keydown.space.prevent="clickable && emit('click')"
   >
     <slot />
     <div

@@ -16,6 +16,7 @@ const fills = [
   { name: 'ms-warning', cls: 'bg-ms-warning' },
   { name: 'ms-danger', cls: 'bg-ms-danger' },
   { name: 'ms-teal', cls: 'bg-ms-teal' },
+  { name: 'ms-purple', cls: 'bg-ms-purple' },
 ]
 const surfaces = [
   { name: 'ms-surface', cls: 'bg-ms-surface' },
@@ -31,6 +32,7 @@ const onColors = [
   { name: 'on-warning', fill: 'bg-ms-warning', text: 'text-ms-on-warning' },
   { name: 'on-danger', fill: 'bg-ms-danger', text: 'text-ms-on-danger' },
   { name: 'on-teal', fill: 'bg-ms-teal', text: 'text-ms-on-teal' },
+  { name: 'on-purple', fill: 'bg-ms-purple', text: 'text-ms-on-purple' },
 ]
 const chart = Object.entries(chartColors)
 

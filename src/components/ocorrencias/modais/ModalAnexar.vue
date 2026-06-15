@@ -27,7 +27,7 @@ function onFile(e: Event) {
     </template>
 
     <button
-      class="flex w-full flex-col items-center gap-3 rounded-xl border-2 border-dashed border-ms-border bg-[#FAFBFC] px-6 py-10 text-center transition hover:border-ms-primary"
+      class="flex w-full flex-col items-center gap-3 rounded-xl border-2 border-dashed border-ms-border bg-ms-fill-light px-6 py-10 text-center transition hover:border-ms-primary"
       @click="fileInput?.click()"
     >
       <span
