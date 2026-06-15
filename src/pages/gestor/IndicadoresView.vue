@@ -203,15 +203,15 @@ const segmentacaoOption = computed(() => {
         symbolSize: (d: number[]) => d[2],
         label: {
           show: true,
-          position: 'inside',
+          // Rótulo acima da bolha (sobre o fundo do gráfico) — contraste limpo,
+          // sem depender de stroke sobre a cor da bolha.
+          position: 'top',
+          distance: 4,
           formatter: (p: { data: { value: [number, number, number, string, string] } }) =>
             p.data.value[4],
-          color: '#fff',
+          color: C.ink,
           fontSize: 10,
           fontWeight: 700,
-          // Contorno escuro garante leitura do texto branco em qualquer cor de bolha.
-          textBorderColor: 'rgba(0,0,0,0.35)',
-          textBorderWidth: 2,
         },
         data: segmentosBase.map((s) => {
           const v = s.metrics[ind]

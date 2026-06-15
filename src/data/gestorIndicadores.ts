@@ -472,21 +472,21 @@ export interface Recomendacao {
 }
 
 export const diagnostico =
-  'A queda de 4,1pp no SLA concentra-se na fila Dúvidas Administrativas (65% SLA, -8pp vs meta) durante a janela 13h-17h. Demanda atípica iniciada na 4ª feira (+27% vs base histórica) precedeu o impacto, com Equipe B como foco operacional.'
+  'A queda de 4,1pp no SLA concentra-se na fila Dúvidas Administrativas (65% SLA, -8pp vs meta), via canal Telefone, no turno da noite. Demanda atípica iniciada na 4ª feira (+27% vs base histórica) precedeu o impacto, com o turno da noite como foco operacional.'
 
 export const recomendacoes: Recomendacao[] = [
   {
-    titulo: 'Aplicar Cenário B na fila Dúvidas Adm.',
+    titulo: 'Reforçar o turno da noite em Dúvidas Adm.',
     descricao:
-      'Reforçar Equipe B com 2 atendentes da fila Reembolso durante 13h-17h. Cenário simulado prevê resolução do gargalo do SLA consolidado em ~25min.',
+      'Realocar 2 atendentes da fila Reembolso para Dúvidas Adm. no turno da noite. Cenário simulado prevê resolução do gargalo do SLA consolidado em ~25min.',
     impacto: 'SLA +9pp · resolução em ~25min',
     acao: 'Aplicar',
     destaque: true,
   },
   {
-    titulo: 'Capacitação focada para Equipe B',
+    titulo: 'Capacitação focada no canal Telefone',
     descricao:
-      'Programar 4h de treinamento em Dúvidas Adm. para Equipe B. Reduz TMA médio e aumenta autonomia da equipe nas próximas semanas.',
+      'Programar 4h de treinamento em Dúvidas Adm. para o time do canal Telefone. Reduz TMA médio e aumenta a autonomia no atendimento nas próximas semanas.',
     impacto: 'SLA +4pp · em 7 dias',
     acao: 'Detalhar',
     destaque: false,
