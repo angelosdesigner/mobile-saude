@@ -282,11 +282,7 @@ const pillDot: Record<StageTone | 'info', string> = {
         <el-option v-for="o in f.options" :key="o" :label="o" :value="o" />
       </el-select>
       <div class="ml-auto flex items-center gap-2">
-        <!-- Ações de header só no modo quadro; no modo lista a configuração de
-             colunas fica no ▥ da própria tabela. -->
-        <el-button v-if="viewMode === 'quadro'" @click="comingSoon('Status Atendimento')"
-          >Status Atendimento</el-button
-        >
+        <!-- No modo lista a configuração de colunas fica no ▥ da própria tabela. -->
         <el-button v-if="viewMode === 'quadro'" @click="comingSoon('Configurar colunas')"
           >Configurar colunas</el-button
         >
