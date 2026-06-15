@@ -101,6 +101,7 @@ declare module 'vue' {
     NotificacaoItem: typeof import('./src/components/notificacoes/NotificacaoItem.vue')['default']
     NotificacoesPanel: typeof import('./src/components/layout/NotificacoesPanel.vue')['default']
     OccupancyCard: typeof import('./src/components/indicadores/OccupancyCard.vue')['default']
+    OcorrenciaDetalheHeader: typeof import('./src/components/ocorrencias/OcorrenciaDetalheHeader.vue')['default']
     OcorrenciasBoard: typeof import('./src/components/ocorrencias/OcorrenciasBoard.vue')['default']
     OcorrenciasList: typeof import('./src/components/ocorrencias/OcorrenciasList.vue')['default']
     OperacionalBoard: typeof import('./src/components/gestor/OperacionalBoard.vue')['default']

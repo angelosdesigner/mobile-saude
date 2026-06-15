@@ -38,6 +38,15 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Detalhe da ocorrência' },
   },
   {
+    // Detalhe / jornada da ocorrência — compartilhada Gestor + Atendente.
+    // Em construção por partes (Figma 7707:85572): header pronto; minifila +
+    // timeline da jornada nas próximas etapas.
+    path: '/ocorrencias/:id/jornada',
+    name: 'ocorrencia-jornada',
+    component: () => import('@/pages/OcorrenciaJornadaView.vue'),
+    meta: { title: 'Detalhe da ocorrência' },
+  },
+  {
     // Central de Notificações — role-aware (atendente: gerais; gestor: por
     // atendente/setor). Acessível pelo dropdown do topbar e pela sidebar.
     path: '/notificacoes',

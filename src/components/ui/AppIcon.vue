@@ -18,6 +18,9 @@ import {
   Moon,
   Eye,
   Pencil,
+  Copy,
+  Clock,
+  MoreHorizontal,
   type LucideProps,
 } from '@lucide/vue'
 import type { Component } from 'vue'
@@ -33,6 +36,9 @@ const icons = {
   moon: Moon,
   eye: Eye,
   edit: Pencil,
+  copy: Copy,
+  clock: Clock,
+  'more-horizontal': MoreHorizontal,
 } satisfies Record<string, Component>
 
 withDefaults(defineProps<{ name: keyof typeof icons; size?: LucideProps['size'] }>(), {

@@ -16,11 +16,12 @@ const setores = [
   'Cadastro',
   'Jurídico',
 ]
+// Motivos da cobrança — Figma 2797:25722.
 const motivos = [
-  'Atraso na resposta',
+  'SLA próximo do vencimento',
+  'Aguardando resposta urgente',
+  'Beneficiário solicitando retorno',
   'Documentação pendente',
-  'Aguardando autorização',
-  'Revisão necessária',
 ]
 
 watch(
@@ -70,7 +71,7 @@ function enviar() {
       </div>
       <div>
         <label class="mb-1.5 block text-ms-text-primary">Motivo da cobrança</label>
-        <el-select v-model="motivo" placeholder="Selecione um motivo..." class="w-full">
+        <el-select v-model="motivo" filterable placeholder="Selecione um motivo..." class="w-full">
           <el-option v-for="m in motivos" :key="m" :label="m" :value="m" />
         </el-select>
       </div>

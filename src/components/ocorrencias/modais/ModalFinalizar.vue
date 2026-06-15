@@ -7,12 +7,14 @@ const emit = defineEmits<{ 'update:modelValue': [boolean] }>()
 const motivo = ref('')
 const obs = ref('')
 
+// Motivos de finalização — Figma 2797:26637.
 const motivos = [
-  'Resolvido',
-  'Sem retorno do beneficiário',
-  'Duplicado',
-  'Encaminhado para outro setor',
-  'Improcedente',
+  'Solicitação atendida',
+  'Autorização aprovada',
+  'Reembolso processado',
+  'Dúvida esclarecida',
+  'Documento emitido',
+  'Cancelado pelo beneficiário',
 ]
 
 watch(
@@ -45,7 +47,12 @@ function finalizar() {
     <div class="space-y-4">
       <div>
         <label class="mb-1.5 block text-ms-text-primary">Motivo da finalização</label>
-        <el-select v-model="motivo" placeholder="Selecione um motivo..." class="w-full">
+        <el-select
+          v-model="motivo"
+          filterable
+          placeholder="Selecione um motivo..."
+          class="w-full"
+        >
           <el-option v-for="m in motivos" :key="m" :label="m" :value="m" />
         </el-select>
       </div>
