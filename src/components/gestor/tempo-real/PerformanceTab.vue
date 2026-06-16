@@ -168,7 +168,10 @@ const scatterOption = computed(() => ({
     />
 
     <!-- Demanda × capacidade / heatmap + turnos -->
-    <div class="grid gap-4 lg:grid-cols-3">
+    <!-- items-start: evita esticar os itens da grade — a coluna esquerda tem 2
+         ChartCards (cada um !h-full); esticando, ambos viram 100% da linha e
+         transbordam, sobrepondo os blocos seguintes. -->
+    <div class="grid items-start gap-4 lg:grid-cols-3">
       <div class="space-y-4 lg:col-span-2">
         <ChartCard
           title="Demanda vs Capacidade por Hora"
