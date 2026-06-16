@@ -6,7 +6,7 @@ import type { Ocorrencia } from '@/types/ocorrencias'
 export const ocorrencias: Ocorrencia[] = [
   {
     id: 1,
-    protocol: 'OC-2026-001001',
+    protocol: '20260100001',
     beneficiary: 'Maria Silva Santos de Oliveira Conceição',
     tipo: 'Reembolso de consulta médica com especialista em cardiologia',
     assunto: 'Consulta médica',
@@ -25,7 +25,7 @@ export const ocorrencias: Ocorrencia[] = [
   },
   {
     id: 2,
-    protocol: 'OC-2026-001002',
+    protocol: '20260100002',
     beneficiary: 'João Pedro Oliveira',
     tipo: 'Autorização de exame',
     assunto: 'Consulta médica',
@@ -44,7 +44,7 @@ export const ocorrencias: Ocorrencia[] = [
   },
   {
     id: 3,
-    protocol: 'OC-2026-001003',
+    protocol: '20260100003',
     beneficiary: 'Ana Carolina Costa',
     tipo: 'Dúvida sobre cobertura',
     assunto: 'Consulta médica',
@@ -64,7 +64,7 @@ export const ocorrencias: Ocorrencia[] = [
   },
   {
     id: 4,
-    protocol: 'OC-2026-001004',
+    protocol: '20260100004',
     beneficiary: 'Carlos Eduardo Lima',
     tipo: 'Solicitação de procedimento',
     assunto: 'Consulta médica',
@@ -84,7 +84,7 @@ export const ocorrencias: Ocorrencia[] = [
   },
   {
     id: 5,
-    protocol: 'OC-2026-001005',
+    protocol: '20260100005',
     beneficiary: 'Maria Silva Santos de Oliveira Conceição',
     tipo: 'Encaminhamento para autorização',
     assunto: 'Consulta médica',
@@ -103,7 +103,7 @@ export const ocorrencias: Ocorrencia[] = [
   },
   {
     id: 6,
-    protocol: 'OC-2026-001006',
+    protocol: '20260100006',
     beneficiary: 'Fernanda Rodrigues',
     tipo: 'Encaminhamento para autorização',
     assunto: 'Consulta médica',

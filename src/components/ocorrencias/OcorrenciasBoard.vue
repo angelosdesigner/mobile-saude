@@ -44,7 +44,7 @@ const initials = (name: string) =>
 <template>
   <KanbanBoard :columns="columns" :groups="filteredBoard" draggable @move="onMove">
     <template #card="{ item }">
-      <KanbanCard :highlight="item.risk" clickable @click="router.push(`/ocorrencias/${item.id}`)">
+      <KanbanCard :highlight="item.risk" clickable @click="router.push(`/ocorrencias/${item.id}/jornada`)">
         <!-- Protocolo + tempo -->
         <div class="flex items-start justify-between gap-2">
           <span class="text-2xs text-ms-text-secondary">{{ item.protocol }}</span>

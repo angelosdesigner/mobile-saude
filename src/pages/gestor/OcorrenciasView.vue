@@ -150,11 +150,13 @@ function parseTempoSec(c: GestorCard): number {
 
 const { comingSoon } = useActionFeedback()
 
+// Visualizar/Editar abrem a tela de detalhe/jornada da ocorrência (compartilhada
+// Gestor + Atendente). ctx=gestor garante a resolução pela store do gestor.
 function onVisualizar(c: GestorCard): void {
-  ElMessage.info(`Visualizar: ${c.beneficiary}`)
+  router.push(`/ocorrencias/${c.id}/jornada?ctx=gestor`)
 }
 function onEditar(c: GestorCard) {
-  ElMessage.info(`Editar: ${c.beneficiary}`)
+  router.push(`/ocorrencias/${c.id}/jornada?ctx=gestor`)
 }
 
 const viewMode = computed({

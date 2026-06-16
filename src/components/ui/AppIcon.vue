@@ -21,6 +21,11 @@ import {
   Copy,
   Clock,
   MoreHorizontal,
+  FileText,
+  File,
+  MapPin,
+  BarChart3,
+  User,
   type LucideProps,
 } from '@lucide/vue'
 import type { Component } from 'vue'
@@ -39,6 +44,11 @@ const icons = {
   copy: Copy,
   clock: Clock,
   'more-horizontal': MoreHorizontal,
+  'file-text': FileText,
+  file: File,
+  'map-pin': MapPin,
+  'bar-chart': BarChart3,
+  user: User,
 } satisfies Record<string, Component>
 
 withDefaults(defineProps<{ name: keyof typeof icons; size?: LucideProps['size'] }>(), {

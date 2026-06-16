@@ -22,11 +22,12 @@ const listColumns: DataListColumn[] = [
 
 const { comingSoon } = useActionFeedback()
 
+// Visualizar/Editar abrem a tela de detalhe/jornada (compartilhada).
 function onVisualizar(o: Ocorrencia) {
-  router.push(`/ocorrencias/${o.id}`)
+  router.push(`/ocorrencias/${o.id}/jornada`)
 }
 function onEditar(o: Ocorrencia) {
-  ElMessage.info(`Editar: ${o.protocol}`)
+  router.push(`/ocorrencias/${o.id}/jornada`)
 }
 </script>
 

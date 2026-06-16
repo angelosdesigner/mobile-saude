@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
 import KanbanBoard from '@/components/ui/KanbanBoard.vue'
@@ -12,6 +13,7 @@ import { stages, type GestorStage, type PillTone, type SlaState, type Prioridade
 
 const store = useGestorOcorrenciasStore()
 const { board, headerByStage } = storeToRefs(store)
+const router = useRouter()
 
 // ── Colunas ──────────────────────────────────────────────────────────────────
 const columns = computed<KanbanColumn[]>(() =>
@@ -321,7 +323,11 @@ function cancelTransfer() {
 
     <!-- ── Cards ─────────────────────────────────────────────────────────── -->
     <template #card="{ item }">
-      <KanbanCard :highlight="item.destaque || item.risco">
+      <KanbanCard
+        :highlight="item.destaque || item.risco"
+        clickable
+        @click="router.push(`/ocorrencias/${item.id}/jornada?ctx=gestor`)"
+      >
 
         <!-- ── Atendimento Automatizado ──────────────────────────────── -->
         <template v-if="item.stage === 'automatizado'">
