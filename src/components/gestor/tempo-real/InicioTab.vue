@@ -204,7 +204,7 @@ const demandaOption = computed(() => ({
     <SectionHeader
       title="Resumo Executivo da Operação"
       subtitle="Visão consolidada dos indicadores mais importantes da central de atendimento."
-      action-to="/gestor/ocorrencias?view=lista"
+      action-to="/gestor/indicadores"
     />
 
     <!-- KPIs — todos no mesmo padrão (anel + número + infos), via KpiRingCard. -->

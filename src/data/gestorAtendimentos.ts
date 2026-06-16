@@ -25,20 +25,22 @@ export const indicadoresGerais: IndicadorGeral[] = [
     tone: 'primary',
   },
   {
-    label: 'Pessoas na fila',
+    // Card 3: atendimento humano em curso vem antes da espera (macro→micro).
+    label: 'Na fila humana',
+    value: 34,
+    display: '56',
+    meta: '34% do total · em atendimento',
+    tone: 'success',
+  },
+  {
+    // Card 4: "Fila em espera" (antes "Pessoas na fila").
+    label: 'Fila em espera',
     value: 14,
     display: '23',
     delta: '↑ 3 hoje',
     deltaTone: 'danger',
     meta: '14% do total · aguardando',
     tone: 'warning',
-  },
-  {
-    label: 'Na fila humana',
-    value: 34,
-    display: '56',
-    meta: '34% do total · em atendimento',
-    tone: 'success',
   },
 ]
 
