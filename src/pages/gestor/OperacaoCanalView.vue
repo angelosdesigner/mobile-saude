@@ -8,6 +8,7 @@ import KpiStatCard from '@/components/gestor/KpiStatCard.vue'
 import RecomendacoesIA from '@/components/gestor/RecomendacoesIA.vue'
 import IndicadorSelector from '@/components/gestor/IndicadorSelector.vue'
 import PeriodoSelector from '@/components/gestor/PeriodoSelector.vue'
+import StickyPeriodo from '@/components/gestor/StickyPeriodo.vue'
 import DataList from '@/components/ui/DataList.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import { useChartColors } from '@/plugins/echarts'
@@ -284,6 +285,11 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string;
 
 <template>
   <DashboardLayout>
+    <!-- Seletor de período fixo no topo (sticky · à direita) -->
+    <StickyPeriodo>
+      <PeriodoSelector v-model="periodoAtivo" :options="periodos" />
+    </StickyPeriodo>
+
     <!-- Breadcrumb -->
     <el-breadcrumb separator="/" class="mb-2">
       <el-breadcrumb-item :to="{ path: '/gestor/tempo-real' }">Dashboard</el-breadcrumb-item>
@@ -312,7 +318,6 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string;
           </h1>
           <p class="mt-1 text-sm text-ms-text-secondary">{{ ctx.subtitulo }}</p>
         </div>
-        <PeriodoSelector v-model="periodoAtivo" :options="periodos" />
       </div>
 
       <!-- Chips de tipo de canal (clicáveis · filtro global) -->

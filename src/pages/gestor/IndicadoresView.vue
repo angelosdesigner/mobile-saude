@@ -5,6 +5,7 @@ import VChart from 'vue-echarts'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import PeriodoSelector from '@/components/gestor/PeriodoSelector.vue'
+import StickyPeriodo from '@/components/gestor/StickyPeriodo.vue'
 import DataList from '@/components/ui/DataList.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import {
@@ -265,6 +266,11 @@ const segmentoColumns: DataListColumn[] = [
 
 <template>
   <DashboardLayout>
+    <!-- Seletor de período fixo no topo (sticky · à direita) -->
+    <StickyPeriodo>
+      <PeriodoSelector v-model="periodoAtivo" :options="periodos" />
+    </StickyPeriodo>
+
     <!-- Breadcrumb (interativo) -->
     <el-breadcrumb separator="/" class="mb-2">
       <el-breadcrumb-item :to="{ path: '/gestor/tempo-real' }">Dashboard</el-breadcrumb-item>
@@ -282,7 +288,6 @@ const segmentoColumns: DataListColumn[] = [
           Análise temporal, comparativa e por segmento dos KPIs estratégicos da operação.
         </p>
       </div>
-      <PeriodoSelector v-model="periodoAtivo" :options="periodos" />
     </div>
 
     <!-- Seletor de indicadores -->

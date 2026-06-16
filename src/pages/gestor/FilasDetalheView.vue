@@ -8,6 +8,7 @@ import KpiStatCard from '@/components/gestor/KpiStatCard.vue'
 import RecomendacoesIA from '@/components/gestor/RecomendacoesIA.vue'
 import IndicadorSelector from '@/components/gestor/IndicadorSelector.vue'
 import PeriodoSelector from '@/components/gestor/PeriodoSelector.vue'
+import StickyPeriodo from '@/components/gestor/StickyPeriodo.vue'
 import DataList from '@/components/ui/DataList.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import { useChartColors } from '@/plugins/echarts'
@@ -289,6 +290,11 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
 
 <template>
   <DashboardLayout>
+    <!-- Seletor de período fixo no topo (sticky · à direita) -->
+    <StickyPeriodo>
+      <PeriodoSelector v-model="periodoAtivo" :options="periodos" />
+    </StickyPeriodo>
+
     <!-- Breadcrumb -->
     <el-breadcrumb separator="/" class="mb-2">
       <el-breadcrumb-item :to="{ path: '/gestor/tempo-real' }">Dashboard</el-breadcrumb-item>
@@ -312,11 +318,7 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
           <h1 class="mt-2 text-2xl font-bold text-ms-text-primary">{{ contexto.titulo }}</h1>
           <p class="mt-1 text-sm text-ms-text-secondary">{{ contexto.subtitulo }}</p>
         </div>
-        <!-- Seletor de período alinhado à direita do header (G8/G5). -->
-        <div class="flex flex-col items-end gap-1">
-          <PeriodoSelector v-model="periodoAtivo" :options="periodos" />
-          <span class="text-2xs text-ms-text-secondary">{{ contexto.atualizado }}</span>
-        </div>
+        <span class="shrink-0 text-2xs text-ms-text-secondary">{{ contexto.atualizado }}</span>
       </div>
     </el-card>
 
