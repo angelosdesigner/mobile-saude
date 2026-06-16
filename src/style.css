@@ -54,36 +54,39 @@
 
 /* ── Tier 1: PRIMITIVOS (não geram utilitárias; base dos semânticos) ──────── */
 :root {
-  /* Marca / acentos (light) */
-  --ms-blue-50: #ecf5ff;
-  --ms-blue-500: #409eff;
-  --ms-blue-600: #337ecc;
-  --ms-green-500: #67c23a;
-  --ms-amber-500: #e6a23c;
-  --ms-red-500: #f56c6c;
+  /* Marca / acentos (light) — paleta enterprise premium (azul mais vivo,
+     feedbacks suavizados; menos "consumer", mais Stripe/Linear). */
+  --ms-blue-50: #eaf2ff;
+  --ms-blue-500: #4a90ff;
+  --ms-blue-600: #3b7ae0;
+  --ms-green-500: #58c26d;
+  --ms-amber-500: #e4a53a;
+  --ms-red-500: #ef6a6a;
   --ms-teal-500: #13c2c2;
   /* Roxo do projeto (NPS, insights de IA). Antes só existia cru no echarts.ts. */
   --ms-purple-500: #7c6cf2;
   /* Versões "soft" calibradas p/ fundo escuro (menos saturação/"vibração").
      Usadas só no html.dark; light continua com os tons cheios acima. */
-  --ms-blue-soft: #4f93d6;
-  --ms-green-soft: #5da654;
+  --ms-blue-soft: #5a93e6;
+  --ms-green-soft: #5aab68;
   --ms-amber-soft: #d99a45;
-  --ms-red-soft: #e07070;
+  --ms-red-soft: #d96d6d;
   --ms-teal-soft: #2aa3a3;
   --ms-purple-soft: #8478d6;
 
-  /* Neutros — tema claro (cinzas frios, alinhados ao Element Plus) */
-  --ms-gray-0: #ffffff;
-  --ms-gray-50: #f5f7fa;
-  --ms-gray-100: #f2f6fc;
-  --ms-gray-200: #ebeef5;
-  --ms-gray-300: #dcdfe6;
-  --ms-gray-400: #c0c4cc;
-  --ms-gray-500: #909399;
-  --ms-gray-600: #73777c;
-  --ms-gray-700: #606266;
-  --ms-gray-800: #303133;
+  /* Neutros — tema claro. 3 superfícies DISTINTAS (profundidade suave):
+     app-bg (página) < gray-50 (container/header) < gray-0 (card). */
+  --ms-gray-0: #ffffff; /* nível 3 — card */
+  --ms-app-bg: #f3f6fb; /* nível 1 — página */
+  --ms-gray-50: #f8fafd; /* nível 2 — container / header de tabela */
+  --ms-gray-100: #eef2f8; /* border-lighter / divisores internos */
+  --ms-gray-200: #e6ecf5; /* border-light (cards, inputs) */
+  --ms-gray-300: #d8e0ec; /* border (divisores fortes, resizer) */
+  --ms-gray-400: #9ca3af; /* text-placeholder */
+  --ms-gray-500: #6b7280; /* (scrollbar/uso pontual) */
+  --ms-gray-600: #6b7280; /* text-secondary */
+  --ms-gray-700: #374151; /* text-regular */
+  --ms-gray-800: #1f2937; /* text-primary */
 
   /* Neutros — tema escuro (superfícies/bordas/texto calibrados p/ dark) */
   --ms-dark-bg: #141414;
@@ -136,10 +139,12 @@
   --color-ms-border-light: var(--ms-gray-200);
   --color-ms-border-lighter: var(--ms-gray-100);
 
-  /* Superfícies (invertem no escuro): surface = cards/sidebar/topbar; bg = página. */
+  /* Superfícies em 3 níveis (invertem no escuro):
+     bg = página (nível 1) · fill-light = container/header (nível 2) ·
+     surface = card (nível 3). Tons distintos = profundidade suave. */
   --color-ms-fill-light: var(--ms-gray-50);
   --color-ms-surface: var(--ms-gray-0);
-  --color-ms-bg: var(--ms-gray-50);
+  --color-ms-bg: var(--ms-app-bg);
 
   /* Tipografia: piso de acessibilidade = 12px (igual ao text-xs do Tailwind,
      mas mantido como token nomeado p/ as ~49 telas que já usam text-2xs).
@@ -153,24 +158,77 @@
   /* Fonte do design (Figma): Inter. Sobrescreve a fonte do Element Plus. */
   --el-font-family: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
 
-  /* Tokens de forma/sombra extraídos do Figma, aplicados como variáveis do
-     Element Plus (customização idiomática — vale para todos os componentes). */
-  --el-border-radius-base: 8px; /* botões, inputs, selects (Figma ~6–8px) */
-  --el-border-radius-small: 6px;
-  --el-box-shadow-light: 0 4px 12px rgba(0, 0, 0, 0.06); /* sombra suave do design */
-  --el-box-shadow-lighter: 0 2px 8px rgba(0, 0, 0, 0.05);
+  /* Sombras "premium" (2 camadas: contato + difusa) — profundidade suave. */
+  --ms-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.03), 0 8px 24px rgba(15, 23, 42, 0.05);
+  --ms-shadow-card-hover: 0 1px 2px rgba(15, 23, 42, 0.04), 0 10px 30px rgba(15, 23, 42, 0.08);
+  --ms-shadow-dialog: 0 24px 60px rgba(15, 23, 42, 0.18);
+
+  /* Raios (Figma + sistema premium): cards/modais 16px; inputs/botões/selects 10px. */
+  --el-border-radius-base: 10px;
+  --el-border-radius-small: 8px;
+  --el-box-shadow-light: var(--ms-shadow-card);
+  --el-box-shadow-lighter: var(--ms-shadow-card);
+
+  /* Element Plus (LIGHT): alinhar as cores de marca aos tokens novos + recriar a
+     rampa (-light-N mistura com branco; -dark-2 escurece). Antes só o dark fazia
+     isso, então botões/tags usavam o azul default do EP. */
+  --el-color-primary: var(--ms-blue-500);
+  --el-color-success: var(--ms-green-500);
+  --el-color-warning: var(--ms-amber-500);
+  --el-color-danger: var(--ms-red-500);
+  --el-color-error: var(--ms-red-500);
+
+  --el-color-primary-light-3: color-mix(in srgb, var(--ms-blue-500) 70%, #fff);
+  --el-color-primary-light-5: color-mix(in srgb, var(--ms-blue-500) 50%, #fff);
+  --el-color-primary-light-7: color-mix(in srgb, var(--ms-blue-500) 30%, #fff);
+  --el-color-primary-light-8: color-mix(in srgb, var(--ms-blue-500) 20%, #fff);
+  --el-color-primary-light-9: color-mix(in srgb, var(--ms-blue-500) 10%, #fff);
+  --el-color-primary-dark-2: color-mix(in srgb, var(--ms-blue-500) 80%, #000);
+
+  --el-color-success-light-3: color-mix(in srgb, var(--ms-green-500) 70%, #fff);
+  --el-color-success-light-5: color-mix(in srgb, var(--ms-green-500) 50%, #fff);
+  --el-color-success-light-7: color-mix(in srgb, var(--ms-green-500) 30%, #fff);
+  --el-color-success-light-8: color-mix(in srgb, var(--ms-green-500) 20%, #fff);
+  --el-color-success-light-9: color-mix(in srgb, var(--ms-green-500) 10%, #fff);
+  --el-color-success-dark-2: color-mix(in srgb, var(--ms-green-500) 80%, #000);
+
+  --el-color-warning-light-3: color-mix(in srgb, var(--ms-amber-500) 70%, #fff);
+  --el-color-warning-light-5: color-mix(in srgb, var(--ms-amber-500) 50%, #fff);
+  --el-color-warning-light-7: color-mix(in srgb, var(--ms-amber-500) 30%, #fff);
+  --el-color-warning-light-8: color-mix(in srgb, var(--ms-amber-500) 20%, #fff);
+  --el-color-warning-light-9: color-mix(in srgb, var(--ms-amber-500) 10%, #fff);
+  --el-color-warning-dark-2: color-mix(in srgb, var(--ms-amber-500) 80%, #000);
+
+  --el-color-danger-light-3: color-mix(in srgb, var(--ms-red-500) 70%, #fff);
+  --el-color-danger-light-5: color-mix(in srgb, var(--ms-red-500) 50%, #fff);
+  --el-color-danger-light-7: color-mix(in srgb, var(--ms-red-500) 30%, #fff);
+  --el-color-danger-light-8: color-mix(in srgb, var(--ms-red-500) 20%, #fff);
+  --el-color-danger-light-9: color-mix(in srgb, var(--ms-red-500) 10%, #fff);
+  --el-color-danger-dark-2: color-mix(in srgb, var(--ms-red-500) 80%, #000);
+
+  /* Tabelas (EP + DataList herdam): header no nível 2, hover azulado, borda leve. */
+  --el-table-header-bg-color: var(--color-ms-fill-light);
+  --el-table-row-hover-bg-color: #f5f9ff;
+  --el-table-border-color: var(--color-ms-border-light);
 }
 
 body {
   margin: 0;
   background: var(--color-ms-bg);
   font-family: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+  /* Crispness premium da tipografia. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Foco visível acessível (WCAG 2.4.7) para controles custom — botões nativos,
    links e elementos focáveis. `:where()` mantém baixa especificidade para não
-   conflitar com o foco próprio do Element Plus. */
-:where(button, a, [tabindex]):focus-visible {
+   conflitar com o foco próprio do Element Plus.
+   EXCLUI os inners de input/textarea/select do EP (eles têm tabindex, mas o EP
+   já desenha o foco no wrapper — senão sai uma "caixa dupla" desalinhada). */
+:where(button, a, [tabindex]):focus-visible:not(.el-input__inner):not(.el-textarea__inner):not(
+    .el-select__wrapper
+  ) {
   outline: 2px solid var(--color-ms-primary);
   outline-offset: 2px;
   border-radius: 4px;
@@ -249,11 +307,60 @@ html.dark {
    Element Plus (não são achatadas) e ABAIXO das utilities do Tailwind
    (uma classe utilitária ainda sobrepõe, se necessário). */
 @layer components {
+  /* ── Cards: profundidade premium (vale para TODOS os .el-card, inclusive os
+     shadow="never" — esta layer vence a `element-plus`). ──────────────────── */
   .el-card {
-    --el-card-border-radius: 12px; /* containers/cards do Figma */
+    --el-card-border-radius: 16px; /* raio premium */
     --el-card-border-color: var(--color-ms-border-light);
     /* Ancora o fundo do card no token de superfície (alterna claro/escuro de
        forma confiável no toggle ao vivo, evitando o lag do --el-* do card). */
     background-color: var(--color-ms-surface);
+    border: 1px solid var(--color-ms-border-light);
+    box-shadow: var(--ms-shadow-card);
+    transition:
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
   }
+  .el-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--ms-shadow-card-hover);
+  }
+
+  /* Inputs/selects: borda no token + anel de foco suave (4px). */
+  .el-input__wrapper,
+  .el-textarea__inner {
+    box-shadow: 0 0 0 1px var(--color-ms-border-light) inset;
+  }
+  .el-input__wrapper.is-focus,
+  .el-input__wrapper:focus-within,
+  .el-textarea__inner:focus {
+    box-shadow:
+      0 0 0 1px var(--el-color-primary) inset,
+      0 0 0 4px color-mix(in srgb, var(--el-color-primary) 14%, transparent);
+  }
+
+  /* Diálogos/modais: raio 16px + sombra elevada (premium). */
+  .el-dialog {
+    border-radius: 16px;
+    box-shadow: var(--ms-shadow-dialog);
+  }
+
+  /* Dropdown menus: raio + borda no token. */
+  .el-dropdown__popper.el-popper,
+  .el-select__popper.el-popper {
+    border-radius: 12px;
+  }
+}
+
+/* Sombra dos cards no ESCURO: mais densa (sombra suave "some" no dark; usa preto
+   translúcido + leve realce de borda). Fora de @layer p/ vencer a regra base. */
+html.dark .el-card {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 8px 24px rgba(0, 0, 0, 0.35);
+}
+html.dark .el-card:hover {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 12px 32px rgba(0, 0, 0, 0.45);
 }

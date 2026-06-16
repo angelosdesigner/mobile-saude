@@ -35,15 +35,15 @@ use([
 // As cores semânticas (primary/danger/…) servem nos dois temas; só os neutros
 // dependentes de contraste (ink/axis/split) mudam no dark — ver useChartColors.
 export const chartColors = {
-  primary: '#409eff',
-  success: '#67c23a',
-  warning: '#e6a23c',
-  danger: '#f56c6c',
+  primary: '#4a90ff',
+  success: '#58c26d',
+  warning: '#e4a53a',
+  danger: '#ef6a6a',
   teal: '#13c2c2',
   purple: '#7c6cf2', // roxo do projeto (KPI NPS, insights de IA)
   neutral: '#909399',
   axis: '#909399',
-  ink: '#303133',
+  ink: '#1f2937', // text-primary
   split: 'rgba(144,147,153,0.15)',
 }
 
@@ -55,10 +55,10 @@ const chartColorsDark = {
   axis: '#a3a6ad', // --ms-dark-text-secondary
   ink: '#e5eaf3', // --ms-dark-text-primary
   split: 'rgba(144,147,153,0.24)',
-  primary: '#4f93d6', // --ms-blue-soft
-  success: '#5da654', // --ms-green-soft
+  primary: '#5a93e6', // --ms-blue-soft
+  success: '#5aab68', // --ms-green-soft
   warning: '#d99a45', // --ms-amber-soft
-  danger: '#e07070', // --ms-red-soft
+  danger: '#d96d6d', // --ms-red-soft
   teal: '#2aa3a3', // --ms-teal-soft
   purple: '#8478d6', // espelha --ms-purple-soft (token UI --color-ms-purple)
 }
