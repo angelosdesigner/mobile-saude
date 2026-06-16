@@ -23,7 +23,6 @@ import {
   correlacao,
   comoInterpretar,
   indicadores,
-  graficoPeriodos,
   horasGrafico,
   filasEvolucao,
   graficoMeta,
@@ -48,7 +47,6 @@ const router = useRouter()
 
 const periodoAtivo = ref<string>('Hoje')
 const indicadorAtivo = ref<Indicador>('TME')
-const graficoPeriodo = ref<string>('Hoje')
 
 // Filas ativas no gráfico (toggle). Default: as marcadas em `ativoPadrao`.
 const filasAtivas = ref<string[]>(filasEvolucao.filter((f) => f.ativoPadrao).map((f) => f.key))
@@ -385,7 +383,6 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
       <!-- Controles -->
       <div class="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
         <IndicadorSelector v-model="indicadorAtivo" label="Indicador:" :options="indicadores" />
-        <PeriodoSelector v-model="graficoPeriodo" label="Período:" :options="graficoPeriodos" />
       </div>
       <!-- Chips de fila (toggle) -->
       <div class="mb-3 flex flex-wrap items-center gap-2">
