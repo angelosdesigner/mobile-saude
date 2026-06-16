@@ -273,11 +273,11 @@ export type CorrelLinha = {
 
 // Chat/WhatsApp unificados (volume somado 1456+920=2376; SLA/TME/ocup./espera
 // ponderados pelo volume: SLA ≈ 75%, TME ≈ 6:50, ocup. ≈ 81%, espera ≈ 8:38).
+// Portal Web e App entram dentro de Chat/WhatsApp (mensageria) — não aparecem
+// como linhas próprias, coerente com a tabela "operação por canal".
 export const correlacao: CorrelLinha[] = [
   { canal: 'Telefone', volume: 276, sla: 61, tme: '9:23', ocupacao: 95, espera: '12:41', gargalo: 'Alta ocupação → TME elevado', status: 'Crítico' },
   { canal: 'Chat/WhatsApp', volume: 2376, sla: 75, tme: '6:50', ocupacao: 81, espera: '8:38', gargalo: 'Volume alto → SLA e espera pressionados', status: 'Alto' },
-  { canal: 'App', volume: 89, sla: 55, tme: '12:40', ocupacao: 91, espera: '18:20', gargalo: 'Baixo vol., alta ocup. → gargalo', status: 'Crítico' },
-  { canal: 'Portal Web', volume: 412, sla: 74, tme: '5:17', ocupacao: 62, espera: '4:48', gargalo: 'Estável; ligeira piora no TME', status: 'Médio' },
   { canal: 'Balcão', volume: 143, sla: 96, tme: '2:34', ocupacao: 58, espera: '1:12', gargalo: 'Sem gargalo identificado', status: 'OK' },
 ]
 
