@@ -26,12 +26,21 @@ import {
   type EvolucaoMetrica,
   type AbandonoStatus,
 } from '@/data/gestorAbandonosDetalhe'
+import { escalarVolume } from '@/data/gestorPeriodo'
 
 // Tela de detalhe "Abandonos e Desistência" — estrutura padrão (5 seções).
 const C = useChartColors()
 
 const periodoAtivo = ref<string>('Hoje')
 const metrica = ref<EvolucaoMetrica>('Total')
+
+// Contagens cumulativas (Abandonos/No BOT/No humano) escalam pelo período;
+// a taxa de abandono (%) é média e permanece estável.
+const indicadoresPeriodo = computed(() =>
+  indicadores.map((k) =>
+    k.unit === '%' ? k : { ...k, value: escalarVolume(k.value, periodoAtivo.value) },
+  ),
+)
 
 // ── 3) Evolução: abandonos por hora (contagem) ───────────────────────────────
 const evolucaoOption = computed(() => {
@@ -168,7 +177,7 @@ const humanaTone = (v: number) => (v >= 10 ? 'text-ms-danger' : v >= 5 ? 'text-m
     </p>
     <div class="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <KpiStatCard
-        v-for="k in indicadores"
+        v-for="k in indicadoresPeriodo"
         :key="k.label"
         :label="k.label"
         :value="k.value"
