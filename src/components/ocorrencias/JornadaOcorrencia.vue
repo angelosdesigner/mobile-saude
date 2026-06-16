@@ -8,6 +8,7 @@
 // A timeline da "Conversa" será construída na próxima etapa (placeholder por ora).
 import { ref } from 'vue'
 import { useActionFeedback } from '@/composables/useActionFeedback'
+import TimelineJornada from '@/components/ocorrencias/TimelineJornada.vue'
 
 const { comingSoon } = useActionFeedback()
 
@@ -111,20 +112,19 @@ const extraParticipantes = 1
     </div>
 
     <!-- Conteúdo -->
-    <div class="min-h-0 flex-1">
+    <div class="min-h-0 flex-1 overflow-y-auto pr-1">
+      <!-- Conversa: timeline completa da jornada (multicanal) -->
+      <TimelineJornada v-if="abaAtiva === 'conversa'" />
+
+      <!-- Demais abas: ainda em construção -->
       <div
+        v-else
         class="flex h-full min-h-[280px] flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-ms-border-light text-center"
       >
         <p class="text-sm font-medium text-ms-text-primary">
           {{ abas.find((a) => a.key === abaAtiva)?.label }}
         </p>
-        <p class="text-xs text-ms-text-secondary">
-          {{
-            abaAtiva === 'conversa'
-              ? 'Timeline da jornada do atendimento — próxima etapa.'
-              : 'Conteúdo em construção (próxima etapa).'
-          }}
-        </p>
+        <p class="text-xs text-ms-text-secondary">Conteúdo em construção (próxima etapa).</p>
       </div>
     </div>
   </div>

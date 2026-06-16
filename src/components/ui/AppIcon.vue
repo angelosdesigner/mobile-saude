@@ -26,6 +26,13 @@ import {
   MapPin,
   BarChart3,
   User,
+  MessageCircle,
+  ChevronsRight,
+  Phone,
+  Download,
+  Play,
+  Bell,
+  Star,
   type LucideProps,
 } from '@lucide/vue'
 import type { Component } from 'vue'
@@ -49,6 +56,13 @@ const icons = {
   'map-pin': MapPin,
   'bar-chart': BarChart3,
   user: User,
+  'message-circle': MessageCircle,
+  'chevrons-right': ChevronsRight,
+  phone: Phone,
+  download: Download,
+  play: Play,
+  bell: Bell,
+  star: Star,
 } satisfies Record<string, Component>
 
 withDefaults(defineProps<{ name: keyof typeof icons; size?: LucideProps['size'] }>(), {
