@@ -114,11 +114,21 @@ function revealActive() {
     updateEdges()
   })
 }
+// Observa a largura da régua: ao abrir/fechar aba ou ao surgir/sumir uma seta
+// (que muda o espaço disponível), recalcula quais setas devem aparecer.
+let stripRo: ResizeObserver | null = null
 onMounted(() => {
   revealActive()
   window.addEventListener('resize', updateEdges)
+  if (tabStrip.value) {
+    stripRo = new ResizeObserver(updateEdges)
+    stripRo.observe(tabStrip.value)
+  }
 })
-onBeforeUnmount(() => window.removeEventListener('resize', updateEdges))
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateEdges)
+  stripRo?.disconnect()
+})
 watch(() => tabs.value.length, revealActive)
 watch(activeId, revealActive)
 
@@ -133,25 +143,28 @@ const status = ref<'Disponível' | 'Ocupado'>('Disponível')
   >
     <!-- Esquerda: navegação em abas -->
     <div class="flex min-w-0 items-center gap-2">
-      <el-button
-        text
-        circle
-        size="small"
-        aria-label="Rolar abas à esquerda"
-        :disabled="!canLeft"
-        @click="scrollTabs(-1)"
-      >
-        <AppIcon name="chevron-left" class="h-4 w-4" />
-      </el-button>
+      <!-- Régua de abas com setas SOBREPOSTAS (estilo YouTube): a seta só aparece
+           quando há conteúdo escondido naquele lado. Sendo overlay (absolute), não
+           muda a largura da régua — evita o loop de aparecer/sumir no extremo. -->
+      <div class="relative min-w-0 flex-1">
+        <button
+          v-if="canLeft"
+          type="button"
+          class="absolute left-0 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-ms-surface text-ms-text-secondary shadow-sm transition hover:text-ms-primary"
+          aria-label="Rolar abas à esquerda"
+          @click="scrollTabs(-1)"
+        >
+          <AppIcon name="chevron-left" class="h-4 w-4" />
+        </button>
 
-      <!-- Abas abertas: cada uma navega para sua tela; fecháveis. Sem scrollbar;
-           rolagem pelas setas + fade nas bordas (continuidade sob as setas). -->
-      <div
-        ref="tabStrip"
-        class="tab-strip flex min-w-0 items-center gap-1.5 overflow-x-auto"
-        :style="maskStyle"
-        @scroll="updateEdges"
-      >
+        <!-- Abas abertas: cada uma navega para sua tela; fecháveis. Sem scrollbar;
+             rolagem pelas setas + fade nas bordas (continuidade sob as setas). -->
+        <div
+          ref="tabStrip"
+          class="tab-strip flex items-center gap-1.5 overflow-x-auto"
+          :style="maskStyle"
+          @scroll="updateEdges"
+        >
         <div
           v-for="t in tabs"
           :key="t.id"
@@ -190,19 +203,18 @@ const status = ref<'Disponível' | 'Ocupado'>('Disponível')
             </svg>
           </button>
         </div>
-      </div>
+        </div>
 
-      <el-button
-        text
-        circle
-        size="small"
-        class="!text-ms-text-secondary"
-        aria-label="Rolar abas à direita"
-        :disabled="!canRight"
-        @click="scrollTabs(1)"
-      >
-        <AppIcon name="chevron-right" class="h-4 w-4" />
-      </el-button>
+        <button
+          v-if="canRight"
+          type="button"
+          class="absolute right-0 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-ms-surface text-ms-text-secondary shadow-sm transition hover:text-ms-primary"
+          aria-label="Rolar abas à direita"
+          @click="scrollTabs(1)"
+        >
+          <AppIcon name="chevron-right" class="h-4 w-4" />
+        </button>
+      </div>
 
       <!-- Adicionar tela (atalhos do sistema) -->
       <el-popover
