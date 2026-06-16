@@ -25,6 +25,7 @@ import {
   type CanalContexto,
   type CorrelStatus,
 } from '@/data/gestorOperacaoCanal'
+import { escalarVolume } from '@/data/gestorPeriodo'
 
 // Tela de detalhe "Operação por Canal" (drill-down da aba Atendimentos) —
 // Figma 7651:98838. Os chips no topo selecionam o TIPO de canal (Geral por
@@ -51,6 +52,14 @@ function selecionar(key: CanalContexto) {
 
 const ctx = computed(() => contextos[ctxKey.value])
 const isGeral = computed(() => ctxKey.value === 'geral')
+
+// KPIs reagem ao período: o Volume (acumulado) é escalado; taxas/tempos
+// (Ocupação/TME/TMA) são médias e permanecem estáveis.
+const kpisPeriodo = computed(() =>
+  ctx.value.kpis.map((k) =>
+    k.label === 'Volume' ? { ...k, value: escalarVolume(k.value, periodoAtivo.value) } : k,
+  ),
+)
 const destacado = (canal: string) => ctx.value.canaisDestaque.includes(canal)
 
 const periodoAtivo = ref<string>('Hoje')
@@ -349,7 +358,7 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string;
     </p>
     <div class="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <KpiStatCard
-        v-for="k in ctx.kpis"
+        v-for="k in kpisPeriodo"
         :key="k.label"
         :label="k.label"
         :value="k.value"
