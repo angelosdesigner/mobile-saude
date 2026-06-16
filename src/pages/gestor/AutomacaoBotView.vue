@@ -36,14 +36,15 @@ const C = useChartColors()
 const { comingSoon } = useActionFeedback()
 
 const periodoAtivo = ref<string>('Hoje')
-const metrica = ref<(typeof evolucaoMetricas)[number]>('Retenção')
-const isAbandono = computed(() => metrica.value === 'Abandono')
+const metrica = ref<(typeof evolucaoMetricas)[number]>('Transbordo')
 
 // ── Evolução ──────────────────────────────────────────────────────────────────
+// Transbordo e Abandono são "quanto menor, melhor": eixo direito 0–50% e uma
+// linha de LIMITE (alvo máximo) por indicador.
 const evolucaoOption = computed(() => {
   const volume = evolucao.volume
-  const linha = evolucao.series[metrica.value] ?? evolucao.series.Retenção
-  const eixoDir = isAbandono.value ? { min: 0, max: 20 } : { min: 50, max: 100 }
+  const linha = evolucao.series[metrica.value] ?? evolucao.series.Transbordo
+  const limite = evolucao.limites[metrica.value] ?? 30
   return {
     tooltip: { trigger: 'axis' },
     grid: { left: 40, right: 48, top: 20, bottom: 36 },
@@ -53,7 +54,7 @@ const evolucaoOption = computed(() => {
       itemWidth: 12,
       itemHeight: 8,
       textStyle: { color: C.axis, fontSize: 11 },
-      data: ['Volume', `${metrica.value} atual`, ...(isAbandono.value ? [] : ['Meta 90%'])],
+      data: ['Volume', `${metrica.value} atual`, `Limite ${limite}%`],
     },
     xAxis: {
       type: 'category',
@@ -71,7 +72,8 @@ const evolucaoOption = computed(() => {
       },
       {
         type: 'value',
-        ...eixoDir,
+        min: 0,
+        max: 50,
         position: 'right',
         axisLabel: { color: C.axis, fontSize: 10, formatter: '{value}%' },
         splitLine: { show: false },
@@ -93,8 +95,8 @@ const evolucaoOption = computed(() => {
         symbol: 'circle',
         symbolSize: 5,
         data: linha,
-        lineStyle: { color: isAbandono.value ? C.danger : C.warning, width: 2.5 },
-        itemStyle: { color: isAbandono.value ? C.danger : C.warning },
+        lineStyle: { color: C.warning, width: 2.5 },
+        itemStyle: { color: C.warning },
         markLine: {
           symbol: 'none',
           silent: true,
@@ -113,19 +115,15 @@ const evolucaoOption = computed(() => {
           ],
         },
       },
-      ...(isAbandono.value
-        ? []
-        : [
-            {
-              name: 'Meta 90%',
-              type: 'line',
-              yAxisIndex: 1,
-              symbol: 'none',
-              data: evolucao.horas.map(() => evolucao.meta),
-              lineStyle: { color: C.success, type: 'dashed', width: 1.5 },
-              itemStyle: { color: C.success },
-            },
-          ]),
+      {
+        name: `Limite ${limite}%`,
+        type: 'line',
+        yAxisIndex: 1,
+        symbol: 'none',
+        data: evolucao.horas.map(() => limite),
+        lineStyle: { color: C.danger, type: 'dashed', width: 1.5 },
+        itemStyle: { color: C.danger },
+      },
     ],
   }
 })
@@ -145,7 +143,6 @@ const fluxoColumns: DataListColumn[] = [
   { key: 'abandono', label: 'Abandono', align: 'right', width: 100, sortBy: (r) => r.abandono as number },
   { key: 'tma', label: 'TMA', align: 'right', width: 90, sortBy: (r) => tmeSeg(r.tma as string) },
   { key: 'nps', label: 'NPS', align: 'right', width: 80, sortBy: (r) => r.nps as number },
-  { key: 'tEspHumano', label: 'T. esp. humano', align: 'right', width: 130, sortBy: (r) => tmeSeg(r.tEspHumano as string) },
   { key: 'status', label: 'Status', width: 120, sortBy: (r) => statusOrder[r.status as FluxoStatus] },
   { key: 'acao', label: 'Ação', width: 120 },
 ]
@@ -247,12 +244,12 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
 
     <!-- 1) Indicadores do BOT -->
     <div class="mb-1 text-xs font-bold uppercase tracking-wide text-ms-text-secondary">
-      Indicadores do BOT · Hoje
+      Indicadores do BOT · {{ periodoAtivo }}
     </div>
     <p class="mb-3 text-xs text-ms-text-secondary">
-      Retenção, transbordo, eficiência · vs período anterior
+      Transbordo, abandono e satisfação · vs período anterior
     </p>
-    <div class="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+    <div class="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <KpiStatCard
         v-for="k in indicadoresBot"
         :key="k.label"

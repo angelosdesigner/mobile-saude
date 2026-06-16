@@ -24,11 +24,11 @@ export interface BotKpi {
   deltaTone?: 'up' | 'down' | 'neutral'
 }
 
+// Ordem por importância (macro→micro). Sem "Retenção" (complementar ao
+// Transbordo, redundante) nem "Eficiência" (sem fórmula clara) — pedido G7.
 export const indicadoresBot: BotKpi[] = [
-  { label: 'Retenção BOT', value: '65', unit: '%', status: 'ok', delta: 'meta 60%', deltaTone: 'up' },
-  { label: 'Transbordo', value: '35', unit: '%', status: 'warning' },
+  { label: 'Transbordo', value: '35', unit: '%', status: 'warning', delta: '35% vão ao humano', deltaTone: 'neutral' },
   { label: 'Abandono BOT', value: '8.2', unit: '%', status: 'warning', delta: 'concentrado em 1 fluxo', deltaTone: 'down' },
-  { label: 'Eficiência', value: '87', unit: '%', status: 'ok' },
   { label: 'Tempo Médio', value: '2:14', unit: '', status: 'ok' },
   { label: 'NPS do BOT', value: '4.3', unit: '/5', status: 'ok', delta: '+0.2 vs humano', deltaTone: 'up' },
 ]
@@ -37,18 +37,19 @@ export const indicadoresBot: BotKpi[] = [
 export const evolucao = {
   horas: ['08h', '09h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h'],
   volume: [52, 64, 78, 84, 90, 96, 100, 95, 92, 86, 70, 64],
-  // Linha por indicador (%). Retenção é o default (casa a legenda).
+  // Linha por indicador (%). Transbordo é o default (casa a legenda).
+  // Transbordo ≈ complemento da retenção (quanto vai ao humano).
   series: {
-    Retenção: [70, 69, 68, 67, 66, 66, 65, 65, 64, 65, 66, 67],
+    Transbordo: [30, 31, 32, 33, 34, 34, 35, 35, 36, 35, 34, 33],
     Abandono: [4, 5, 6, 7, 9, 10, 11, 10, 9, 8, 7, 7],
-    Eficiência: [90, 89, 88, 88, 87, 87, 86, 87, 87, 88, 88, 89],
   } as Record<string, number[]>,
-  meta: 90,
+  // Limite (alvo máximo) por indicador — quanto menor, melhor.
+  limites: { Transbordo: 30, Abandono: 5 } as Record<string, number>,
   picoIdx: 3, // 11h
   picoLabel: '11h · pico vespertino',
   agoraIdx: 9, // 17h
 }
-export const evolucaoMetricas = ['Retenção', 'Abandono', 'Eficiência'] as const
+export const evolucaoMetricas = ['Transbordo', 'Abandono'] as const
 
 // ── 2) Todos os fluxos do BOT (tabela, ordenada por abandono) ────────────────
 export type FluxoStatus = 'ALERTA' | 'ATENÇÃO' | 'BAIXA RET.' | 'OK'
