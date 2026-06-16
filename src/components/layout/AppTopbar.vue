@@ -99,13 +99,6 @@ function updateEdges() {
 function scrollTabs(dir: -1 | 1) {
   tabStrip.value?.scrollBy({ left: dir * 220, behavior: 'smooth' })
 }
-// Fade (máscara) nas bordas só do lado onde há conteúdo escondido sob as setas.
-const maskStyle = computed(() => {
-  const l = canLeft.value ? 'transparent' : '#000'
-  const r = canRight.value ? 'transparent' : '#000'
-  const img = `linear-gradient(to right, ${l}, #000 28px, #000 calc(100% - 28px), ${r})`
-  return { maskImage: img, WebkitMaskImage: img }
-})
 // Garante que a aba ativa fique visível (ex.: ao adicionar uma aba fora da área).
 function revealActive() {
   nextTick(() => {
@@ -157,12 +150,22 @@ const status = ref<'Disponível' | 'Ocupado'>('Disponível')
           <AppIcon name="chevron-left" class="h-4 w-4" />
         </button>
 
+        <!-- Sombreado de continuidade: gradiente da superfície → transparente
+             sob cada seta, fazendo os chips desvanecerem (efeito YouTube). -->
+        <div
+          v-if="canLeft"
+          class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-14 bg-gradient-to-r from-ms-surface to-transparent"
+        />
+        <div
+          v-if="canRight"
+          class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-14 bg-gradient-to-l from-ms-surface to-transparent"
+        />
+
         <!-- Abas abertas: cada uma navega para sua tela; fecháveis. Sem scrollbar;
-             rolagem pelas setas + fade nas bordas (continuidade sob as setas). -->
+             rolagem pelas setas + sombreado de continuidade nas bordas. -->
         <div
           ref="tabStrip"
           class="tab-strip flex items-center gap-1.5 overflow-x-auto"
-          :style="maskStyle"
           @scroll="updateEdges"
         >
         <div
