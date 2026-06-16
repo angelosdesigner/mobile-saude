@@ -105,27 +105,41 @@ function getBodyWrapper(): HTMLElement | null {
     tableWrap.value.querySelector('.el-table__body-wrapper')) as HTMLElement | null
 }
 
+// Header do EP é uma <table> separada (overflow:hidden) que o EP rola por JS.
+// Quando o scroll do body é PROGRAMÁTICO (barra superior / drag), o EP nem sempre
+// sincroniza o header → títulos descolam das colunas. Sincronizamos à mão.
+function getHeaderWrapper(): HTMLElement | null {
+  return (tableWrap.value?.querySelector('.el-table__header-wrapper') ?? null) as HTMLElement | null
+}
+
 function syncInnerWidth() {
   const bw = getBodyWrapper()
   if (!bw || !topInner.value) return
   topInner.value.style.width = bw.scrollWidth + 'px'
 }
 
-function onTopScroll() {
-  if (syncLock) return
+// Sincroniza header + (opcionalmente) body/topBar para uma mesma posição.
+function applyScrollLeft(left: number, opts: { body?: boolean; top?: boolean } = {}) {
   const bw = getBodyWrapper()
-  if (!bw || !topBar.value) return
+  const hw = getHeaderWrapper()
+  if (opts.body && bw) bw.scrollLeft = left
+  if (hw) hw.scrollLeft = left
+  if (opts.top && topBar.value) topBar.value.scrollLeft = left
+}
+
+function onTopScroll() {
+  if (syncLock || !topBar.value) return
   syncLock = true
-  bw.scrollLeft = topBar.value.scrollLeft
+  applyScrollLeft(topBar.value.scrollLeft, { body: true })
   syncLock = false
 }
 
 function onBodyScroll() {
   if (syncLock) return
   const bw = getBodyWrapper()
-  if (!bw || !topBar.value) return
+  if (!bw) return
   syncLock = true
-  topBar.value.scrollLeft = bw.scrollLeft
+  applyScrollLeft(bw.scrollLeft, { top: true })
   syncLock = false
 }
 
@@ -155,7 +169,12 @@ function onTablePointerMove(e: PointerEvent) {
   document.body.style.cursor = 'grabbing'
   document.body.style.userSelect = 'none'
   const bw = getBodyWrapper()
-  if (bw) bw.scrollLeft = dragSl - dx
+  if (bw) {
+    const left = dragSl - dx
+    bw.scrollLeft = left
+    // mantém header + barra superior alinhados durante o arraste
+    applyScrollLeft(left, { top: true })
+  }
 }
 
 function onTablePointerUp() {
