@@ -82,11 +82,12 @@ export const contextos: Record<CanalContexto, ContextoCanal> = {
     badgeTone: 'primary',
     resumoSla: 'SLA consolidado 84% · 4 tipos de canal',
     subtitulo: '47 atendentes alocados · 3.654 atendimentos no período · 4 canais monitorados',
+    // Ordem por importância (macro→micro): Volume → Ocupação → TME → TMA.
     kpis: [
-      { label: 'TME', value: '2.3', unit: 'min', status: 'warning', delta: 'meta 2.0min', deltaTone: 'down' },
       { label: 'Volume', value: '3.654', unit: 'atend.', status: 'ok', delta: 'todos os canais', deltaTone: 'neutral' },
-      { label: 'TMA', value: '7', unit: 'min', status: 'ok' },
       { label: 'Ocupação', value: '79', unit: '%', status: 'warning', delta: '37/47 atendentes', deltaTone: 'neutral' },
+      { label: 'TME', value: '2.3', unit: 'min', status: 'warning', delta: 'meta 2.0min', deltaTone: 'down' },
+      { label: 'TMA', value: '7', unit: 'min', status: 'ok' },
     ],
     volume: [60, 80, 110, 140, 160, 175, 190, 185, 180, 165, 130, 120],
     sla: [90, 89, 88, 87, 86, 85, 84, 84, 83, 84, 85, 86],
@@ -122,10 +123,10 @@ export const contextos: Record<CanalContexto, ContextoCanal> = {
     resumoSla: 'SLA 86% · 65% do volume total',
     subtitulo: '22 atendentes alocados · 65% do volume total · 68 atendimentos em curso',
     kpis: [
-      { label: 'TME', value: '2.0', unit: 'min', status: 'ok', delta: 'na meta', deltaTone: 'up' },
       { label: 'Volume', value: '2.376', unit: 'atend.', status: 'warning', delta: '65% do total', deltaTone: 'neutral' },
-      { label: 'TMA', value: '6', unit: 'min', status: 'ok' },
       { label: 'Ocupação', value: '81', unit: '%', status: 'warning', delta: '22 atendentes', deltaTone: 'neutral' },
+      { label: 'TME', value: '2.0', unit: 'min', status: 'ok', delta: 'na meta', deltaTone: 'up' },
+      { label: 'TMA', value: '6', unit: 'min', status: 'ok' },
     ],
     volume: [120, 160, 210, 260, 300, 330, 360, 350, 340, 310, 250, 230],
     sla: [92, 91, 90, 89, 88, 87, 86, 86, 85, 86, 87, 88],
@@ -161,10 +162,10 @@ export const contextos: Record<CanalContexto, ContextoCanal> = {
     resumoSla: 'SLA 71% · pior canal no momento',
     subtitulo: '12 atendentes alocados · 23% do volume total · 47 atendimentos em curso',
     kpis: [
-      { label: 'TME', value: '2.4', unit: 'min', status: 'danger', delta: 'meta 1.5min', deltaTone: 'down' },
       { label: 'Volume', value: '847', unit: 'atend.', status: 'warning', delta: '23% do total', deltaTone: 'neutral' },
-      { label: 'TMA', value: '9', unit: 'min', status: 'warning' },
       { label: 'Ocupação', value: '92', unit: '%', status: 'danger', delta: '12/12 atendentes', deltaTone: 'down' },
+      { label: 'TME', value: '2.4', unit: 'min', status: 'danger', delta: 'meta 1.5min', deltaTone: 'down' },
+      { label: 'TMA', value: '9', unit: 'min', status: 'warning' },
     ],
     volume: [46, 58, 70, 75, 82, 90, 100, 96, 95, 88, 72, 68],
     sla: [95, 93, 90, 88, 80, 72, 64, 67, 65, 60, 58, 56],
@@ -191,10 +192,10 @@ export const contextos: Record<CanalContexto, ContextoCanal> = {
     resumoSla: 'SLA 88% · estável',
     subtitulo: '3 atendentes alocados · 12% do volume total · 8 atendimentos em curso',
     kpis: [
-      { label: 'TME', value: '4.2', unit: 'min', status: 'warning', delta: 'atendimento presencial', deltaTone: 'neutral' },
       { label: 'Volume', value: '431', unit: 'atend.', status: 'ok', delta: '12% do total', deltaTone: 'neutral' },
-      { label: 'TMA', value: '11', unit: 'min', status: 'warning' },
       { label: 'Ocupação', value: '58', unit: '%', status: 'ok', delta: 'capacidade ociosa', deltaTone: 'up' },
+      { label: 'TME', value: '4.2', unit: 'min', status: 'warning', delta: 'atendimento presencial', deltaTone: 'neutral' },
+      { label: 'TMA', value: '11', unit: 'min', status: 'warning' },
     ],
     volume: [10, 14, 20, 28, 34, 40, 44, 42, 38, 30, 22, 18],
     sla: [94, 93, 92, 91, 90, 89, 88, 88, 87, 88, 89, 90],
@@ -227,30 +228,33 @@ export const evolucaoBase = {
   picoLabel: '11h · pico vespertino',
   agoraIdx: 9, // 17h
 }
-export const evolucaoMetricas = ['SLA', 'Retenção', 'TME'] as const
+// Seletores da evolução = os 4 indicadores da operação (G6).
+export const evolucaoMetricas = ['Volume', 'Ocupação', 'TMA', 'TME'] as const
 
 // ── 2) Operação por canal · agora (tabela comparativa — todos os canais) ──────
 export type CanalLinha = {
   canal: string
-  atendentes: number
+  volume: number
+  ocupacao: number
+  ocupacaoTone: 'success' | 'warning' | 'danger'
+  tme: string
+  tma: string
+  noBot: number
   emEspera: number
   emAtendimento: number
-  finalizados: number
-  tme: string
-  sla: number
-  slaTone: 'success' | 'warning' | 'danger'
+  finalizados: number // concluídos
+  atendentes: number
   esperaTone?: 'danger'
 }
 
-// Chat e WhatsApp são o MESMO tipo de canal (mensageria) → linha única
-// "Chat/WhatsApp" (atendentes/espera/atend./finalizados somados; TME e SLA
-// ponderados pelo volume: TME (2.1·384+1.8·218)/602 ≈ 2.0min; SLA ≈ 86%).
+// Sem coluna SLA. Portal Web e App entram dentro de "Chat/WhatsApp" (mensageria):
+// atendentes 22+2+1=25, espera 16+1+0=17, atend. 68+4+2=74, concluídos 602+42+28=672,
+// TME ponderado ≈ 1.9min. Volume/ocupação/TMA/TME por canal seguem os KPIs dos
+// contextos (consistência). "No bot" = atendimentos no atendimento automatizado.
 export const operacaoAgora: CanalLinha[] = [
-  { canal: 'Chat/WhatsApp', atendentes: 22, emEspera: 16, emAtendimento: 68, finalizados: 602, tme: '2.0 min', sla: 86, slaTone: 'warning' },
-  { canal: 'Telefone', atendentes: 12, emEspera: 47, emAtendimento: 38, finalizados: 156, tme: '2.4 min', sla: 71, slaTone: 'danger', esperaTone: 'danger' },
-  { canal: 'Balcão', atendentes: 3, emEspera: 5, emAtendimento: 8, finalizados: 89, tme: '4.2 min', sla: 88, slaTone: 'success' },
-  { canal: 'Portal Web', atendentes: 2, emEspera: 1, emAtendimento: 4, finalizados: 42, tme: '1.2 min', sla: 95, slaTone: 'success' },
-  { canal: 'App', atendentes: 1, emEspera: 0, emAtendimento: 2, finalizados: 28, tme: '0.9 min', sla: 98, slaTone: 'success' },
+  { canal: 'Chat/WhatsApp', volume: 2376, ocupacao: 81, ocupacaoTone: 'warning', tme: '1.9 min', tma: '6 min', noBot: 84, emEspera: 17, emAtendimento: 74, finalizados: 672, atendentes: 25 },
+  { canal: 'Telefone', volume: 847, ocupacao: 92, ocupacaoTone: 'danger', tme: '2.4 min', tma: '9 min', noBot: 12, emEspera: 47, emAtendimento: 38, finalizados: 156, atendentes: 12, esperaTone: 'danger' },
+  { canal: 'Balcão', volume: 431, ocupacao: 58, ocupacaoTone: 'success', tme: '4.2 min', tma: '11 min', noBot: 0, emEspera: 5, emAtendimento: 8, finalizados: 89, atendentes: 3 },
 ]
 
 // ── 4) Correlação operacional (tabela comparativa — todos os canais) ─────────

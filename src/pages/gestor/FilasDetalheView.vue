@@ -226,10 +226,10 @@ const filaTone: Record<'danger' | 'warning' | 'success', string> = {
 }
 const filaColumns: DataListColumn[] = [
   { key: 'fila', label: 'Fila', minWidth: 170, sortable: true },
-  { key: 'disponiveis', label: 'Disponíveis', align: 'right', width: 110, sortable: true },
+  { key: 'disponiveis', label: 'Atendentes', align: 'right', width: 110, sortable: true },
   { key: 'emEspera', label: 'Em espera', align: 'right', width: 110, sortable: true },
   { key: 'emAtendimento', label: 'Em atend.', align: 'right', width: 110, sortable: true },
-  { key: 'finalizados', label: 'Finalizados', align: 'right', width: 110, sortable: true },
+  { key: 'finalizados', label: 'Concluídos', align: 'right', width: 110, sortable: true },
   { key: 'tme', label: 'TME', align: 'right', width: 90 },
   { key: 'tma', label: 'TMA', align: 'right', width: 90 },
   { key: 'nps', label: 'NPS', align: 'right', width: 80 },

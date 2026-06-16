@@ -22,6 +22,13 @@ const dot: Record<'ok' | 'warning' | 'danger' | 'neutral', string> = {
   danger: 'bg-ms-danger',
   neutral: 'bg-ms-text-placeholder',
 }
+// Significado de cada cor da bolinha (tooltip explicativo · pedido G6).
+const statusHint: Record<'ok' | 'warning' | 'danger' | 'neutral', string> = {
+  ok: 'Saudável — dentro da meta',
+  warning: 'Atenção — próximo do limite da meta',
+  danger: 'Crítico — fora da meta',
+  neutral: 'Informativo — sem meta definida',
+}
 const deltaClass: Record<'up' | 'down' | 'neutral', string> = {
   up: 'text-ms-success',
   down: 'text-ms-danger',
@@ -35,7 +42,13 @@ const deltaClass: Record<'up' | 'down' | 'neutral', string> = {
       <span class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">{{
         label
       }}</span>
-      <span class="mt-0.5 h-2 w-2 shrink-0 rounded-full" :class="dot[status]" />
+      <el-tooltip :content="statusHint[status]" placement="top">
+        <span
+          class="mt-0.5 h-2 w-2 shrink-0 cursor-help rounded-full"
+          :class="dot[status]"
+          :aria-label="statusHint[status]"
+        />
+      </el-tooltip>
     </div>
     <div class="mt-2 flex items-baseline gap-1">
       <span class="text-2xl font-bold text-ms-text-primary">{{ value }}</span>

@@ -53,7 +53,7 @@ const isGeral = computed(() => ctxKey.value === 'geral')
 const destacado = (canal: string) => ctx.value.canaisDestaque.includes(canal)
 
 const periodoAtivo = ref<string>('Hoje')
-const metrica = ref<(typeof evolucaoMetricas)[number]>('SLA')
+const metrica = ref<(typeof evolucaoMetricas)[number]>('Ocupação')
 
 const toneText: Record<'success' | 'warning' | 'danger' | 'neutral' | 'primary', string> = {
   success: 'text-ms-success',
@@ -77,8 +77,10 @@ const toneBar: Record<'success' | 'warning' | 'danger' | 'primary', string> = {
 }
 
 // Títulos de seção e textos dependem de ser visão geral ou de um canal.
+// "Indicadores da operação" é o título-base de todas as telas de detalhe.
+// O sufixo de período reflete o que o usuário escolher no seletor (não fixo em "Hoje").
 const kpiTitulo = computed(() =>
-  isGeral.value ? 'Indicadores da operação · Hoje' : 'Indicadores do canal · Hoje',
+  `${isGeral.value ? 'Indicadores da operação' : 'Indicadores do canal'} · ${periodoAtivo.value}`,
 )
 const evolucaoTitulo = computed(() =>
   isGeral.value ? 'Evolução da operação · últimas 12h' : 'Evolução do canal · últimas 12h',
@@ -115,13 +117,21 @@ function resample(arr: number[], n: number): number[] {
   })
 }
 
-// Métricas da linha derivadas da série de SLA do contexto (determinístico):
-// Retenção ≈ 85% do SLA; TME inversamente proporcional (mock para o seletor).
+// Tipo de eixo do indicador selecionado: % (Ocupação), minutos (TME/TMA) ou
+// contagem (Volume → compartilha o eixo das barras de volume).
+const metricaPct = computed(() => metrica.value === 'Ocupação')
+const metricaMin = computed(() => metrica.value === 'TME' || metrica.value === 'TMA')
+
+// Séries da linha derivadas das séries do contexto (determinístico, mock):
 const linhaSerie = computed<number[]>(() => {
+  const vol = ctx.value.volume
   const sla = ctx.value.sla
-  if (metrica.value === 'Retenção') return sla.map((v) => Math.round(v * 0.85))
-  if (metrica.value === 'TME') return sla.map((v) => Math.max(40, Math.round(118 - v)))
-  return sla
+  const max = Math.max(...vol) || 1
+  if (metrica.value === 'Volume') return vol
+  if (metrica.value === 'Ocupação') return vol.map((v) => Math.round(55 + (v / max) * 40))
+  if (metrica.value === 'TMA') return vol.map((v) => Number((4 + (v / max) * 6).toFixed(1)))
+  // TME (min): inversamente proporcional ao SLA.
+  return sla.map((v) => Number(Math.max(1.2, (100 - v) / 10).toFixed(1)))
 })
 
 const evolucaoOption = computed(() => {
@@ -138,7 +148,7 @@ const evolucaoOption = computed(() => {
       itemWidth: 12,
       itemHeight: 8,
       textStyle: { color: C.axis, fontSize: 11 },
-      data: ['Volume', `${metrica.value} atual`, 'Meta 90%'],
+      data: ['Volume', `${metrica.value} atual`, ...(metricaPct.value ? ['Meta 90%'] : [])],
     },
     xAxis: {
       type: 'category',
@@ -156,10 +166,14 @@ const evolucaoOption = computed(() => {
       },
       {
         type: 'value',
-        min: 50,
-        max: 100,
         position: 'right',
-        axisLabel: { color: C.axis, fontSize: 10, formatter: '{value}%' },
+        min: metricaPct.value ? 50 : 0,
+        max: metricaPct.value ? 100 : Math.ceil((Math.max(...linha) || 1) * 1.25),
+        axisLabel: {
+          color: C.axis,
+          fontSize: 10,
+          formatter: metricaPct.value ? '{value}%' : metricaMin.value ? '{value}min' : '{value}',
+        },
         splitLine: { show: false },
       },
     ],
@@ -174,7 +188,7 @@ const evolucaoOption = computed(() => {
       {
         name: `${metrica.value} atual`,
         type: 'line',
-        yAxisIndex: 1,
+        yAxisIndex: metricaPct.value || metricaMin.value ? 1 : 0,
         smooth: true,
         symbol: 'circle',
         symbolSize: 5,
@@ -202,11 +216,12 @@ const evolucaoOption = computed(() => {
           : undefined,
       },
       {
+        // Linha de meta só faz sentido para a Ocupação (%); oculta nos demais.
         name: 'Meta 90%',
         type: 'line',
         yAxisIndex: 1,
         symbol: 'none',
-        data: eixoLabels.value.map(() => evolucaoBase.meta),
+        data: metricaPct.value ? eixoLabels.value.map(() => evolucaoBase.meta) : [],
         lineStyle: { color: C.success, type: 'dashed', width: 1.5 },
         itemStyle: { color: C.success },
       },
@@ -215,14 +230,19 @@ const evolucaoOption = computed(() => {
 })
 
 // ── Tabela "Operação por canal · agora" ──────────────────────────────────────
+// Ordem macro→micro: indicadores (Volume/Ocupação/TME/TMA) → No bot → contadores
+// operacionais. Sem coluna SLA (pedido G6).
 const operacaoColumns: DataListColumn[] = [
   { key: 'canal', label: 'Canal', minWidth: 140, sortable: true },
-  { key: 'atendentes', label: 'Atendentes', align: 'right', width: 120, sortable: true },
-  { key: 'emEspera', label: 'Em espera', align: 'right', width: 120, sortable: true },
-  { key: 'emAtendimento', label: 'Em atendimento', align: 'right', width: 140, sortable: true },
-  { key: 'finalizados', label: 'Finalizados', align: 'right', width: 120, sortable: true },
+  { key: 'volume', label: 'Volume', align: 'right', width: 110, sortable: true },
+  { key: 'ocupacao', label: 'Ocupação', align: 'right', width: 110, sortBy: (r) => r.ocupacao as number },
   { key: 'tme', label: 'TME', align: 'right', width: 100, sortBy: (r) => parseFloat(String(r.tme)) },
-  { key: 'sla', label: 'SLA', align: 'right', width: 100, sortBy: (r) => r.sla as number },
+  { key: 'tma', label: 'TMA', align: 'right', width: 100, sortBy: (r) => parseFloat(String(r.tma)) },
+  { key: 'noBot', label: 'No bot', align: 'right', width: 100, sortable: true },
+  { key: 'emEspera', label: 'Em espera', align: 'right', width: 110, sortable: true },
+  { key: 'emAtendimento', label: 'Em atendimento', align: 'right', width: 140, sortable: true },
+  { key: 'atendentes', label: 'Atendentes', align: 'right', width: 110, sortable: true },
+  { key: 'finalizados', label: 'Concluídos', align: 'right', width: 110, sortable: true },
 ]
 
 // ── Tabela "Correlação operacional" ──────────────────────────────────────────
@@ -355,13 +375,13 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string;
             <span v-if="destacado(row.canal)" class="h-1.5 w-1.5 rounded-full bg-ms-primary" />{{ row.canal }}
           </span>
         </template>
+        <template #cell-ocupacao="{ row }">
+          <span class="font-medium" :class="ocupTone(row.ocupacao)">{{ row.ocupacao }}%</span>
+        </template>
         <template #cell-emEspera="{ row }">
           <span :class="row.esperaTone === 'danger' ? 'font-semibold text-ms-danger' : ''">{{
             row.emEspera
           }}</span>
-        </template>
-        <template #cell-sla="{ row }">
-          <span class="font-semibold" :class="pillTone[row.slaTone]">{{ row.sla }}%</span>
         </template>
       </DataList>
     </ChartCard>
