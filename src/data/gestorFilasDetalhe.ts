@@ -8,28 +8,33 @@ import type { RecomendacaoIA } from '@/components/gestor/recomendacoesIA'
 export const periodos = ['Tempo real', 'Hoje', '7 dias', '30 dias'] as const
 
 // ── Cabeçalho/contexto ────────────────────────────────────────────────────────
+// Visão GERAL das filas (não uma fila específica): título e resumo consolidados.
 export const contexto = {
-  badge: 'CRÍTICO',
-  prioridade: 'Prioridade 1 de 3 ações pendentes',
+  badge: 'VISÃO GERAL',
+  prioridade: '4 filas monitoradas',
   atualizado: 'Atualizado há 1 min · próxima leitura em 30s',
-  titulo: 'Fila Dúvidas Administrativas em estouro de SLA',
+  titulo: 'Gestão de Filas e Atendimento Humano',
   subtitulo:
-    'Estouro projetado em 18 minutos · 18 beneficiários impactados · 3 protocolos com risco regulatório (Lei do SAC).',
+    'Visão consolidada das filas e do atendimento humano · 29 em fila · espera média 6m 18s · 22% de capacidade livre.',
 }
 
 // ── 1) Resumo executivo (KPIs) ────────────────────────────────────────────────
+// Mesmos cards da tela "Gestão de Filas" (tempo real): Total em fila, Espera
+// média, Capacidade livre, Maior espera, Alertas de fila. (SLA e Risco
+// regulatório ficam ocultos aqui — pedido G8.)
 export interface FilaKpi {
   label: string
   value: string
   unit: string
-  status: 'ok' | 'warning' | 'danger'
+  status: 'ok' | 'warning' | 'danger' | 'neutral'
+  delta?: string
 }
 export const resumoExecutivo: FilaKpi[] = [
-  { label: 'Fila atual', value: '18', unit: '', status: 'warning' },
-  { label: 'Aguardando', value: '12', unit: 'atendimentos', status: 'warning' },
-  { label: 'TME', value: '14', unit: 'min', status: 'danger' },
-  { label: 'SLA', value: '65', unit: '%', status: 'danger' },
-  { label: 'Risco regulatório', value: '3', unit: 'protocolos', status: 'danger' },
+  { label: 'Total em fila', value: '29', unit: '', status: 'neutral', delta: 'todos os canais' },
+  { label: 'Espera média', value: '6m 18s', unit: '', status: 'danger', delta: '↑ 2min vs. ontem' },
+  { label: 'Capacidade livre', value: '22', unit: '%', status: 'warning', delta: '3 de 14 disponíveis' },
+  { label: 'Maior espera', value: '14', unit: 'min', status: 'danger', delta: 'Chat/WhatsApp · Fila N1' },
+  { label: 'Alertas de fila', value: '8', unit: '', status: 'danger', delta: 'atend. acima do limite de TME' },
 ]
 
 // ── 2) Tabela de filas ────────────────────────────────────────────────────────

@@ -300,24 +300,23 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
 
     <!-- Cabeçalho/contexto -->
     <el-card shadow="never" body-class="!p-5" class="mb-5 overflow-hidden !border-ms-border-light">
-      <div class="-mx-5 -mt-5 mb-4 h-1 bg-ms-danger" />
-      <div class="flex flex-wrap items-start justify-between gap-3">
-        <div class="flex items-center gap-2 text-xs">
-          <span class="flex items-center gap-1.5 font-bold uppercase tracking-wide text-ms-danger">
-            <span class="h-2 w-2 rounded-full bg-ms-danger" />{{ contexto.badge }}
-          </span>
-          <span class="text-ms-text-secondary">· {{ contexto.prioridade }}</span>
+      <div class="-mx-5 -mt-5 mb-4 h-1 bg-ms-primary" />
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 text-xs">
+            <span class="flex items-center gap-1.5 font-bold uppercase tracking-wide text-ms-primary">
+              <span class="h-2 w-2 rounded-full bg-ms-primary" />{{ contexto.badge }}
+            </span>
+            <span class="text-ms-text-secondary">· {{ contexto.prioridade }}</span>
+          </div>
+          <h1 class="mt-2 text-2xl font-bold text-ms-text-primary">{{ contexto.titulo }}</h1>
+          <p class="mt-1 text-sm text-ms-text-secondary">{{ contexto.subtitulo }}</p>
         </div>
-        <span class="text-2xs text-ms-text-secondary">{{ contexto.atualizado }}</span>
-      </div>
-      <h1 class="mt-2 text-2xl font-bold text-ms-text-primary">{{ contexto.titulo }}</h1>
-      <p class="mt-1 text-sm text-ms-text-secondary">{{ contexto.subtitulo }}</p>
-      <!-- Filtro global de período -->
-      <div class="mt-4 flex flex-wrap items-center gap-2">
-        <span class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary"
-          >Período:</span
-        >
-        <PeriodoSelector v-model="periodoAtivo" :options="periodos" />
+        <!-- Seletor de período alinhado à direita do header (G8/G5). -->
+        <div class="flex flex-col items-end gap-1">
+          <PeriodoSelector v-model="periodoAtivo" :options="periodos" />
+          <span class="text-2xs text-ms-text-secondary">{{ contexto.atualizado }}</span>
+        </div>
       </div>
     </el-card>
 
@@ -325,7 +324,7 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
     <div class="mb-1 text-xs font-bold uppercase tracking-wide text-ms-text-secondary">
       Resumo executivo
     </div>
-    <p class="mb-3 text-xs text-ms-text-secondary">Estado atual da fila e suas restrições</p>
+    <p class="mb-3 text-xs text-ms-text-secondary">Estado atual das filas e do atendimento humano</p>
     <div class="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
       <KpiStatCard
         v-for="k in resumoExecutivo"
@@ -334,6 +333,7 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
         :value="k.value"
         :unit="k.unit"
         :status="k.status"
+        :delta="k.delta"
       />
     </div>
 
