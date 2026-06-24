@@ -51,7 +51,7 @@ export const kpiGauges: KpiGauge[] = [
   },
 ]
 
-// 4º card do Resumo Executivo (Figma): "Chamadas na fila" — taxa de abandono.
+// 4º card do Resumo Executivo: "Chamadas abandonadas" — taxa de abandono na fila.
 export const chamadasNaFila = {
   abandono: 6.4, // % abandonadas
   atendidas: 93.6, // %
@@ -132,7 +132,7 @@ export const canalResumo = {
   slaConformidade: '96%',
 }
 
-// Abandono por fluxo — BOT vs Humano (%).
+// Filas de abandono — BOT vs Humano (%). (Rótulos = filas.)
 export const abandonoFluxo = {
   fluxos: ['Dúvidas Adm.', 'Reembolso', 'Autorizações', 'Financeiro (Boleto)'],
   bot: [8, 15, 2, 10],

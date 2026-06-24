@@ -54,7 +54,7 @@ export const ResumoExecutivo: Story = {
         <KpiRingCard :value="78" display="78%" label="Fix Call Resolution" delta="↑ 1% hoje" delta-tone="up" meta="Meta: 80%" tone="primary" />
         <KpiRingCard :value="82" display="82%" label="Resolução de Chamados" delta="↑ 3% hoje" delta-tone="up" meta="Meta: 90%" tone="success" />
         <KpiRingCard :value="92" display="4.6" label="NPS / Satisfação" delta="↓ 0.1 hoje" delta-tone="down" meta="Meta: 5.0" tone="purple" />
-        <KpiRingCard :value="6.4" display="6,4%" label="Chamadas na fila" delta="↑ 1,1% hoje (crítico)" delta-tone="danger" meta="Atendidas: 93,6%" tone="danger" />
+        <KpiRingCard :value="6.4" display="6,4%" label="Chamadas abandonadas" delta="↑ 1,1% hoje (crítico)" delta-tone="danger" meta="Atendidas: 93,6%" tone="danger" />
       </div>`,
   }),
 }

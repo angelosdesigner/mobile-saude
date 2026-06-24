@@ -187,14 +187,6 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Ocorrências · Gestão Operacional' },
   },
   {
-    // Lista dedicada de chamadas abandonadas (drill-down do card "Chamadas na
-    // fila" da Início). Contexto separado das ocorrências gerais.
-    path: '/gestor/abandonos',
-    name: 'gestor-abandonos',
-    component: () => import('@/pages/gestor/AbandonosListaView.vue'),
-    meta: { title: 'Chamadas Abandonadas' },
-  },
-  {
     // Design System (styleguide vivo) — tokens + galeria de componentes.
     // Fora da navegação principal; acesso direto por /design-system.
     path: '/design-system',

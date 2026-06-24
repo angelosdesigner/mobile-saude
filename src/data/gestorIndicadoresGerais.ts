@@ -4,6 +4,17 @@
 // mostra o número-chave (contagem, taxa ou %). Cada aba exporta seu próprio
 // `indicadoresGerais` no respectivo data file.
 
+/**
+ * Destino de drill-down de um card-indicador (padrão indicador → registro):
+ *  - `indicador`: Centro de Indicadores (`/gestor/indicadores?ind=`) — análise temporal.
+ *  - `ocorrencias`: lista canônica de Ocorrências (Protocolo → jornada), com filtro.
+ *  - `rota`: rota direta (ex.: uma tela de detalhe analítica).
+ */
+export type IndicadorTarget =
+  | { kind: 'indicador'; ind: string }
+  | { kind: 'ocorrencias'; query?: Record<string, string> }
+  | { kind: 'rota'; to: string }
+
 export interface IndicadorGeral {
   /** Rótulo do card. */
   label: string
@@ -18,4 +29,6 @@ export interface IndicadorGeral {
   meta?: string
   /** Cor do anel (taxonomia: BOT/automatizado=primary, humano=success, fila=warning). */
   tone: 'primary' | 'success' | 'purple' | 'danger' | 'warning'
+  /** Destino de drill-down ao clicar no card (opcional). */
+  target?: IndicadorTarget
 }

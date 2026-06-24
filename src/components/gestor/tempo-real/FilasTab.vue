@@ -30,6 +30,15 @@ function abrirFila(label: string) {
     query: { view: 'lista', fila: normalizeFila(label) },
   })
 }
+// Métricas/capacidade/status agregados → tela analítica de Gestão de Filas.
+function abrirFilasDetalhe() {
+  router.push('/gestor/filas-detalhe')
+}
+// Clique num ponto do scatter (cada ponto = uma fila) → Ocorrências da fila.
+function abrirFilaScatter(params: { value?: unknown }) {
+  const v = params?.value as [number, number, number, string] | undefined
+  if (v && v[3]) abrirFila(v[3])
+}
 
 // Números das métricas neutralizados (redesign minimalista): só o extremo
 // genuinamente crítico mantém realce; o resto fica neutro.
@@ -139,7 +148,8 @@ const filaScatterOption = computed(() => ({
         :key="m.label"
         shadow="never"
         body-class="!p-4"
-        class="!border-ms-border-light"
+        class="cursor-pointer !border-ms-border-light transition hover:shadow-md"
+        @click="abrirFilasDetalhe"
       >
         <div class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">
           {{ m.label }}
@@ -151,7 +161,11 @@ const filaScatterOption = computed(() => ({
 
     <!-- Capacidade + ocupação + equipes -->
     <div class="grid gap-4 lg:grid-cols-3">
-      <ChartCard title="Capacidade Operacional" subtitle="atendentes logados / total">
+      <ChartCard
+        title="Capacidade Operacional"
+        subtitle="atendentes logados / total"
+        to="/gestor/filas-detalhe"
+      >
         <div class="h-32 w-full">
           <VChart class="h-full w-full" :option="capacidadeOption" autoresize />
         </div>
@@ -165,7 +179,11 @@ const filaScatterOption = computed(() => ({
         <BarList :items="ocupacaoFila" clickable @item-click="abrirFila" />
       </ChartCard>
 
-      <ChartCard title="Status atual das equipes" subtitle="distribuição da operação agora">
+      <ChartCard
+        title="Status atual das equipes"
+        subtitle="distribuição da operação agora"
+        to="/gestor/filas-detalhe"
+      >
         <div class="space-y-2.5">
           <div v-for="s in equipeStatus" :key="s.label" class="flex items-center justify-between">
             <span class="flex items-center gap-2 text-sm text-ms-text-regular">
@@ -187,10 +205,15 @@ const filaScatterOption = computed(() => ({
     <!-- Fila × TME -->
     <ChartCard
       title="Fila × TME por canal/equipe"
-      subtitle="tamanho do ponto = % SLA cumprido · canto superior direito = risco iminente de SLA"
+      subtitle="tamanho do ponto = % SLA cumprido · clique num ponto para abrir a fila"
     >
       <div class="h-72 w-full">
-        <VChart class="h-full w-full" :option="filaScatterOption" autoresize />
+        <VChart
+          class="h-full w-full cursor-pointer"
+          :option="filaScatterOption"
+          autoresize
+          @click="abrirFilaScatter"
+        />
       </div>
     </ChartCard>
 

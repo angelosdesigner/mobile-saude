@@ -244,8 +244,7 @@ flowchart TD
   TR --> Per["/gestor/performance-detalhe"]
   TR --> Equ["/gestor/equipe-detalhe"]
   GES --> Ind["/gestor/indicadores"]
-  GES --> GOc["/gestor/ocorrencias · Gestão Operacional (Kanban)"]
-  GES --> GAb["/gestor/abandonos · Chamadas abandonadas"]
+  GES --> GOc["/gestor/ocorrencias · Gestão Operacional (Kanban + Protocolos)"]
 
   SYS --> DS["/design-system · Styleguide vivo"]
   SYS --> Demo["/demo · Validação de stack"]

@@ -1,23 +1,69 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
 import IndicadoresGerais from '@/components/gestor/IndicadoresGerais.vue'
+import DataList from '@/components/ui/DataList.vue'
+import type { DataListColumn } from '@/components/ui/dataList'
 import {
   porCanal,
   porFluxoBot,
-  porFilaHumana,
-  abandonoFluxo,
   comparativo,
   abandonoScatter,
   bannerAbandono,
   indicadoresGerais,
+  filasAbandono,
+  type AbandonoStatus,
 } from '@/data/gestorAbandonos'
 import { useChartColors } from '@/plugins/echarts'
-import { canalCor, atendimentoCor } from '@/data/gestorTaxonomia'
+import { canalCor, normalizeCanal, normalizeFila } from '@/data/gestorTaxonomia'
 
 const C = useChartColors()
+const router = useRouter()
+
+// Drill-down (3 níveis): indicador/gráfico → fila (agrupador) → Ocorrências
+// filtradas (registro/protocolo → jornada). Reusa a lista canônica de Ocorrências.
+function abrirFila(fila: string) {
+  router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', fila: normalizeFila(fila) } })
+}
+function abrirCanal(params: { name?: string }) {
+  if (params?.name)
+    router.push({
+      path: '/gestor/ocorrencias',
+      query: { view: 'lista', canal: normalizeCanal(params.name) },
+    })
+}
+// Clique num ponto do scatter (cada ponto = uma fila) → Ocorrências da fila.
+function abrirScatter(params: { value?: unknown }) {
+  const v = params?.value as [number, number, number, string] | undefined
+  if (v && v[3]) abrirFila(v[3])
+}
+
+// ── Tabela "Filas de abandono" (agrupador) ───────────────────────────────────
+const statusOrder: Record<AbandonoStatus, number> = { OK: 0, Médio: 1, Alto: 2, Crítico: 3 }
+const filaColumns: DataListColumn[] = [
+  { key: 'fila', label: 'Fila', minWidth: 200, sortable: true },
+  { key: 'abandonos', label: 'Abandonos', align: 'right', width: 120, sortable: true },
+  { key: 'bot', label: 'Aband. BOT', align: 'right', width: 120, sortBy: (r) => r.bot as number },
+  { key: 'humana', label: 'Aband. humana', align: 'right', width: 140, sortBy: (r) => r.humana as number },
+  { key: 'origem', label: 'Origem', width: 110 },
+  { key: 'status', label: 'Status', width: 120, sortBy: (r) => statusOrder[r.status as AbandonoStatus] },
+]
+const statusTone: Record<AbandonoStatus, { text: string; dot: string }> = {
+  Crítico: { text: 'text-ms-danger', dot: 'bg-ms-danger' },
+  Alto: { text: 'text-ms-warning', dot: 'bg-ms-warning' },
+  Médio: { text: 'text-ms-warning', dot: 'bg-ms-warning/60' },
+  OK: { text: 'text-ms-success', dot: 'bg-ms-success' },
+}
+const origemTone: Record<'BOT' | 'Humano' | 'Misto', string> = {
+  BOT: 'text-ms-primary',
+  Humano: 'text-ms-success',
+  Misto: 'text-ms-text-secondary',
+}
+const botTone = (v: number) => (v >= 10 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
+const humanaTone = (v: number) => (v >= 10 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
 
 const canalOption = computed(() => ({
   tooltip: { trigger: 'item', formatter: '{b}: {c}' },
@@ -31,43 +77,6 @@ const canalOption = computed(() => ({
         name: i.name,
         itemStyle: { color: canalCor(i.name, C) },
       })),
-    },
-  ],
-}))
-
-const abandonoFluxoOption = computed(() => ({
-  tooltip: { trigger: 'axis', valueFormatter: (v: number) => `${v}%` },
-  legend: {
-    bottom: 0,
-    icon: 'circle',
-    itemWidth: 8,
-    itemHeight: 8,
-    textStyle: { color: C.axis, fontSize: 11 },
-  },
-  grid: { left: 30, right: 8, top: 12, bottom: 32 },
-  xAxis: {
-    type: 'category',
-    data: abandonoFluxo.fluxos,
-    axisLabel: { color: C.axis, fontSize: 10, interval: 0 },
-    axisLine: { lineStyle: { color: C.split } },
-  },
-  yAxis: {
-    type: 'value',
-    axisLabel: { color: C.axis, formatter: '{value}%' },
-    splitLine: { lineStyle: { color: C.split } },
-  },
-  series: [
-    {
-      name: 'BOT',
-      type: 'bar',
-      data: abandonoFluxo.bot,
-      itemStyle: { color: atendimentoCor(C).bot, borderRadius: [3, 3, 0, 0] },
-    },
-    {
-      name: 'Humano',
-      type: 'bar',
-      data: abandonoFluxo.humano,
-      itemStyle: { color: atendimentoCor(C).humano, borderRadius: [3, 3, 0, 0] },
     },
   ],
 }))
@@ -134,11 +143,63 @@ const ringStyle = (pct: number, color: string) => ({
       action-to="/gestor/abandonos-detalhe"
     />
 
-    <!-- Por canal / fluxo bot / fila humana -->
+    <!-- Filas de abandono (agrupador) — total · % no BOT · % no humano (sem volume).
+         Clique numa fila para abrir os protocolos que compõem o número. -->
+    <ChartCard
+      title="Filas de abandono"
+      subtitle="Onde o beneficiário desiste · por fila · clique numa fila para abrir os protocolos"
+    >
+      <DataList
+        :columns="filaColumns"
+        :rows="filasAbandono"
+        row-key="fila"
+        :selectable="false"
+        :expandable="false"
+        :actions="false"
+        :paginated="false"
+        count-label="filas"
+      >
+        <template #cell-fila="{ row }">
+          <button
+            class="text-left text-sm font-medium text-ms-primary hover:underline"
+            @click="abrirFila(row.fila)"
+          >
+            {{ row.fila }}
+          </button>
+        </template>
+        <template #cell-bot="{ row }">
+          <span class="font-medium" :class="botTone(row.bot)">{{ row.bot }}%</span>
+        </template>
+        <template #cell-humana="{ row }">
+          <span class="font-medium" :class="humanaTone(row.humana)">{{ row.humana }}%</span>
+        </template>
+        <template #cell-origem="{ row }">
+          <span class="text-xs font-semibold" :class="origemTone[row.origem]">{{ row.origem }}</span>
+        </template>
+        <template #cell-status="{ row }">
+          <span
+            class="flex items-center gap-1.5 text-xs font-semibold"
+            :class="statusTone[row.status].text"
+          >
+            <span class="h-2 w-2 rounded-full" :class="statusTone[row.status].dot" />{{ row.status }}
+          </span>
+        </template>
+      </DataList>
+    </ChartCard>
+
+    <!-- Por canal / comparativo / etapas no BOT -->
     <div class="grid gap-4 lg:grid-cols-3">
-      <ChartCard title="Por Canal" :subtitle="`Total: ${porCanal.total} abandonos`">
+      <ChartCard
+        title="Por Canal"
+        :subtitle="`Total: ${porCanal.total} abandonos · clique numa fatia para detalhar`"
+      >
         <div class="relative h-36 w-full">
-          <VChart class="h-full w-full" :option="canalOption" autoresize />
+          <VChart
+            class="h-full w-full cursor-pointer"
+            :option="canalOption"
+            autoresize
+            @click="abrirCanal"
+          />
           <div
             class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
           >
@@ -158,40 +219,6 @@ const ringStyle = (pct: number, color: string) => ({
         </div>
       </ChartCard>
 
-      <ChartCard title="Por fluxo (BOT)" subtitle="etapa onde o cliente desiste">
-        <div class="space-y-2.5">
-          <div v-for="f in porFluxoBot" :key="f.label">
-            <div class="flex items-center justify-between text-xs">
-              <span class="truncate pr-2 text-ms-text-regular">{{ f.label }}</span>
-              <span class="font-medium text-ms-text-primary">{{ f.value }}%</span>
-            </div>
-            <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
-              <div
-                class="h-full rounded-full bg-ms-text-placeholder"
-                :style="{ width: `${f.value * 5}%` }"
-              />
-            </div>
-          </div>
-        </div>
-      </ChartCard>
-
-      <ChartCard title="Por fila humana" subtitle="% de abandono na fila">
-        <div class="space-y-2.5">
-          <div v-for="f in porFilaHumana" :key="f.label">
-            <div class="flex items-center justify-between text-xs">
-              <span class="truncate pr-2 text-ms-text-regular">{{ f.label }}</span>
-              <span class="font-medium text-ms-text-primary">{{ f.value }}%</span>
-            </div>
-            <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
-              <div class="h-full rounded-full bg-ms-text-placeholder" :style="{ width: `${f.value * 2}%` }" />
-            </div>
-          </div>
-        </div>
-      </ChartCard>
-    </div>
-
-    <!-- Comparativo + fluxo -->
-    <div class="grid gap-4 lg:grid-cols-2">
       <ChartCard
         title="Comparativo: Abandono BOT vs Humano"
         :subtitle="`Distribuição dos ${comparativo.total} casos de abandono`"
@@ -229,7 +256,7 @@ const ringStyle = (pct: number, color: string) => ({
             </div>
           </div>
         </div>
-        <div class="space-y-1 border-t border-ms-border-lighter pt-2 text-xs">
+        <div class="mt-auto space-y-1 border-t border-ms-border-lighter pt-2 text-xs">
           <div class="flex justify-between">
             <span class="text-ms-text-secondary">Humano abandona</span>
             <span class="font-semibold text-ms-text-primary">{{ comparativo.mult }}</span>
@@ -247,23 +274,36 @@ const ringStyle = (pct: number, color: string) => ({
         </div>
       </ChartCard>
 
-      <ChartCard
-        title="Abandono por Fluxo — BOT vs Humano"
-        subtitle="% de abandono em cada canal por fluxo"
-      >
-        <div class="h-56 w-full">
-          <VChart class="h-full w-full" :option="abandonoFluxoOption" autoresize />
+      <ChartCard title="Etapas de abandono no BOT" subtitle="etapa do fluxo onde o cliente desiste">
+        <div class="space-y-2.5">
+          <div v-for="f in porFluxoBot" :key="f.label">
+            <div class="flex items-center justify-between text-xs">
+              <span class="truncate pr-2 text-ms-text-regular">{{ f.label }}</span>
+              <span class="font-medium text-ms-text-primary">{{ f.value }}%</span>
+            </div>
+            <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
+              <div
+                class="h-full rounded-full bg-ms-text-placeholder"
+                :style="{ width: `${f.value * 5}%` }"
+              />
+            </div>
+          </div>
         </div>
       </ChartCard>
     </div>
 
-    <!-- Scatter diagnóstico -->
+    <!-- Scatter diagnóstico (por fila) -->
     <ChartCard
-      title="Abandono BOT × Humano por fluxo"
-      subtitle="tamanho do ponto = volume do fluxo · matriz de diagnóstico da jornada"
+      title="Filas de abandono — BOT × Humano"
+      subtitle="tamanho do ponto = volume da fila · clique num ponto para abrir a fila"
     >
       <div class="h-72 w-full">
-        <VChart class="h-full w-full" :option="abandonoScatterOption" autoresize />
+        <VChart
+          class="h-full w-full cursor-pointer"
+          :option="abandonoScatterOption"
+          autoresize
+          @click="abrirScatter"
+        />
       </div>
     </ChartCard>
 

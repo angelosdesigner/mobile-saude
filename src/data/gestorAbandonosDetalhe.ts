@@ -1,11 +1,12 @@
 // Tela de detalhe "Abandonos e Desistência" (drill-down da aba Abandonos).
 // Estrutura padrão das telas de detalhe do gestor (5 seções):
-// 1) Indicadores gerais · 2) Tabela · 3) Evolução · 4) Correlação ·
-// 5) Insights da IA.
+// 1) Indicadores gerais · 2) Tabela (Filas de abandono) · 3) Evolução ·
+// 4) Correlação · 5) Insights da IA.
 //
 // Números semeados a partir de `gestorAbandonos.ts` (aba): 23 abandonos no
 // período, 6 no BOT / 17 no humano, taxa geral 14,6% (meta < 10%).
 import type { RecomendacaoIA } from '@/components/gestor/recomendacoesIA'
+import type { AbandonoStatus } from '@/data/gestorAbandonos'
 
 export const periodos = ['Hoje', '7d', '30d', 'Trimestre'] as const
 
@@ -14,7 +15,7 @@ export const contexto = {
   titulo: 'Abandonos e Desistência',
   resumo: '23 desistências no período · taxa 14,6% (meta < 10%)',
   subtitulo:
-    'Beneficiários que desistiram antes da resolução · diagnóstico por canal, fluxo e etapa da jornada',
+    'Beneficiários que desistiram antes da resolução · diagnóstico por canal, fila e etapa da jornada',
 }
 
 // ── 1) Indicadores gerais (KpiStatCard) ──────────────────────────────────────
@@ -34,28 +35,11 @@ export const indicadores: AbandonoKpi[] = [
   { label: 'Taxa de abandono', value: '14,6', unit: '%', status: 'danger', delta: 'meta < 10%', deltaTone: 'down' },
 ]
 
-// ── 2) Tabela — abandono por fluxo ───────────────────────────────────────────
-export type AbandonoStatus = 'Crítico' | 'Alto' | 'Médio' | 'OK'
-
-export type FluxoLinha = {
-  fluxo: string
-  volume: number
-  abandonos: number
-  bot: number // % de abandono no BOT
-  humana: number // % de abandono na fila humana
-  origem: 'BOT' | 'Humano' | 'Misto'
-  status: AbandonoStatus
-}
-
-// Abandonos somam 23 (= total da aba). Ordenado por criticidade.
-export const fluxos: FluxoLinha[] = [
-  { fluxo: 'Reembolso', volume: 42, abandonos: 8, bot: 15, humana: 2, origem: 'BOT', status: 'Crítico' },
-  { fluxo: 'Financeiro (Boleto)', volume: 38, abandonos: 6, bot: 10, humana: 4, origem: 'BOT', status: 'Crítico' },
-  { fluxo: 'Dúvidas Adm.', volume: 18, abandonos: 4, bot: 2, humana: 12, origem: 'Humano', status: 'Alto' },
-  { fluxo: 'Negativas/Exames', volume: 26, abandonos: 2, bot: 4, humana: 3, origem: 'Misto', status: 'Médio' },
-  { fluxo: 'Autorizações', volume: 27, abandonos: 2, bot: 2, humana: 2, origem: 'Misto', status: 'OK' },
-  { fluxo: 'Ouvidoria/Reanálise', volume: 18, abandonos: 1, bot: 3, humana: 3, origem: 'Misto', status: 'OK' },
-]
+// ── 2) Tabela — Filas de abandono ────────────────────────────────────────────
+// Foco do gestor: total de abandono · % no BOT · % no humano (sem volume).
+// Fonte única em gestorAbandonos.ts (reutilizada pela aba e por esta tela).
+export { filasAbandono } from '@/data/gestorAbandonos'
+export type { AbandonoStatus, FilaAbandonoLinha } from '@/data/gestorAbandonos'
 
 // ── 3) Evolução — abandonos por hora (contagem) ──────────────────────────────
 export const evolucaoMetricas = ['Total', 'BOT', 'Humano'] as const
@@ -74,10 +58,9 @@ export const evolucao = {
   agoraIdx: 9, // 17h
 }
 
-// ── 4) Correlação — diagnóstico por fluxo ────────────────────────────────────
+// ── 4) Correlação — diagnóstico por fila ─────────────────────────────────────
 export type CorrelLinha = {
-  fluxo: string
-  volume: number
+  fila: string
   bot: number
   humana: number
   gargalo: string
@@ -85,22 +68,22 @@ export type CorrelLinha = {
 }
 
 export const correlacao: CorrelLinha[] = [
-  { fluxo: 'Reembolso', volume: 42, bot: 15, humana: 2, gargalo: 'Desiste no BOT (envio de docs) — fluxo complexo', status: 'Crítico' },
-  { fluxo: 'Financeiro (Boleto)', volume: 38, bot: 10, humana: 4, gargalo: 'Desiste no BOT (validação financeira)', status: 'Crítico' },
-  { fluxo: 'Dúvidas Adm.', volume: 18, bot: 2, humana: 12, gargalo: 'Espera longa na fila humana → workforce', status: 'Alto' },
-  { fluxo: 'Negativas/Exames', volume: 26, bot: 4, humana: 3, gargalo: 'Equilibrado · sem gargalo dominante', status: 'Médio' },
-  { fluxo: 'Autorizações', volume: 27, bot: 2, humana: 2, gargalo: 'Sem gargalo identificado', status: 'OK' },
-  { fluxo: 'Ouvidoria/Reanálise', volume: 18, bot: 3, humana: 3, gargalo: 'Sem gargalo identificado', status: 'OK' },
+  { fila: 'Reembolso', bot: 15, humana: 2, gargalo: 'Desiste no BOT (envio de docs) — fluxo complexo', status: 'Crítico' },
+  { fila: 'Financeiro', bot: 10, humana: 4, gargalo: 'Desiste no BOT (validação financeira)', status: 'Crítico' },
+  { fila: 'Dúvidas Administrativas', bot: 2, humana: 12, gargalo: 'Espera longa na fila humana → workforce', status: 'Alto' },
+  { fila: 'Negativas/Exames', bot: 4, humana: 3, gargalo: 'Equilibrado · sem gargalo dominante', status: 'Médio' },
+  { fila: 'Autorização', bot: 2, humana: 2, gargalo: 'Sem gargalo identificado', status: 'OK' },
+  { fila: 'Ouvidoria/Reanálise', bot: 3, humana: 3, gargalo: 'Sem gargalo identificado', status: 'OK' },
 ]
 
 export const comoInterpretar =
-  'Abandono concentrado no BOT (Reembolso, Financeiro) indica fluxo complexo ou com erro — o cliente desiste antes de chegar ao humano. Abandono concentrado na fila humana (Dúvidas Adm.) indica espera longa → problema de dimensionamento (workforce). Origem "BOT" + alto volume = prioridade de correção de jornada.'
+  'Abandono concentrado no BOT (Reembolso, Financeiro) indica fluxo complexo ou com erro — o cliente desiste antes de chegar ao humano. Abandono concentrado na fila humana (Dúvidas Administrativas) indica espera longa → problema de dimensionamento (workforce). Origem "BOT" + alto volume = prioridade de correção de jornada. Clique numa fila para abrir os protocolos que compõem o número.'
 
 // ── 5) Insights da IA ────────────────────────────────────────────────────────
 export const diagnostico = {
   confianca: 'confiança 86% · 312 padrões similares',
   texto:
-    'O abandono está 2,8× maior no atendimento humano (17 vs 6), mas a causa-raiz dos casos mais críticos está no BOT: Reembolso e Financeiro concentram desistências na etapa de envio de documentos, sinalizando fluxo complexo. Já Dúvidas Adm. desiste na fila humana por espera longa — problema de capacidade, não de jornada.',
+    'O abandono está 2,8× maior no atendimento humano (17 vs 6), mas a causa-raiz dos casos mais críticos está no BOT: Reembolso e Financeiro concentram desistências na etapa de envio de documentos, sinalizando fluxo complexo. Já Dúvidas Administrativas desiste na fila humana por espera longa — problema de capacidade, não de jornada.',
 }
 
 export const recomendacoes: RecomendacaoIA[] = [
@@ -112,7 +95,7 @@ export const recomendacoes: RecomendacaoIA[] = [
     destaque: true,
   },
   {
-    titulo: 'Reforçar a fila de Dúvidas Adm.',
+    titulo: 'Reforçar a fila de Dúvidas Administrativas',
     corpo: 'A desistência na fila humana é por espera. Realocar atendentes nos horários de pico (14h–17h) reduz o tempo até o primeiro atendimento.',
     impacto: 'Abandono humano −25%',
     acao: 'Detalhar',

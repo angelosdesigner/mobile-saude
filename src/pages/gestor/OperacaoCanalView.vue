@@ -26,6 +26,7 @@ import {
   type CorrelStatus,
 } from '@/data/gestorOperacaoCanal'
 import { escalarVolume } from '@/data/gestorPeriodo'
+import { normalizeCanal } from '@/data/gestorTaxonomia'
 
 // Tela de detalhe "Operação por Canal" (drill-down da aba Atendimentos) —
 // Figma 7651:98838. Os chips no topo selecionam o TIPO de canal (Geral por
@@ -48,6 +49,15 @@ watch(
 function selecionar(key: CanalContexto) {
   ctxKey.value = key
   router.replace({ query: { ...route.query, canal: key } })
+}
+
+// Drill-down (3º nível): clique no nome do canal nas tabelas → lista de
+// Ocorrências filtrada por aquele canal (Protocolo → jornada).
+function abrirCanalLista(canal: string) {
+  router.push({
+    path: '/gestor/ocorrencias',
+    query: { view: 'lista', canal: normalizeCanal(canal) },
+  })
 }
 
 const ctx = computed(() => contextos[ctxKey.value])
@@ -380,8 +390,14 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string;
         count-label="canais"
       >
         <template #cell-canal="{ row }">
-          <span class="flex items-center gap-1.5" :class="destacado(row.canal) ? 'font-semibold text-ms-text-primary' : ''">
-            <span v-if="destacado(row.canal)" class="h-1.5 w-1.5 rounded-full bg-ms-primary" />{{ row.canal }}
+          <span class="flex items-center gap-1.5">
+            <span v-if="destacado(row.canal)" class="h-1.5 w-1.5 rounded-full bg-ms-primary" /><button
+              class="hover:underline"
+              :class="destacado(row.canal) ? 'font-semibold text-ms-text-primary' : 'text-ms-primary'"
+              @click="abrirCanalLista(row.canal)"
+            >
+              {{ row.canal }}
+            </button>
           </span>
         </template>
         <template #cell-ocupacao="{ row }">
@@ -421,8 +437,14 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string;
         count-label="canais"
       >
         <template #cell-canal="{ row }">
-          <span class="flex items-center gap-1.5" :class="destacado(row.canal) ? 'font-semibold text-ms-text-primary' : ''">
-            <span v-if="destacado(row.canal)" class="h-1.5 w-1.5 rounded-full bg-ms-primary" />{{ row.canal }}
+          <span class="flex items-center gap-1.5">
+            <span v-if="destacado(row.canal)" class="h-1.5 w-1.5 rounded-full bg-ms-primary" /><button
+              class="hover:underline"
+              :class="destacado(row.canal) ? 'font-semibold text-ms-text-primary' : 'text-ms-primary'"
+              @click="abrirCanalLista(row.canal)"
+            >
+              {{ row.canal }}
+            </button>
           </span>
         </template>
         <template #cell-sla="{ row }">

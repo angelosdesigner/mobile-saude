@@ -14,7 +14,6 @@ export const appScreens: AppScreen[] = [
   { label: 'Operação por Canal', path: '/gestor/operacao-canal', group: 'Gestor' },
   { label: 'Central de Automação', path: '/gestor/automacao-bot', group: 'Gestor' },
   { label: 'Gestão de Filas · Detalhes', path: '/gestor/filas-detalhe', group: 'Gestor' },
-  { label: 'Chamadas Abandonadas', path: '/gestor/abandonos', group: 'Gestor' },
   // ── Atendente ──
   { label: 'Início do Atendente', path: '/inicio', group: 'Atendente' },
   { label: 'Ocorrências', path: '/ocorrencias', group: 'Atendente' },

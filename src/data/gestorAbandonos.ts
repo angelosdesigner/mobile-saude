@@ -1,8 +1,5 @@
 // Fixtures da aba "Abandonos e desistência" — Figma 7900:111365.
-import { abandonoFluxo } from '@/data/gestorTempoReal'
 import type { IndicadorGeral } from '@/data/gestorIndicadoresGerais'
-
-export { abandonoFluxo }
 
 // Indicadores gerais (4 cards de topo). Total 23 (= porCanal.total); quebra
 // BOT/Humano coerente com `comparativo` (6 + 17 = 23). 4º card: taxa geral de
@@ -17,6 +14,7 @@ export const indicadoresGerais: IndicadorGeral[] = [
     deltaTone: 'danger',
     meta: 'desistências no período',
     tone: 'danger',
+    target: { kind: 'ocorrencias', query: { stage: 'fila' } },
   },
   {
     label: 'No BOT',
@@ -24,6 +22,7 @@ export const indicadoresGerais: IndicadorGeral[] = [
     display: '6',
     meta: '26% dos abandonos',
     tone: 'primary',
+    target: { kind: 'ocorrencias', query: { stage: 'automatizado' } },
   },
   {
     label: 'No humano',
@@ -31,6 +30,7 @@ export const indicadoresGerais: IndicadorGeral[] = [
     display: '17',
     meta: '74% · 2,8× o BOT',
     tone: 'success',
+    target: { kind: 'ocorrencias', query: { stage: 'humano' } },
   },
   {
     label: 'Taxa de abandono',
@@ -40,7 +40,33 @@ export const indicadoresGerais: IndicadorGeral[] = [
     deltaTone: 'danger',
     meta: 'Meta: < 10%',
     tone: 'warning',
+    target: { kind: 'indicador', ind: 'abandono' },
   },
+]
+
+// ── Filas de abandono (agrupador) ────────────────────────────────────────────
+// Fonte única do "abandono por fila" — reutilizada pela aba e pela tela de
+// detalhe. Foco do gestor: total de abandono · % no BOT · % no humano (sem
+// volume). Nomes de fila canônicos (ver gestorTaxonomia) p/ o drill-down casar
+// com a lista de Ocorrências. Abandonos somam 23 (= porCanal.total).
+export type AbandonoStatus = 'Crítico' | 'Alto' | 'Médio' | 'OK'
+
+export type FilaAbandonoLinha = {
+  fila: string
+  abandonos: number
+  bot: number // % de abandono no BOT
+  humana: number // % de abandono na fila humana
+  origem: 'BOT' | 'Humano' | 'Misto'
+  status: AbandonoStatus
+}
+
+export const filasAbandono: FilaAbandonoLinha[] = [
+  { fila: 'Reembolso', abandonos: 8, bot: 15, humana: 2, origem: 'BOT', status: 'Crítico' },
+  { fila: 'Financeiro', abandonos: 6, bot: 10, humana: 4, origem: 'BOT', status: 'Crítico' },
+  { fila: 'Dúvidas Administrativas', abandonos: 4, bot: 2, humana: 12, origem: 'Humano', status: 'Alto' },
+  { fila: 'Negativas/Exames', abandonos: 2, bot: 4, humana: 3, origem: 'Misto', status: 'Médio' },
+  { fila: 'Autorização', abandonos: 2, bot: 2, humana: 2, origem: 'Misto', status: 'OK' },
+  { fila: 'Ouvidoria/Reanálise', abandonos: 1, bot: 3, humana: 3, origem: 'Misto', status: 'OK' },
 ]
 
 // Cor por canal vem da taxonomia (canalCor) — não hardcoded aqui.
@@ -54,20 +80,12 @@ export const porCanal = {
   ],
 }
 
-// Abandono por fluxo no BOT (% por etapa).
+// Etapas de abandono no BOT (% por etapa do fluxo automatizado).
 export const porFluxoBot = [
   { label: 'Reembolso → Envio de docs', value: 15 },
   { label: 'Financeiro → Valid. financeira', value: 11 },
   { label: 'Autorização → Envio de docs', value: 7 },
   { label: 'Dúvidas Administrativas → Identificação', value: 4 },
-]
-
-// Abandono por fila humana (%).
-export const porFilaHumana = [
-  { label: 'Reembolso', value: 38 },
-  { label: 'Financeiro', value: 27 },
-  { label: 'Autorização', value: 20 },
-  { label: 'Dúvidas Administrativas', value: 12 },
 ]
 
 export const comparativo = {
@@ -80,7 +98,7 @@ export const comparativo = {
   insight: 'O fluxo está muito complexo ou com erro',
 }
 
-// Abandono BOT × Humano por fluxo (dispersão): x = % abandono no BOT,
+// Filas de abandono — BOT × Humano (dispersão): x = % abandono no BOT,
 // y = % abandono na fila humana, tamanho = volume do fluxo.
 export interface AbandonoPonto {
   nome: string

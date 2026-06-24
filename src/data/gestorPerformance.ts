@@ -17,6 +17,7 @@ export const indicadoresGerais: IndicadorGeral[] = [
     deltaTone: 'danger',
     meta: '15h: 32 vs 14/h',
     tone: 'danger',
+    target: { kind: 'rota', to: '/gestor/performance-detalhe' },
   },
   {
     label: 'Atendentes na escala',
@@ -24,6 +25,7 @@ export const indicadoresGerais: IndicadorGeral[] = [
     display: '36',
     meta: 'Manhã 14 · Tarde 12 · Noite 10',
     tone: 'primary',
+    target: { kind: 'rota', to: '/gestor/performance-detalhe' },
   },
   {
     label: 'Limite de inflexão',
@@ -31,6 +33,7 @@ export const indicadoresGerais: IndicadorGeral[] = [
     display: '26/h',
     meta: 'acima disso o SLA de 8min estoura',
     tone: 'warning',
+    target: { kind: 'rota', to: '/gestor/performance-detalhe' },
   },
   {
     label: 'Ganho do remanejamento',
@@ -40,6 +43,7 @@ export const indicadoresGerais: IndicadorGeral[] = [
     deltaTone: 'up',
     meta: 'mover 3 da noite p/ tarde',
     tone: 'success',
+    target: { kind: 'rota', to: '/gestor/performance-detalhe' },
   },
 ]
 

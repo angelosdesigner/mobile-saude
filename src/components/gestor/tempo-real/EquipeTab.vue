@@ -22,6 +22,15 @@ const C = useChartColors()
 function abrirAtendente(nome: string) {
   router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', atendente: nome } })
 }
+// Métricas agregadas da equipe → tela analítica de Desempenho da Equipe.
+function abrirEquipeDetalhe() {
+  router.push('/gestor/equipe-detalhe')
+}
+// Clique num ponto do scatter (cada ponto = um atendente) → ocorrências dele.
+function abrirAtendenteScatter(params: { value?: unknown }) {
+  const v = params?.value as [number, number, string, number] | undefined
+  if (v && v[2]) abrirAtendente(v[2])
+}
 
 // Número das métricas (redesign minimalista): só o extremo ruim mantém realce;
 // o estado positivo fica neutro.
@@ -113,7 +122,8 @@ const scatterOption = computed(() => ({
         :key="m.label"
         shadow="never"
         body-class="!p-4"
-        class="!border-ms-border-light"
+        class="cursor-pointer !border-ms-border-light transition hover:shadow-md"
+        @click="abrirEquipeDetalhe"
       >
         <div class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">
           {{ m.label }}
@@ -149,10 +159,15 @@ const scatterOption = computed(() => ({
     <!-- Dispersão ocupação × CSAT -->
     <ChartCard
       title="Ocupação × CSAT por atendente"
-      subtitle="tamanho do ponto = reaberturas · áreas coloridas = zonas de risco"
+      subtitle="tamanho do ponto = reaberturas · clique num ponto para abrir o atendente"
     >
       <div class="h-72 w-full">
-        <VChart class="h-full w-full" :option="scatterOption" autoresize />
+        <VChart
+          class="h-full w-full cursor-pointer"
+          :option="scatterOption"
+          autoresize
+          @click="abrirAtendenteScatter"
+        />
       </div>
     </ChartCard>
 

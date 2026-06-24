@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
 import ChartCard from '@/components/gestor/ChartCard.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
@@ -18,9 +19,23 @@ import {
   insightsAutomatizado,
 } from '@/data/gestorAtendimentos'
 import { useChartColors } from '@/plugins/echarts'
-import { canalCor } from '@/data/gestorTaxonomia'
+import { canalCor, normalizeCanal } from '@/data/gestorTaxonomia'
 
 const C = useChartColors()
+const router = useRouter()
+
+// Drill-down (indicador → registro): clique numa fatia/barra de canal → lista de
+// Ocorrências filtrada por aquele canal (Protocolo → jornada).
+function abrirCanal(params: { name?: string }) {
+  if (params?.name)
+    router.push({
+      path: '/gestor/ocorrencias',
+      query: { view: 'lista', canal: normalizeCanal(params.name) },
+    })
+}
+function abrirAutomacao() {
+  router.push('/gestor/automacao-bot')
+}
 
 const canalOption = computed(() => ({
   tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
@@ -195,10 +210,15 @@ const autoValue = 'text-ms-text-primary'
     <div class="grid gap-4 lg:grid-cols-3">
       <ChartCard
         title="Distribuição de Atendimentos por Canal"
-        subtitle="Total: 118 atendimentos ativos"
+        subtitle="Total: 118 atendimentos ativos · clique numa fatia para detalhar"
       >
         <div class="relative h-40 w-full">
-          <VChart class="h-full w-full" :option="canalOption" autoresize />
+          <VChart
+            class="h-full w-full cursor-pointer"
+            :option="canalOption"
+            autoresize
+            @click="abrirCanal"
+          />
           <div
             class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
           >
@@ -224,10 +244,15 @@ const autoValue = 'text-ms-text-primary'
 
       <ChartCard
         title="Ocupação por Canal vs Capacidade"
-        subtitle="% de uso da capacidade operacional"
+        subtitle="% de uso da capacidade operacional · clique numa barra para detalhar"
       >
         <div class="h-44 w-full">
-          <VChart class="h-full w-full" :option="ocupacaoOption" autoresize />
+          <VChart
+            class="h-full w-full cursor-pointer"
+            :option="ocupacaoOption"
+            autoresize
+            @click="abrirCanal"
+          />
         </div>
         <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-2xs text-ms-text-secondary">
           <span class="flex items-center gap-1"
@@ -242,7 +267,11 @@ const autoValue = 'text-ms-text-primary'
         </div>
       </ChartCard>
 
-      <ChartCard title="TME por Canal" subtitle="tempo médio de espera">
+      <ChartCard
+        title="TME por Canal"
+        subtitle="tempo médio de espera"
+        :to="{ path: '/gestor/indicadores', query: { ind: 'tme' } }"
+      >
         <div class="h-32 w-full">
           <VChart class="h-full w-full" :option="tmeOption" autoresize />
         </div>
@@ -284,7 +313,8 @@ const autoValue = 'text-ms-text-primary'
         :key="m.label"
         shadow="never"
         body-class="!p-4"
-        class="!border-ms-border-light"
+        class="cursor-pointer !border-ms-border-light transition hover:shadow-md"
+        @click="abrirAutomacao"
       >
         <div class="text-xs text-ms-text-secondary">{{ m.label }}</div>
         <div class="mt-1 text-2xl font-bold" :class="autoValue">{{ m.value }}</div>
@@ -301,7 +331,11 @@ const autoValue = 'text-ms-text-primary'
 
     <!-- Detalhamento dos fluxos do BOT -->
     <div class="grid gap-4 lg:grid-cols-3">
-      <ChartCard title="Fluxos Mais Acessados" subtitle="sessões ativas (média 24h)">
+      <ChartCard
+        title="Fluxos Mais Acessados"
+        subtitle="sessões ativas (média 24h)"
+        to="/gestor/automacao-bot"
+      >
         <div class="h-44 w-full">
           <VChart class="h-full w-full" :option="fluxosOption" autoresize />
         </div>
@@ -312,7 +346,11 @@ const autoValue = 'text-ms-text-primary'
         </div>
       </ChartCard>
 
-      <ChartCard title="Setores onde o BOT é Mais Eficiente" subtitle="% resolvidos sem transbordo">
+      <ChartCard
+        title="Setores onde o BOT é Mais Eficiente"
+        subtitle="% resolvidos sem transbordo"
+        to="/gestor/automacao-bot"
+      >
         <div class="space-y-2.5">
           <div v-for="s in setoresBotEficiente.itens" :key="s.label">
             <div class="flex items-center justify-between text-xs">
@@ -334,7 +372,11 @@ const autoValue = 'text-ms-text-primary'
         </div>
       </ChartCard>
 
-      <ChartCard title="Fluxos com Maior Taxa de Abandono" subtitle="% de abandono dentro do bot">
+      <ChartCard
+        title="Fluxos com Maior Taxa de Abandono"
+        subtitle="% de abandono dentro do bot"
+        to="/gestor/automacao-bot"
+      >
         <div class="h-44 w-full">
           <VChart class="h-full w-full" :option="abandonoBotOption" autoresize />
         </div>

@@ -54,9 +54,10 @@ function abrirCanal(params: { name?: string }) {
     router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', canal: params.name } })
 }
 
-// "Chamadas na fila" → lista dedicada de chamadas abandonadas.
+// "Chamadas abandonadas" → aba Abandonos (agrupador "Filas de abandono"), de
+// onde se drilla por fila até os protocolos. Padrão indicador → fila → registro.
 function abrirAbandonos() {
-  router.push('/gestor/abandonos')
+  router.push({ path: '/gestor/tempo-real', query: { tab: 'abandonos' } })
 }
 
 // Drill-down das ocupações: fila (normalizada) e atendente.
@@ -76,7 +77,7 @@ const andamentoTone: Record<'primary' | 'warning' | 'teal' | 'success', string> 
   success: 'border-ms-border-light bg-ms-surface text-ms-success',
 }
 
-// Número formatado em pt-BR (vírgula decimal) para o card "Chamadas na fila".
+// Número formatado em pt-BR (vírgula decimal) para o card "Chamadas abandonadas".
 const ptNum = (n: number) => String(n).replace('.', ',')
 
 // Legendas (bolinha + nome) reutilizando ChartLegend; cores = taxonomia única.
@@ -224,11 +225,11 @@ const demandaOption = computed(() => ({
         clickable
         @click="goTarget(k.target)"
       />
-      <!-- Chamadas na fila — taxa de abandono, mesmo padrão dos demais. -->
+      <!-- Chamadas abandonadas — taxa de abandono, mesmo padrão dos demais. -->
       <KpiRingCard
         :value="chamadasNaFila.abandono"
         :display="`${ptNum(chamadasNaFila.abandono)}%`"
-        label="Chamadas na fila"
+        label="Chamadas abandonadas"
         :delta="`${chamadasNaFila.delta}${chamadasNaFila.critico ? ' (crítico)' : ''}`"
         delta-tone="danger"
         tone="danger"
@@ -320,8 +321,9 @@ const demandaOption = computed(() => ({
       </ChartCard>
 
       <ChartCard
-        title="Abandono por fluxo — BOT vs Humano"
-        subtitle="% de abandono em cada canal por fluxo"
+        title="Filas de abandono — BOT vs Humano"
+        subtitle="% de abandono em cada fila · ver agrupador de filas"
+        :to="{ path: '/gestor/tempo-real', query: { tab: 'abandonos' } }"
       >
         <div class="w-full flex-1" style="min-height: 200px">
           <VChart class="h-full w-full" :option="abandonoOption" autoresize />
@@ -332,6 +334,7 @@ const demandaOption = computed(() => ({
       <ChartCard
         title="Demanda × Capacidade"
         subtitle="Distribuição ao longo do dia · pico 14h-16h"
+        to="/gestor/performance-detalhe"
       >
         <div class="w-full flex-1" style="min-height: 200px">
           <VChart class="h-full w-full" :option="demandaOption" autoresize />

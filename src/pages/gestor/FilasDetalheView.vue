@@ -354,8 +354,13 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
         count-label="filas"
       >
         <template #cell-fila="{ row }">
-          <span class="flex items-center gap-1.5 font-medium text-ms-text-primary">
-            <span class="h-2 w-2 rounded-full" :class="filaTone[row.tone]" />{{ row.fila }}
+          <span class="flex items-center gap-1.5">
+            <span class="h-2 w-2 rounded-full" :class="filaTone[row.tone]" /><button
+              class="font-medium text-ms-primary hover:underline"
+              @click="abrirFila(row.fila)"
+            >
+              {{ row.fila }}
+            </button>
           </span>
         </template>
         <template #cell-ocupacao="{ row }">
@@ -363,7 +368,7 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
         </template>
         <template #cell-acao="{ row }">
           <el-button text type="primary" size="small" @click="abrirFila(row.fila)"
-            >Detalhes →</el-button
+            >Ver protocolos →</el-button
           >
         </template>
       </DataList>
@@ -452,6 +457,11 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
         :actions="false"
         count-label="filas"
       >
+        <template #cell-fila="{ row }">
+          <button class="font-medium text-ms-primary hover:underline" @click="abrirFila(row.fila)">
+            {{ row.fila }}
+          </button>
+        </template>
         <template #cell-sla="{ row }">
           <span class="font-medium" :class="slaTone(row.sla)">{{ row.sla }}%</span>
         </template>

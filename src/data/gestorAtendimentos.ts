@@ -16,6 +16,7 @@ export const indicadoresGerais: IndicadorGeral[] = [
     deltaTone: 'up',
     meta: 'em andamento agora',
     tone: 'primary',
+    target: { kind: 'ocorrencias' },
   },
   {
     label: 'No automatizado',
@@ -23,6 +24,7 @@ export const indicadoresGerais: IndicadorGeral[] = [
     display: '84',
     meta: '52% do total · Chatbot + URA',
     tone: 'primary',
+    target: { kind: 'ocorrencias', query: { stage: 'automatizado' } },
   },
   {
     // Card 3: atendimento humano em curso vem antes da espera (macro→micro).
@@ -31,16 +33,18 @@ export const indicadoresGerais: IndicadorGeral[] = [
     display: '56',
     meta: '34% do total · em atendimento',
     tone: 'success',
+    target: { kind: 'ocorrencias', query: { stage: 'humano' } },
   },
   {
-    // Card 4: "Fila em espera" (antes "Pessoas na fila").
-    label: 'Fila em espera',
+    // Card 4: "Em espera na fila" (antes "Pessoas na fila"/"Fila em espera").
+    label: 'Em espera na fila',
     value: 14,
     display: '23',
     delta: '↑ 3 hoje',
     deltaTone: 'danger',
     meta: '14% do total · aguardando',
     tone: 'warning',
+    target: { kind: 'ocorrencias', query: { stage: 'fila' } },
   },
 ]
 

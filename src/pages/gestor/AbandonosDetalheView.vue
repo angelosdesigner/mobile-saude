@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import ChartCard from '@/components/gestor/ChartCard.vue'
@@ -15,7 +16,7 @@ import {
   periodos,
   contexto,
   indicadores,
-  fluxos,
+  filasAbandono,
   evolucao,
   evolucaoMetricas,
   correlacao,
@@ -26,13 +27,22 @@ import {
   type EvolucaoMetrica,
   type AbandonoStatus,
 } from '@/data/gestorAbandonosDetalhe'
+import { normalizeFila } from '@/data/gestorTaxonomia'
 import { escalarVolume } from '@/data/gestorPeriodo'
 
 // Tela de detalhe "Abandonos e Desistência" — estrutura padrão (5 seções).
 const C = useChartColors()
 
+const router = useRouter()
+
 const periodoAtivo = ref<string>('Hoje')
 const metrica = ref<EvolucaoMetrica>('Total')
+
+// Drill-down (3º nível): clique numa fila de abandono → Ocorrências filtradas
+// por aquela fila, onde se chega ao Protocolo e à jornada.
+function abrirFila(fila: string) {
+  router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', fila: normalizeFila(fila) } })
+}
 
 // Contagens cumulativas (Abandonos/No BOT/No humano) escalam pelo período;
 // a taxa de abandono (%) é média e permanece estável.
@@ -96,24 +106,23 @@ const evolucaoOption = computed(() => {
   }
 })
 
-// ── 2) Tabela — abandono por fluxo ───────────────────────────────────────────
+// ── 2) Tabela — Filas de abandono ────────────────────────────────────────────
+// Sem coluna Volume (decisão do gestor): foco em total de abandono · BOT% · humano%.
 const statusOrder: Record<AbandonoStatus, number> = { OK: 0, Médio: 1, Alto: 2, Crítico: 3 }
-const fluxoColumns: DataListColumn[] = [
-  { key: 'fluxo', label: 'Fluxo', minWidth: 180, sortable: true },
-  { key: 'volume', label: 'Volume', align: 'right', width: 100, sortable: true },
-  { key: 'abandonos', label: 'Abandonos', align: 'right', width: 110, sortable: true },
-  { key: 'bot', label: 'Aband. BOT', align: 'right', width: 110, sortBy: (r) => r.bot as number },
-  { key: 'humana', label: 'Aband. humana', align: 'right', width: 130, sortBy: (r) => r.humana as number },
+const filaColumns: DataListColumn[] = [
+  { key: 'fila', label: 'Fila', minWidth: 200, sortable: true },
+  { key: 'abandonos', label: 'Abandonos', align: 'right', width: 120, sortable: true },
+  { key: 'bot', label: 'Aband. BOT', align: 'right', width: 120, sortBy: (r) => r.bot as number },
+  { key: 'humana', label: 'Aband. humana', align: 'right', width: 140, sortBy: (r) => r.humana as number },
   { key: 'origem', label: 'Origem', width: 110 },
   { key: 'status', label: 'Status', width: 120, sortBy: (r) => statusOrder[r.status as AbandonoStatus] },
 ]
 
 // ── 4) Correlação ────────────────────────────────────────────────────────────
 const correlColumns: DataListColumn[] = [
-  { key: 'fluxo', label: 'Fluxo', minWidth: 180, sortable: true },
-  { key: 'volume', label: 'Volume', align: 'right', width: 100, sortable: true },
-  { key: 'bot', label: 'Aband. BOT', align: 'right', width: 110, sortBy: (r) => r.bot as number },
-  { key: 'humana', label: 'Aband. humana', align: 'right', width: 130, sortBy: (r) => r.humana as number },
+  { key: 'fila', label: 'Fila', minWidth: 200, sortable: true },
+  { key: 'bot', label: 'Aband. BOT', align: 'right', width: 120, sortBy: (r) => r.bot as number },
+  { key: 'humana', label: 'Aband. humana', align: 'right', width: 140, sortBy: (r) => r.humana as number },
   { key: 'gargalo', label: 'Gargalo', minWidth: 260 },
   { key: 'status', label: 'Status', width: 120, sortBy: (r) => statusOrder[r.status as AbandonoStatus] },
 ]
@@ -188,21 +197,29 @@ const humanaTone = (v: number) => (v >= 10 ? 'text-ms-danger font-medium' : 'tex
       />
     </div>
 
-    <!-- 2) Tabela — abandono por fluxo -->
+    <!-- 2) Tabela — Filas de abandono -->
     <ChartCard
-      title="Abandono por fluxo"
-      subtitle="Onde o beneficiário desiste · ordenado por nº de abandonos"
+      title="Filas de abandono"
+      subtitle="Onde o beneficiário desiste · por fila · clique numa fila para abrir os protocolos"
       class="mb-5"
     >
       <DataList
-        :columns="fluxoColumns"
-        :rows="fluxos"
-        row-key="fluxo"
+        :columns="filaColumns"
+        :rows="filasAbandono"
+        row-key="fila"
         :selectable="false"
         :expandable="false"
         :actions="false"
-        count-label="fluxos"
+        count-label="filas"
       >
+        <template #cell-fila="{ row }">
+          <button
+            class="text-left text-sm font-medium text-ms-primary hover:underline"
+            @click="abrirFila(row.fila)"
+          >
+            {{ row.fila }}
+          </button>
+        </template>
         <template #cell-bot="{ row }">
           <span class="font-medium" :class="botTone(row.bot)">{{ row.bot }}%</span>
         </template>
@@ -237,18 +254,26 @@ const humanaTone = (v: number) => (v >= 10 ? 'text-ms-danger font-medium' : 'tex
     <!-- 4) Correlação -->
     <ChartCard
       title="Correlação operacional"
-      subtitle="Volume × Abandono BOT × Abandono humano · Por fluxo · Identificação de gargalos"
+      subtitle="Abandono BOT × Abandono humano · Por fila · Identificação de gargalos"
       class="mb-3"
     >
       <DataList
         :columns="correlColumns"
         :rows="correlacao"
-        row-key="fluxo"
+        row-key="fila"
         :selectable="false"
         :expandable="false"
         :actions="false"
-        count-label="fluxos"
+        count-label="filas"
       >
+        <template #cell-fila="{ row }">
+          <button
+            class="text-left text-sm font-medium text-ms-primary hover:underline"
+            @click="abrirFila(row.fila)"
+          >
+            {{ row.fila }}
+          </button>
+        </template>
         <template #cell-bot="{ row }">
           <span class="font-medium" :class="botTone(row.bot)">{{ row.bot }}%</span>
         </template>

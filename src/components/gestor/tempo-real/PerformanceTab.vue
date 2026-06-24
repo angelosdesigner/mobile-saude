@@ -181,6 +181,7 @@ const scatterOption = computed(() => ({
         <ChartCard
           title="Demanda vs Capacidade por Hora"
           subtitle="barras = volume de chamados · linha preta = atendentes disponíveis"
+          to="/gestor/performance-detalhe"
         >
           <div class="h-52 w-full">
             <VChart class="h-full w-full" :option="demandaOption" autoresize />
@@ -191,6 +192,7 @@ const scatterOption = computed(() => ({
         <ChartCard
           title="Carga por Dia × Faixa Horária (últimos 7 dias)"
           subtitle="intensidade da carga (% ocupação)"
+          to="/gestor/performance-detalhe"
         >
           <div class="overflow-x-auto">
             <div class="min-w-[420px]">
@@ -222,7 +224,11 @@ const scatterOption = computed(() => ({
       </div>
 
       <!-- Turnos de trabalho -->
-      <ChartCard title="Turnos de Trabalho" subtitle="capacidade × carga média por turno">
+      <ChartCard
+        title="Turnos de Trabalho"
+        subtitle="capacidade × carga média por turno"
+        to="/gestor/performance-detalhe"
+      >
         <div class="space-y-3">
           <div
             v-for="t in turnos"
@@ -291,6 +297,7 @@ const scatterOption = computed(() => ({
     <ChartCard
       title="Demanda × TME por hora do dia"
       subtitle="cada ponto = uma hora · ponto de inflexão revela quando o SLA degrada"
+      to="/gestor/performance-detalhe"
     >
       <div class="h-72 w-full">
         <VChart class="h-full w-full" :option="scatterOption" autoresize />
