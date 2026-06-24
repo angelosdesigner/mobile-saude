@@ -10,8 +10,9 @@ withDefaults(
   { delta: '', deltaTone: 'neutral' },
 )
 
+// Minimalista: só a piora (down) recebe cor; melhora/estável ficam neutras.
 const deltaClass: Record<'up' | 'down' | 'neutral', string> = {
-  up: 'text-ms-success',
+  up: 'text-ms-text-secondary',
   down: 'text-ms-danger',
   neutral: 'text-ms-text-secondary',
 }

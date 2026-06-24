@@ -25,19 +25,18 @@ const props = withDefaults(
 
 const emit = defineEmits<{ 'item-click': [label: string] }>()
 
+// Minimalista: barra neutra por padrão; só o crítico (≥90% ou tom danger) colore.
 const toneClass: Record<'success' | 'warning' | 'danger' | 'neutral', string> = {
-  success: 'bg-ms-success',
-  warning: 'bg-ms-warning',
+  success: 'bg-ms-text-placeholder',
+  warning: 'bg-ms-text-placeholder',
   danger: 'bg-ms-danger',
-  neutral: 'bg-ms-border',
+  neutral: 'bg-ms-text-placeholder',
 }
 
-// Cor da barra: explícita (it.tone) ou derivada do valor (faixas de %).
+// Cor da barra: explícita (it.tone) ou derivada do valor (só ≥90% é crítico).
 function barClass(it: BarItem): string {
   if (it.tone) return toneClass[it.tone]
-  if (it.value >= 90) return 'bg-ms-danger'
-  if (it.value >= 70) return 'bg-ms-warning'
-  return 'bg-ms-success'
+  return it.value >= 90 ? 'bg-ms-danger' : 'bg-ms-text-placeholder'
 }
 const barWidth = (v: number) => Math.min(100, (v / props.max) * 100)
 </script>
@@ -80,10 +79,10 @@ const barWidth = (v: number) => Math.min(100, (v / props.max) * 100)
       class="mt-auto flex flex-wrap items-center justify-center gap-3 pt-3 text-2xs text-ms-text-secondary"
     >
       <span class="flex items-center gap-1"
-        ><span class="h-2 w-2 rounded-full bg-ms-success" />&lt;70%</span
+        ><span class="h-2 w-2 rounded-full bg-ms-text-placeholder" />&lt;70%</span
       >
       <span class="flex items-center gap-1"
-        ><span class="h-2 w-2 rounded-full bg-ms-warning" />70–89%</span
+        ><span class="h-2 w-2 rounded-full bg-ms-text-placeholder" />70–89%</span
       >
       <span class="flex items-center gap-1"
         ><span class="h-2 w-2 rounded-full bg-ms-danger" />≥90% crítico</span

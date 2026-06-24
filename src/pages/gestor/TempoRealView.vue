@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 
 // Dashboard de gestão em tempo real (Figma seção "Gestão tempo real"). Estrutura
@@ -37,7 +38,7 @@ const route = useRoute()
 const router = useRouter()
 
 const tabs = [
-  { key: 'inicio', label: 'Início', ready: true },
+  { key: 'inicio', label: 'Visão Geral', ready: true },
   { key: 'atendimentos', label: 'Atendimentos', ready: true },
   { key: 'filas', label: 'Gestão de filas e atendimento humano', ready: true },
   { key: 'abandonos', label: 'Abandonos e desistência', ready: true },
@@ -58,10 +59,10 @@ const current = computed(() => tabs.find((t) => t.key === activeTab.value) ?? ta
   <DashboardLayout>
     <!-- Cabeçalho -->
     <div class="mb-4">
-      <h1 class="text-2xl font-bold text-ms-text-primary">Visão Geral do Atendimento</h1>
+      <h1 class="text-2xl font-bold text-ms-text-primary">Gestão do Atendimento</h1>
       <p class="mt-1 text-sm text-ms-text-secondary">
-        Acompanhe em tempo real os principais indicadores, desempenho das equipes, filas e níveis de
-        atendimento.
+        Acompanhe e gerencie a operação de atendimento da operadora — do monitoramento em tempo real
+        à análise de performance.
       </p>
     </div>
 
@@ -70,7 +71,10 @@ const current = computed(() => tabs.find((t) => t.key === activeTab.value) ?? ta
       <button class="border-b-2 border-ms-primary pb-2 text-sm font-semibold text-ms-primary">
         Gestão Tempo Real
       </button>
-      <button class="pb-2 text-sm font-medium text-ms-text-secondary hover:text-ms-text-regular">
+      <button
+        class="pb-2 text-sm font-medium text-ms-text-secondary hover:text-ms-text-regular"
+        @click="router.push('/gestor/gestao-performance')"
+      >
         Gestão e Performance
       </button>
     </div>

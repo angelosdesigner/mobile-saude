@@ -26,11 +26,13 @@ const columns = computed<KanbanColumn[]>(() =>
 )
 
 // ── Estilos por tom ───────────────────────────────────────────────────────────
-const pillClass: Record<PillTone, string> = {
-  primary: 'bg-ms-primary-light text-ms-primary',
-  info: 'bg-ms-fill-light text-ms-text-secondary',
-  warning: 'bg-ms-warning/10 text-ms-warning',
-  success: 'bg-ms-success/10 text-ms-success',
+// Pill de origem da fila: rótulo informativo (não é status de SLA). Mantém o
+// tom apenas no dot; texto neutro e sem fundo cheio para conter a cor.
+const pillDot: Record<PillTone, string> = {
+  primary: 'bg-ms-primary',
+  info: 'bg-ms-text-placeholder',
+  warning: 'bg-ms-warning',
+  success: 'bg-ms-success',
 }
 const slaClass: Record<SlaState, string> = {
   Dentro: 'text-ms-success',
@@ -340,7 +342,7 @@ function cancelTransfer() {
           </div>
           <div class="mt-2 space-y-1 text-xs text-ms-text-regular">
             <div>Fluxo: <span class="text-ms-text-secondary">{{ item.fluxo }}</span></div>
-            <div v-if="item.no" class="inline-flex items-center gap-1 rounded bg-ms-primary-light px-1.5 py-0.5 text-2xs text-ms-primary">
+            <div v-if="item.no" class="inline-flex items-center gap-1 rounded border border-ms-border-light bg-ms-surface px-1.5 py-0.5 text-2xs text-ms-text-secondary">
               Nó: {{ item.no }}
             </div>
           </div>
@@ -363,12 +365,12 @@ function cancelTransfer() {
             <div class="flex items-center gap-2">
               <span>Posição: <b class="text-ms-text-primary">{{ item.posicao }}º</b></span>
               <span class="text-ms-text-placeholder">·</span>
-              <span class="text-ms-warning">{{ item.espera }}</span>
+              <span class="text-ms-text-regular">{{ item.espera }}</span>
               <span
                 v-if="item.pill"
-                class="rounded-full px-1.5 py-0.5 text-2xs font-medium"
-                :class="pillClass[item.pill.tone]"
-              >{{ item.pill.label }}</span>
+                class="inline-flex items-center gap-1 text-2xs font-medium text-ms-text-secondary"
+              >
+                <span class="h-1.5 w-1.5 shrink-0 rounded-full" :class="pillDot[item.pill.tone]" />{{ item.pill.label }}</span>
             </div>
           </div>
         </template>
@@ -407,7 +409,7 @@ function cancelTransfer() {
             <div>Atendente: <span class="text-ms-text-secondary">{{ item.atendente }}</span></div>
             <div class="flex items-center gap-3">
               <span>Total: <span class="text-ms-text-secondary">{{ item.total }}</span></span>
-              <span v-if="item.estrelas" class="flex items-center gap-0.5 text-ms-warning">
+              <span v-if="item.estrelas" class="flex items-center gap-0.5 text-ms-text-placeholder">
                 <svg class="h-3 w-3 fill-current" viewBox="0 0 24 24">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z" />
                 </svg>

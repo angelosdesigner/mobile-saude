@@ -82,7 +82,7 @@ function resample(arr: number[], n: number): number[] {
 }
 
 const statusDot: Record<'ok' | 'warning' | 'danger', string> = {
-  ok: 'bg-ms-success',
+  ok: 'bg-ms-text-placeholder',
   warning: 'bg-ms-warning',
   danger: 'bg-ms-danger',
 }
@@ -240,10 +240,8 @@ const segmentacaoOption = computed(() => {
   }
 })
 
-function tendTone(t: string): string {
-  if (t.startsWith('Piorando')) return 'text-ms-danger'
-  if (t.startsWith('Melhorando')) return 'text-ms-success'
-  return 'text-ms-text-secondary'
+function tendTone(_t: string): string {
+  return 'text-ms-text-regular'
 }
 
 // Colunas da tabela de segmentos críticos (DataList compartilhado).
@@ -405,7 +403,7 @@ const segmentoColumns: DataListColumn[] = [
         count-label="segmentos"
       >
         <template #cell-abandonados="{ row }">
-          <span class="text-ms-danger">{{ row.abandonados }}</span>
+          <span class="text-ms-text-regular">{{ row.abandonados }}</span>
         </template>
         <template #cell-tendencia="{ row }">
           <span class="text-xs font-medium" :class="tendTone(row.tendencia)">{{

@@ -129,8 +129,8 @@ const origemTone: Record<'BOT' | 'Humano' | 'Misto', string> = {
   Humano: 'text-ms-success',
   Misto: 'text-ms-text-secondary',
 }
-const botTone = (v: number) => (v >= 10 ? 'text-ms-danger' : v >= 5 ? 'text-ms-warning' : 'text-ms-text-regular')
-const humanaTone = (v: number) => (v >= 10 ? 'text-ms-danger' : v >= 5 ? 'text-ms-warning' : 'text-ms-text-regular')
+const botTone = (v: number) => (v >= 10 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
+const humanaTone = (v: number) => (v >= 10 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
 </script>
 
 <template>

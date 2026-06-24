@@ -31,15 +31,19 @@ const props = withDefaults(
 
 defineEmits<{ click: [] }>()
 
+// Minimalista: o anel usa no máximo 3 cores FUNCIONAIS — marca (normal),
+// âmbar (atenção) e vermelho (crítico). Verde e roxo colapsam no azul de marca
+// para remover o excesso cromático sem perder os sinais de atenção/crítico.
 const ringVar: Record<KpiRingTone, string> = {
   primary: 'var(--color-ms-primary)',
-  success: 'var(--color-ms-success)',
-  danger: 'var(--color-ms-danger)',
+  success: 'var(--color-ms-primary)',
+  purple: 'var(--color-ms-primary)',
   warning: 'var(--color-ms-warning)',
-  purple: 'var(--color-ms-purple)',
+  danger: 'var(--color-ms-danger)',
 }
+// Minimalista: só a piora (down/danger) recebe cor; melhora/estável ficam neutras.
 const deltaClass: Record<KpiRingDeltaTone, string> = {
-  up: 'text-ms-success',
+  up: 'text-ms-text-secondary',
   down: 'text-ms-danger',
   danger: 'text-ms-danger',
   neutral: 'text-ms-text-secondary',

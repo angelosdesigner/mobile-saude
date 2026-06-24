@@ -68,6 +68,30 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Gestão em tempo real' },
   },
   {
+    // Gestão e Performance (a frio) — análise retrospectiva de ocorrências por
+    // atendente, volume por período e pendências acionáveis.
+    path: '/gestor/gestao-performance',
+    name: 'gestor-gestao-performance',
+    component: () => import('@/pages/gestor/GestaoPerformanceView.vue'),
+    meta: { title: 'Gestão e Performance' },
+  },
+  {
+    // Overview geral de atendentes — drill-down da seção "Performance por
+    // Atendente" na Gestão e Performance. Estrutura padrão de 5 seções.
+    path: '/gestor/gestao-performance-atendentes',
+    name: 'gestor-gestao-performance-atendentes',
+    component: () => import('@/pages/gestor/GestaoPerformanceAtendentesView.vue'),
+    meta: { title: 'Performance por Atendente' },
+  },
+  {
+    // Detalhe de atendente individual — drill-down do overview geral acima.
+    // Recebe ?atendente=<nome>&periodo=<chave> via query string.
+    path: '/gestor/gestao-performance-atendente',
+    name: 'gestor-gestao-performance-atendente',
+    component: () => import('@/pages/gestor/GestaoPerformanceAtendenteView.vue'),
+    meta: { title: 'Performance do Atendente' },
+  },
+  {
     // Detalhe "Operação por Canal" (drill-down da aba Atendimentos) — Figma
     // 7651:98838. Estrutura padrão das telas de detalhe do gestor.
     path: '/gestor/operacao-canal',
@@ -114,6 +138,39 @@ export const routes: RouteRecordRaw[] = [
     name: 'gestor-equipe-detalhe',
     component: () => import('@/pages/gestor/EquipeDetalheView.vue'),
     meta: { title: 'Equipe · Detalhes' },
+  },
+  {
+    // Detalhe "Risk Center" (drill-down da subaba Gestão de Riscos da Gestão e
+    // Performance). Recebe ?risco=<tipo> para pré-selecionar. Estrutura padrão
+    // das telas de detalhe (5 blocos).
+    path: '/gestor/risco-detalhe',
+    name: 'gestor-risco-detalhe',
+    component: () => import('@/pages/gestor/RiscoDetalheView.vue'),
+    meta: { title: 'Risk Center · Detalhes' },
+  },
+  {
+    // Detalhe "Gargalos e Setores" (drill-down da subaba homônima). Recebe
+    // ?setor=<chave>. Estrutura padrão das telas de detalhe (5 blocos).
+    path: '/gestor/gargalos-detalhe',
+    name: 'gestor-gargalos-detalhe',
+    component: () => import('@/pages/gestor/GargalosDetalheView.vue'),
+    meta: { title: 'Gargalos e Setores · Detalhes' },
+  },
+  {
+    // Detalhe "Pendências e Limbo" (drill-down da subaba homônima). Recebe
+    // ?cat=<categoria>. Estrutura padrão das telas de detalhe (5 blocos).
+    path: '/gestor/limbo-detalhe',
+    name: 'gestor-limbo-detalhe',
+    component: () => import('@/pages/gestor/LimboDetalheView.vue'),
+    meta: { title: 'Pendências e Limbo · Detalhes' },
+  },
+  {
+    // Detalhe "Qualidade e Experiência" (drill-down da subaba homônima). Recebe
+    // ?ind=<indicador>. Estrutura padrão das telas de detalhe (5 blocos).
+    path: '/gestor/qualidade-detalhe',
+    name: 'gestor-qualidade-detalhe',
+    component: () => import('@/pages/gestor/QualidadeDetalheView.vue'),
+    meta: { title: 'Qualidade e Experiência · Detalhes' },
   },
   {
     // Indicadores do gestor — recebe ?ind= para pré-selecionar.

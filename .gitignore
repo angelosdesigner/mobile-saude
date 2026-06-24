@@ -15,6 +15,9 @@ dist-ssr
 # Storybook
 storybook-static
 
+# Artefatos compactados (não versionar)
+*.zip
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -221,7 +221,7 @@ const abandonoAssuntoOption = computed(() => ({
 const filaTone: Record<'danger' | 'warning' | 'success', string> = {
   danger: 'bg-ms-danger',
   warning: 'bg-ms-warning',
-  success: 'bg-ms-success',
+  success: 'bg-ms-text-placeholder',
 }
 const filaColumns: DataListColumn[] = [
   { key: 'fila', label: 'Fila', minWidth: 170, sortable: true },
@@ -237,7 +237,7 @@ const filaColumns: DataListColumn[] = [
   { key: 'ocupacao', label: 'Ocupação', align: 'right', width: 110, sortBy: (r) => r.ocupacao as number },
   { key: 'acao', label: 'Ação', width: 110 },
 ]
-const ocupTone = (v: number) => (v >= 90 ? 'text-ms-danger' : v >= 70 ? 'text-ms-warning' : 'text-ms-success')
+const ocupTone = (v: number) => (v >= 90 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
 
 function abrirFila(fila: string) {
   router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', fila: normalizeFila(fila) } })
@@ -266,7 +266,7 @@ const correlStatusTone: Record<CorrelStatus, { text: string; dot: string }> = {
   Médio: { text: 'text-ms-warning', dot: 'bg-ms-warning/60' },
   OK: { text: 'text-ms-success', dot: 'bg-ms-success' },
 }
-const slaTone = (v: number) => (v >= 90 ? 'text-ms-success' : v >= 70 ? 'text-ms-warning' : 'text-ms-danger')
+const slaTone = (v: number) => (v < 70 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
 
 // ── Registro de beneficiários ─────────────────────────────────────────────────
 const beneficiarioColumns: DataListColumn[] = [
@@ -369,7 +369,7 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
       </DataList>
     </ChartCard>
     <div
-      class="mb-5 flex items-center gap-2 rounded-lg border border-ms-danger/30 bg-ms-danger/5 px-3 py-2.5 text-sm text-ms-text-regular"
+      class="mb-5 flex items-center gap-2 rounded-lg border border-ms-border-light bg-ms-surface px-3 py-2.5 text-sm text-ms-text-regular"
     >
       <span class="text-ms-danger">⊘</span>{{ filasAlerta }}
     </div>
@@ -420,7 +420,7 @@ const abandonoMetricTone: Record<'danger' | 'warning' | 'neutral', string> = {
             <span class="h-2.5 w-2.5 shrink-0 rounded-full" :style="{ backgroundColor: l.color }" />
             <span class="text-ms-text-regular">{{ l.label }}</span>
             <span class="font-semibold text-ms-text-primary">{{ l.valor }} ({{ indicadorAtivo }})</span>
-            <span class="text-2xs" :class="l.ruim ? 'text-ms-danger' : 'text-ms-success'">{{ l.delta }}</span>
+            <span class="text-2xs" :class="l.ruim ? 'text-ms-danger font-medium' : 'text-ms-text-regular'">{{ l.delta }}</span>
           </div>
         </div>
         <div class="grid grid-cols-3 gap-2">

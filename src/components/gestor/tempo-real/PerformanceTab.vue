@@ -71,32 +71,37 @@ const demandaOption = computed(() => ({
   ],
 }))
 
+// Heatmap legítimo (rule 8): mantém cor em atenção/crítico; o estado saudável
+// (baixa ocupação) vira cinza neutro, sem verde.
 const heatColor = (v: number) => {
   if (v >= 95) return 'bg-ms-danger/80 text-white'
   if (v >= 85) return 'bg-ms-danger/50 text-ms-text-primary'
   if (v >= 75) return 'bg-ms-warning/50 text-ms-text-primary'
   if (v >= 60) return 'bg-ms-warning/25 text-ms-text-regular'
-  return 'bg-ms-success/25 text-ms-text-regular'
+  return 'bg-ms-fill-light text-ms-text-regular'
 }
 
+// Cards de turno neutralizados (rule 5/7): fundo/borda neutros; mantém um dot
+// pequeno colorido por status. Badge e detalhe só recebem realce em
+// atenção/crítico; o estado equilibrado fica neutro.
 const turnoStyle: Record<TurnoStatus, { card: string; dot: string; badge: string; detail: string }> = {
   atencao: {
-    card: 'border-ms-warning/30 bg-ms-warning/5',
+    card: 'border-ms-border-light bg-ms-surface',
     dot: 'bg-ms-warning',
     badge: 'text-ms-warning',
     detail: 'text-ms-warning',
   },
   critico: {
-    card: 'border-ms-danger/30 bg-ms-danger/5',
+    card: 'border-ms-border-light bg-ms-surface',
     dot: 'bg-ms-danger',
     badge: 'text-ms-danger',
     detail: 'text-ms-danger',
   },
   equilibrado: {
-    card: 'border-ms-success/30 bg-ms-success/5',
+    card: 'border-ms-border-light bg-ms-surface',
     dot: 'bg-ms-success',
-    badge: 'text-ms-success',
-    detail: 'text-ms-success',
+    badge: 'text-ms-text-secondary',
+    detail: 'text-ms-text-regular',
   },
 }
 
@@ -258,7 +263,7 @@ const scatterOption = computed(() => ({
 
     <!-- Banner SLA reembolso -->
     <div
-      class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-ms-warning/30 bg-ms-warning/5 px-3 py-2.5"
+      class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-ms-border-light bg-ms-surface px-3 py-2.5"
     >
       <div class="flex items-start gap-2 text-sm text-ms-text-regular">
         <span class="text-ms-warning">⚠</span>
@@ -277,7 +282,7 @@ const scatterOption = computed(() => ({
 
     <!-- Banner crítico -->
     <div
-      class="flex items-center gap-2 rounded-lg border border-ms-danger/30 bg-ms-danger/5 px-3 py-2.5 text-sm text-ms-text-regular"
+      class="flex items-center gap-2 rounded-lg border border-ms-border-light bg-ms-surface px-3 py-2.5 text-sm text-ms-text-regular"
     >
       <span class="text-ms-danger">⊘</span>{{ bannerPerfCrit }}
     </div>

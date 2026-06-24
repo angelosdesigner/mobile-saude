@@ -79,11 +79,9 @@ const toneText: Record<'danger' | 'warning' | 'success', string> = {
   warning: 'text-ms-warning',
   success: 'text-ms-success',
 }
-const toneBar: Record<'danger' | 'warning' | 'success', string> = {
-  danger: 'bg-ms-danger',
-  warning: 'bg-ms-warning',
-  success: 'bg-ms-success',
-}
+// Barras decorativas neutralizadas (redesign minimalista): o fill não carrega
+// mais a severidade — ela já aparece no número/rótulo ao lado.
+const toneBar = 'bg-ms-text-placeholder'
 
 // Gauge semicircular (180→0), igual ao "Capacidade Operacional": número central
 // + unidade pequena; arco colorido pela severidade do TME.
@@ -171,23 +169,16 @@ const abandonoBotOption = computed(() => ({
   ],
 }))
 
-// Barra de eficiência do BOT: acima da meta = verde; abaixo = âmbar.
-const eficienteBar = (v: number) => (v >= setoresBotEficiente.meta ? 'bg-ms-success' : 'bg-ms-warning')
+// Eficiência do BOT (resolutividade — BAIXO é ruim): só o extremo abaixo da meta
+// recebe realce; o resto fica neutro. A barra é decorativa → fill neutro.
+const eficienteBar = () => 'bg-ms-text-placeholder'
 const eficienteText = (v: number) =>
-  v >= setoresBotEficiente.meta ? 'text-ms-success' : 'text-ms-warning'
+  v < setoresBotEficiente.meta ? 'text-ms-danger font-medium' : 'text-ms-text-regular'
 
-const autoBar: Record<'success' | 'warning' | 'danger' | 'neutral', string> = {
-  success: 'bg-ms-success',
-  warning: 'bg-ms-warning',
-  danger: 'bg-ms-danger',
-  neutral: 'bg-ms-text-placeholder',
-}
-const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = {
-  success: 'text-ms-success',
-  warning: 'text-ms-warning',
-  danger: 'text-ms-danger',
-  neutral: 'text-ms-text-primary',
-}
+// Cards de automação (redesign minimalista): barra decorativa neutra e número
+// grande sempre neutro — a leitura de valor não precisa de cor de fundo.
+const autoBar = 'bg-ms-text-placeholder'
+const autoValue = 'text-ms-text-primary'
 </script>
 
 <template>
@@ -226,7 +217,7 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
           </div>
           <div class="flex justify-between">
             <span class="text-ms-text-secondary">SLA Conformidade</span>
-            <span class="font-medium text-ms-success">96%</span>
+            <span class="font-medium text-ms-text-primary">96%</span>
           </div>
         </div>
       </ChartCard>
@@ -268,7 +259,7 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
             <div class="h-2 flex-1 overflow-hidden rounded-full bg-ms-fill-light">
               <div
                 class="h-full rounded-full"
-                :class="toneBar[b.tone]"
+                :class="toneBar"
                 :style="{ width: `${(b.value / tmeCanal.max) * 100}%` }"
               />
             </div>
@@ -296,12 +287,12 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
         class="!border-ms-border-light"
       >
         <div class="text-xs text-ms-text-secondary">{{ m.label }}</div>
-        <div class="mt-1 text-2xl font-bold" :class="autoValue[m.tone]">{{ m.value }}</div>
-        <div v-if="m.delta" class="text-2xs text-ms-success">{{ m.delta }}</div>
+        <div class="mt-1 text-2xl font-bold" :class="autoValue">{{ m.value }}</div>
+        <div v-if="m.delta" class="text-2xs text-ms-text-secondary">{{ m.delta }}</div>
         <div v-if="m.pct !== null" class="mt-2 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
           <div
             class="h-full rounded-full"
-            :class="autoBar[m.tone]"
+            :class="autoBar"
             :style="{ width: `${m.pct}%` }"
           />
         </div>
@@ -317,7 +308,7 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
         <div class="mt-auto border-t border-ms-border-lighter pt-2 text-2xs text-ms-text-secondary">
           Total: {{ fluxosMaisAcessados.totalSessoes }} sessões · Atendimentos/dia (média):
           {{ fluxosMaisAcessados.atendimentosDia }}
-          <div class="mt-0.5 font-medium text-ms-success">{{ fluxosMaisAcessados.delta }}</div>
+          <div class="mt-0.5 font-medium text-ms-text-regular">{{ fluxosMaisAcessados.delta }}</div>
         </div>
       </ChartCard>
 
@@ -331,7 +322,7 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
             <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
               <div
                 class="h-full rounded-full"
-                :class="eficienteBar(s.value)"
+                :class="eficienteBar()"
                 :style="{ width: `${s.value}%` }"
               />
             </div>
@@ -362,7 +353,7 @@ const autoValue: Record<'success' | 'warning' | 'danger' | 'neutral', string> = 
     </div>
 
     <div
-      class="flex items-center gap-2 rounded-lg border border-ms-warning/30 bg-ms-warning/5 px-3 py-2.5 text-sm text-ms-text-regular"
+      class="flex items-center gap-2 rounded-lg border border-ms-border-light bg-ms-surface px-3 py-2.5 text-sm text-ms-text-regular"
     >
       <span class="text-ms-warning">⚠</span>
       {{ bannerAutomatizado }}

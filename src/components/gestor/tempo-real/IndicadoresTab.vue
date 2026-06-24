@@ -11,8 +11,10 @@ function abrirIndicador(key: IndicadorKey) {
   router.push({ path: '/gestor/indicadores', query: { ind: key } })
 }
 
+// Dot de status (redesign minimalista): saudável → cinza neutro; cor só em
+// atenção/crítico. O rótulo segue neutro (text-ms-text-secondary).
 const statusDot: Record<'ok' | 'warning' | 'danger', string> = {
-  ok: 'bg-ms-success',
+  ok: 'bg-ms-text-placeholder',
   warning: 'bg-ms-warning',
   danger: 'bg-ms-danger',
 }

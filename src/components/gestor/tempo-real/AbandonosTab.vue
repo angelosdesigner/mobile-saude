@@ -163,11 +163,11 @@ const ringStyle = (pct: number, color: string) => ({
           <div v-for="f in porFluxoBot" :key="f.label">
             <div class="flex items-center justify-between text-xs">
               <span class="truncate pr-2 text-ms-text-regular">{{ f.label }}</span>
-              <span class="font-medium text-ms-primary">{{ f.value }}%</span>
+              <span class="font-medium text-ms-text-primary">{{ f.value }}%</span>
             </div>
             <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
               <div
-                class="h-full rounded-full bg-ms-primary"
+                class="h-full rounded-full bg-ms-text-placeholder"
                 :style="{ width: `${f.value * 5}%` }"
               />
             </div>
@@ -180,10 +180,10 @@ const ringStyle = (pct: number, color: string) => ({
           <div v-for="f in porFilaHumana" :key="f.label">
             <div class="flex items-center justify-between text-xs">
               <span class="truncate pr-2 text-ms-text-regular">{{ f.label }}</span>
-              <span class="font-medium text-ms-success">{{ f.value }}%</span>
+              <span class="font-medium text-ms-text-primary">{{ f.value }}%</span>
             </div>
             <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-ms-fill-light">
-              <div class="h-full rounded-full bg-ms-success" :style="{ width: `${f.value * 2}%` }" />
+              <div class="h-full rounded-full bg-ms-text-placeholder" :style="{ width: `${f.value * 2}%` }" />
             </div>
           </div>
         </div>
@@ -242,7 +242,7 @@ const ringStyle = (pct: number, color: string) => ({
           </div>
           <div class="flex justify-between">
             <span class="text-ms-text-secondary">Insight</span>
-            <span class="text-ms-success">{{ comparativo.insight }}</span>
+            <span class="text-ms-text-primary">{{ comparativo.insight }}</span>
           </div>
         </div>
       </ChartCard>

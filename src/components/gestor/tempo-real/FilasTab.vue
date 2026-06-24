@@ -31,12 +31,14 @@ function abrirFila(label: string) {
   })
 }
 
+// Números das métricas neutralizados (redesign minimalista): só o extremo
+// genuinamente crítico mantém realce; o resto fica neutro.
 const metricTone: Record<MetricTone, string> = {
   default: 'text-ms-text-primary',
   danger: 'text-ms-danger',
-  warning: 'text-ms-warning',
-  success: 'text-ms-success',
-  primary: 'text-ms-primary',
+  warning: 'text-ms-text-primary',
+  success: 'text-ms-text-primary',
+  primary: 'text-ms-text-primary',
 }
 const dot: Record<'success' | 'primary' | 'warning', string> = {
   success: 'bg-ms-success',
@@ -154,7 +156,7 @@ const filaScatterOption = computed(() => ({
           <VChart class="h-full w-full" :option="capacidadeOption" autoresize />
         </div>
         <div class="text-center">
-          <div class="text-sm font-semibold text-ms-success">{{ capacidade.legend }}</div>
+          <div class="text-sm font-semibold text-ms-text-primary">{{ capacidade.legend }}</div>
           <div class="text-xs text-ms-text-secondary">{{ capacidade.pausa }}</div>
         </div>
       </ChartCard>
@@ -177,7 +179,7 @@ const filaScatterOption = computed(() => ({
 
     <!-- Banner crítico -->
     <div
-      class="flex items-center gap-2 rounded-lg border border-ms-danger/30 bg-ms-danger/5 px-3 py-2.5 text-sm text-ms-text-regular"
+      class="flex items-center gap-2 rounded-lg border border-ms-border-light bg-ms-surface px-3 py-2.5 text-sm text-ms-text-regular"
     >
       <span class="text-ms-danger">⊘</span>{{ bannerFilaWarn }}
     </div>

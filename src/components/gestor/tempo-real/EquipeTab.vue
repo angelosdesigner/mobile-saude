@@ -23,8 +23,10 @@ function abrirAtendente(nome: string) {
   router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', atendente: nome } })
 }
 
+// Número das métricas (redesign minimalista): só o extremo ruim mantém realce;
+// o estado positivo fica neutro.
 const metricTone: Record<EquipeTone, string> = {
-  success: 'text-ms-success',
+  success: 'text-ms-text-primary',
   danger: 'text-ms-danger',
 }
 
@@ -120,7 +122,7 @@ const scatterOption = computed(() => ({
         <div class="mt-0.5 text-xs text-ms-text-secondary">{{ m.sub }}</div>
       </el-card>
     </div>
-    <div class="-mt-2 text-sm font-semibold text-ms-success">
+    <div class="-mt-2 text-sm font-semibold text-ms-text-primary">
       Eficiência operacional: {{ eficiencia }}%
     </div>
 

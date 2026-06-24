@@ -272,19 +272,14 @@ const correlColumns: DataListColumn[] = [
   { key: 'status', label: 'Status', width: 120, sortBy: (r) => correlStatusOrder[r.status as CorrelStatus] },
 ]
 
-const pillTone: Record<'success' | 'warning' | 'danger', string> = {
-  success: 'text-ms-success',
-  warning: 'text-ms-warning',
-  danger: 'text-ms-danger',
-}
 const statusTone: Record<CorrelStatus, { text: string; dot: string }> = {
   Crítico: { text: 'text-ms-danger', dot: 'bg-ms-danger' },
   Alto: { text: 'text-ms-warning', dot: 'bg-ms-warning' },
   Médio: { text: 'text-ms-warning', dot: 'bg-ms-warning/60' },
   OK: { text: 'text-ms-success', dot: 'bg-ms-success' },
 }
-const slaTone = (v: number) => (v >= 90 ? 'text-ms-success' : v >= 80 ? 'text-ms-warning' : 'text-ms-danger')
-const ocupTone = (v: number) => (v > 90 ? 'text-ms-danger' : v >= 85 ? 'text-ms-warning' : 'text-ms-success')
+const slaTone = (v: number) => (v < 80 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
+const ocupTone = (v: number) => (v > 90 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
 
 const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string; dot: string }> = {
   CRÍTICO: { bar: 'border-l-ms-danger', badge: 'text-ms-danger', dot: 'bg-ms-danger' },
@@ -344,7 +339,7 @@ const alertaTone: Record<'CRÍTICO' | 'ATENÇÃO', { bar: string; badge: string;
           @click="selecionar(c.key)"
         >
           <span class="text-ms-text-regular">{{ c.label }}</span>
-          <span v-if="c.key !== 'geral'" class="font-semibold" :class="pillTone[c.tone === 'neutral' ? 'success' : c.tone]">{{ c.sla }}%</span>
+          <span v-if="c.key !== 'geral'" class="font-semibold text-ms-text-secondary">{{ c.sla }}%</span>
         </button>
       </div>
     </el-card>

@@ -67,11 +67,13 @@ function abrirAtendente(nome: string) {
   router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', atendente: nome } })
 }
 
+// Cards de andamento neutralizados (redesign minimalista): sem fundo/borda
+// colorida; o rótulo mantém um leve realce semântico apenas no texto.
 const andamentoTone: Record<'primary' | 'warning' | 'teal' | 'success', string> = {
-  primary: 'border-ms-primary/30 bg-ms-primary/5 text-ms-primary',
-  warning: 'border-ms-warning/30 bg-ms-warning/5 text-ms-warning',
-  teal: 'border-ms-teal/30 bg-ms-teal/5 text-ms-teal',
-  success: 'border-ms-success/30 bg-ms-success/5 text-ms-success',
+  primary: 'border-ms-border-light bg-ms-surface text-ms-primary',
+  warning: 'border-ms-border-light bg-ms-surface text-ms-warning',
+  teal: 'border-ms-border-light bg-ms-surface text-ms-teal',
+  success: 'border-ms-border-light bg-ms-surface text-ms-success',
 }
 
 // Número formatado em pt-BR (vírgula decimal) para o card "Chamadas na fila".
@@ -270,7 +272,7 @@ const demandaOption = computed(() => ({
             @keydown.space.prevent="abrirLista(a.filtro)"
           >
             <span class="text-xs font-semibold uppercase">{{ a.label }}</span>
-            <span class="text-xl font-bold">{{ a.value }}</span>
+            <span class="text-xl font-bold text-ms-text-primary">{{ a.value }}</span>
           </div>
         </div>
       </ChartCard>
@@ -312,7 +314,7 @@ const demandaOption = computed(() => ({
           </div>
           <div class="flex justify-between">
             <span class="text-ms-text-regular">SLA Conformidade</span>
-            <span class="font-medium text-ms-success">{{ canalResumo.slaConformidade }}</span>
+            <span class="font-medium text-ms-text-primary">{{ canalResumo.slaConformidade }}</span>
           </div>
         </div>
       </ChartCard>

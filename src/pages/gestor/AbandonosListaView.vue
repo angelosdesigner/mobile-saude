@@ -107,7 +107,7 @@ const columns: DataListColumn[] = [
         <div class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">
           Taxa de abandono
         </div>
-        <div class="mt-1 text-2xl font-bold text-ms-danger">{{ abandonosResumo.taxa }}</div>
+        <div class="mt-1 text-2xl font-bold text-ms-text-primary">{{ abandonosResumo.taxa }}</div>
         <div class="text-2xs text-ms-text-secondary">meta {{ abandonosResumo.meta }}</div>
       </el-card>
       <el-card shadow="never" body-class="!p-4" class="!border-ms-border-light">

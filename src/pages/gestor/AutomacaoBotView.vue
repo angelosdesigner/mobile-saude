@@ -154,8 +154,8 @@ const statusTone: Record<FluxoStatus, { text: string; dot: string }> = {
   'BAIXA RET.': { text: 'text-ms-warning', dot: 'bg-ms-warning/60' },
   OK: { text: 'text-ms-success', dot: 'bg-ms-success' },
 }
-const retencaoTone = (v: number) => (v >= 70 ? 'text-ms-success' : v >= 50 ? 'text-ms-warning' : 'text-ms-danger')
-const abandonoTone = (v: number) => (v >= 10 ? 'text-ms-danger' : v >= 5 ? 'text-ms-warning' : 'text-ms-success')
+const retencaoTone = (v: number) => (v < 50 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
+const abandonoTone = (v: number) => (v >= 10 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
 
 // ── Correlação operacional (tabela diagnóstica por fluxo) ────────────────────
 const correlStatusOrder: Record<CorrelStatus, number> = { OK: 0, Médio: 1, Alto: 2, Crítico: 3 }

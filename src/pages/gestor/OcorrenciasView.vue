@@ -109,11 +109,19 @@ const etapaLabel: Record<GestorCard['stage'], string> = {
   concluido: 'Concluídos no dia',
 }
 
-const stageTagClass: Record<StageTone, string> = {
-  primary: 'bg-ms-primary/10 text-ms-primary',
-  warning: 'bg-ms-warning/10 text-ms-warning',
-  teal: 'bg-ms-teal/10 text-ms-teal',
-  success: 'bg-ms-success/10 text-ms-success',
+// Etapa atual é status legítimo: mantém a cor, mas de forma contida
+// (dot pequeno + texto colorido, sem fundo cheio).
+const stageDotClass: Record<StageTone, string> = {
+  primary: 'bg-ms-primary',
+  warning: 'bg-ms-warning',
+  teal: 'bg-ms-teal',
+  success: 'bg-ms-success',
+}
+const stageTextClass: Record<StageTone, string> = {
+  primary: 'text-ms-primary',
+  warning: 'text-ms-warning',
+  teal: 'text-ms-teal',
+  success: 'text-ms-success',
 }
 
 // Detalhe da etapa por estágio.
@@ -325,10 +333,7 @@ const pillDot: Record<StageTone | 'info', string> = {
             <div class="flex items-center gap-1.5">
               <span
                 v-if="row.perfilTipo"
-                class="rounded px-1 py-px text-2xs font-medium"
-                :class="row.perfilTipo === 'Titular'
-                  ? 'bg-ms-primary/10 text-ms-primary'
-                  : 'bg-ms-teal/10 text-ms-teal'"
+                class="rounded border border-ms-border-light bg-ms-surface px-1 py-px text-2xs font-medium text-ms-text-secondary"
               >{{ row.perfilTipo }}</span>
               <span class="text-2xs text-ms-text-secondary">{{ row.cpf ?? '—' }}</span>
             </div>
@@ -364,12 +369,13 @@ const pillDot: Record<StageTone | 'info', string> = {
           <span v-else class="text-ms-text-placeholder">—</span>
         </template>
 
-        <!-- Etapa atual (tag colorida) -->
+        <!-- Etapa atual (status legítimo: dot + texto colorido, sem fundo cheio) -->
         <template #cell-etapaAtual="{ row }">
-          <span
-            class="rounded-full px-2.5 py-0.5 text-2xs font-medium"
-            :class="stageTagClass[stageMeta[row.stage].tone]"
-          >{{ etapaLabel[row.stage] }}</span>
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium"
+            :class="stageTextClass[stageMeta[row.stage].tone]"
+          >
+            <span class="h-1.5 w-1.5 shrink-0 rounded-full"
+              :class="stageDotClass[stageMeta[row.stage].tone]" />{{ etapaLabel[row.stage] }}</span>
         </template>
 
         <!-- Detalhe da etapa -->

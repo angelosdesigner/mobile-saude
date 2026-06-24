@@ -124,8 +124,8 @@ const statusTone: Record<EquipeStatus, { text: string; dot: string }> = {
   Médio: { text: 'text-ms-warning', dot: 'bg-ms-warning/60' },
   OK: { text: 'text-ms-success', dot: 'bg-ms-success' },
 }
-const ocupTone = (v: number) => (v >= 90 ? 'text-ms-danger' : v >= 80 ? 'text-ms-warning' : 'text-ms-success')
-const csatTone = (v: number) => (v < 4 ? 'text-ms-danger' : v < 4.5 ? 'text-ms-warning' : 'text-ms-success')
+const ocupTone = (v: number) => (v >= 90 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
+const csatTone = (v: number) => (v < 4 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
 </script>
 
 <template>
@@ -258,9 +258,9 @@ const csatTone = (v: number) => (v < 4 ? 'text-ms-danger' : v < 4.5 ? 'text-ms-w
       </DataList>
     </ChartCard>
     <div
-      class="mb-5 flex items-start gap-2 rounded-lg border border-ms-primary/20 bg-ms-primary/5 px-3 py-2.5"
+      class="mb-5 flex items-start gap-2 rounded-lg border border-ms-border-light bg-ms-surface px-3 py-2.5"
     >
-      <span class="text-ms-primary">ℹ</span>
+      <span class="text-ms-text-secondary">ℹ</span>
       <div class="text-xs text-ms-text-regular">
         <span class="font-semibold text-ms-text-primary">Como interpretar</span>
         <p class="mt-0.5 leading-relaxed">{{ comoInterpretar }}</p>

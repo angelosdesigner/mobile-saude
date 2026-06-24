@@ -5,7 +5,6 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import FilterChips from '@/components/ui/FilterChips.vue'
 import type { FilterChip } from '@/components/ui/filterChips'
 import NotificacaoItem from '@/components/notificacoes/NotificacaoItem.vue'
-import EmptyState from '@/components/ui/EmptyState.vue'
 import { useNotificacoesStore } from '@/stores/notificacoes'
 import { useProfileStore } from '@/stores/profile'
 import { useActionFeedback } from '@/composables/useActionFeedback'
@@ -137,10 +136,21 @@ const grupos = computed(() =>
         </div>
       </section>
 
+      <!-- Estado vazio contextual: distingue "sem notificações" de "nada bate
+           com os filtros". No 2º caso, oferece a saída de recuperação. -->
       <EmptyState
-        v-if="!grupos.length && !loading"
-        title="Nenhuma notificação"
-        description="Não há notificações para os filtros aplicados."
+        v-if="!grupos.length && !loading && activeFilterCount"
+        title="Nenhuma notificação encontrada"
+        description="Nenhuma notificação corresponde aos filtros aplicados."
+      >
+        <el-button text type="primary" @click="clearFilters">
+          Limpar filtros ({{ activeFilterCount }})
+        </el-button>
+      </EmptyState>
+      <EmptyState
+        v-else-if="!grupos.length && !loading"
+        title="Tudo em dia"
+        description="Você não tem notificações no momento."
       />
     </div>
   </DashboardLayout>
