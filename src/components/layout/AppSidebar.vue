@@ -48,6 +48,8 @@ const atendenteItems = computed<NavItem[]>(() =>
 const gestorItems: NavItem[] = [
   { to: '/gestor/tempo-real', label: 'Início', icon: 'home' },
   { to: '/gestor/ocorrencias', label: 'Ocorrências', icon: 'alert' },
+  // Entrada fixa p/ abandono — independe dos cards/indicadores do dashboard.
+  { to: '/gestor/tempo-real?tab=abandonos', label: 'Abandonos', icon: 'trending-down' },
   { to: '/notificacoes', label: 'Notificações', icon: 'bell' },
   { to: '/gestor/relatorios', label: 'Relatórios', icon: 'grid', comingSoon: true },
 ]
@@ -59,6 +61,10 @@ const isActive = (to: string) => route.path === to || route.path.startsWith(to +
 // ── Indicadores gestor (rodapé da sidebar) ────────────────────────────────────
 // Visíveis em qualquer rota /gestor/*, independente do role switcher.
 const showIndicadores = computed(() => route.path.startsWith('/gestor'))
+
+// Sidebar "navy de marca" só na EXPERIÊNCIA DO GESTOR (perfil gestor ou telas
+// /gestor/*). O atendente mantém a sidebar clara (mesmas cores de antes).
+const isGestorView = computed(() => isGestor.value || route.path.startsWith('/gestor'))
 
 // Cor das barras de ocupação
 function barCor(v: number) {
@@ -77,7 +83,7 @@ const excesso = peakDemanda - demandaCapacidade.capacidade
 <template>
   <aside
     class="relative flex shrink-0 flex-col border-r border-ms-border bg-ms-surface transition-[width] duration-200"
-    :class="expanded ? 'w-[200px]' : 'w-16'"
+    :class="[expanded ? 'w-[200px]' : 'w-16', { 'sidebar-brand': isGestorView }]"
   >
     <!-- Cabeçalho: logo + botão de colapsar/expandir -->
     <div
@@ -158,6 +164,10 @@ const excesso = peakDemanda - demandaCapacidade.capacidade
             <template v-else-if="item.icon === 'bell'">
               <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
               <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </template>
+            <template v-else-if="item.icon === 'trending-down'">
+              <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+              <polyline points="17 18 23 18 23 12" />
             </template>
             <template v-else>
               <rect x="3" y="3" width="7" height="7" rx="1" />

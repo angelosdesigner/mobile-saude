@@ -67,7 +67,8 @@ const contextBadges = computed(() => {
   const out: { key: keyof typeof f; label: string }[] = []
   if (f.canal) out.push({ key: 'canal', label: `Canal: ${f.canal}` })
   if (f.fila) out.push({ key: 'fila', label: `Fila: ${f.fila}` })
-  if (f.atendente) out.push({ key: 'atendente', label: `Atendente: ${f.atendente}` })
+  if (f.atendente)
+    out.push({ key: 'atendente', label: `Atendente: ${f.atendente.split(',').join(', ')}` })
   if (f.stage) out.push({ key: 'stage', label: `Etapa atual: ${etapaLabel[f.stage] ?? f.stage}` })
   if (f.prioridade) out.push({ key: 'prioridade', label: `Prioridade: ${f.prioridade}` })
   if (f.tipo) out.push({ key: 'tipo', label: `Tipo: ${f.tipo}` })
@@ -179,8 +180,8 @@ const viewMode = computed({
   set: (v) => router.replace({ query: { ...route.query, view: v } }),
 })
 
-// Filtros. Canal/Fila/Atendente têm `ctxKey` e ficam atrelados ao contexto de
-// drill-down (store + URL). Prioridade/Tipo são visuais (lógica futura).
+// Filtros single-select atrelados ao contexto (store + URL). Atendente saiu
+// daqui: virou multi-seleção própria (ver atendenteModel).
 const filterDefs = [
   { label: 'Prioridade', ctxKey: 'prioridade' as const, options: [...PRIORIDADES] },
   {
@@ -194,8 +195,8 @@ const filterDefs = [
     ctxKey: 'canal' as const,
     options: [...CANAIS_CANONICOS],
   },
-  { label: 'Atendente', ctxKey: 'atendente' as const, options: ['Ana Silva', 'Lucas Mendes', 'Ana Souza'] },
 ]
+const atendenteOptions = ['Ana Silva', 'Lucas Mendes', 'Ana Souza']
 
 // Lê/escreve o valor de um filtro de contexto a partir do select (sincroniza
 // store + query param). Mantém a URL como fonte de verdade do drill-down.
@@ -228,6 +229,20 @@ const etapaModel = computed<string | undefined>({
     const next = { ...route.query }
     if (v) next.stage = v
     else delete next.stage
+    router.replace({ query: next })
+  },
+})
+
+// Atendente: MULTI-seleção. O store guarda os nomes como lista separada por
+// vírgula (1 ou vários); aqui convertemos de/para array p/ o el-select multiple.
+const atendenteModel = computed<string[]>({
+  get: () => (contextFilters.value.atendente ? contextFilters.value.atendente.split(',') : []),
+  set: (arr) => {
+    const val = arr.length ? arr.join(',') : undefined
+    store.setContext({ ...contextFilters.value, atendente: val })
+    const next = { ...route.query }
+    if (val) next.atendente = val
+    else delete next.atendente
     router.replace({ query: next })
   },
 })
@@ -327,6 +342,18 @@ const pillDot: Record<StageTone | 'info', string> = {
       <!-- Filtro por Etapa (estágio do atendimento) -->
       <el-select v-model="etapaModel" placeholder="Etapa" class="!w-44" clearable>
         <el-option v-for="s in stages" :key="s.key" :label="etapaLabel[s.key]" :value="s.key" />
+      </el-select>
+      <!-- Atendente (multi-seleção) -->
+      <el-select
+        v-model="atendenteModel"
+        multiple
+        collapse-tags
+        collapse-tags-tooltip
+        placeholder="Atendente"
+        class="!w-52"
+        clearable
+      >
+        <el-option v-for="o in atendenteOptions" :key="o" :label="o" :value="o" />
       </el-select>
       <div class="ml-auto flex items-center gap-2">
         <!-- No modo lista a configuração de colunas fica no ▥ da própria tabela. -->

@@ -77,6 +77,16 @@ const andamentoTone: Record<'primary' | 'warning' | 'teal' | 'success', string> 
   success: 'border-ms-border-light bg-ms-surface text-ms-success',
 }
 
+// "Ativos agora" consolidado: total + barra de proporção das etapas ativas
+// (automatizado/fila/humano). Cor de preenchimento por etapa (dot + segmento).
+const ativosTotal = computed(() => andamento.reduce((s, a) => s + a.value, 0))
+const ativosSegBar: Record<'primary' | 'warning' | 'teal' | 'success', string> = {
+  primary: 'bg-ms-primary',
+  warning: 'bg-ms-warning',
+  teal: 'bg-ms-teal',
+  success: 'bg-ms-success',
+}
+
 // Número formatado em pt-BR (vírgula decimal) para o card "Chamadas abandonadas".
 const ptNum = (n: number) => String(n).replace('.', ',')
 
@@ -251,6 +261,7 @@ const demandaOption = computed(() => ({
         :value="m.value"
         :delta="m.delta"
         :delta-tone="m.deltaTone"
+        :trend="m.trend"
         class="cursor-pointer transition hover:shadow-md"
         @click="goTarget(m.target)"
       />
@@ -258,7 +269,27 @@ const demandaOption = computed(() => ({
 
     <!-- Andamento + ocupações -->
     <div class="grid gap-4 lg:grid-cols-3">
-      <ChartCard title="Atendimentos em andamento" subtitle="Visão instantânea dos ativos agora">
+      <ChartCard
+        title="Ativos agora"
+        subtitle="Tudo em atendimento agora · automatizado, fila e humano"
+      >
+        <!-- Total + barra de proporção das etapas ativas -->
+        <div class="mb-3">
+          <div class="flex items-baseline justify-between">
+            <span class="text-2xl font-bold text-ms-text-primary">{{ ativosTotal }}</span>
+            <span class="text-2xs uppercase tracking-wide text-ms-text-secondary">ativos agora</span>
+          </div>
+          <div class="mt-2 flex h-2 overflow-hidden rounded-full bg-ms-fill-light">
+            <div
+              v-for="a in andamento"
+              :key="a.label"
+              :class="ativosSegBar[a.tone]"
+              :style="{ width: `${(a.value / ativosTotal) * 100}%` }"
+              :title="`${a.label}: ${a.value}`"
+            />
+          </div>
+        </div>
+        <!-- Etapas ativas (clicáveis → lista filtrada) -->
         <div class="space-y-2">
           <div
             v-for="a in andamento"
@@ -272,7 +303,9 @@ const demandaOption = computed(() => ({
             @keydown.enter.prevent="abrirLista(a.filtro)"
             @keydown.space.prevent="abrirLista(a.filtro)"
           >
-            <span class="text-xs font-semibold uppercase">{{ a.label }}</span>
+            <span class="flex items-center gap-2 text-xs font-semibold uppercase">
+              <span class="h-2 w-2 shrink-0 rounded-full" :class="ativosSegBar[a.tone]" />{{ a.label }}
+            </span>
             <span class="text-xl font-bold text-ms-text-primary">{{ a.value }}</span>
           </div>
         </div>

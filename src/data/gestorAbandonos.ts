@@ -88,6 +88,16 @@ export const porFluxoBot = [
   { label: 'Dúvidas Administrativas → Identificação', value: 4 },
 ]
 
+// Abandono na fila humana, por fila (% de quem entra na fila e desiste antes do
+// atendimento). Complementa o "Por Fluxo (BOT)" — onde o BOT perde vs. onde a
+// fila humana perde.
+export const porFilaHumana = [
+  { label: 'Reembolso', value: 38 },
+  { label: 'Financeiro', value: 27 },
+  { label: 'Autorização', value: 20 },
+  { label: 'Dúvidas Administrativas', value: 12 },
+]
+
 export const comparativo = {
   total: 23,
   bot: { pct: 26, casos: 6 },

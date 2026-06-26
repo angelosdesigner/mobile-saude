@@ -141,6 +141,8 @@ declare module 'vue' {
     SecoesColapsaveis: typeof import('./src/components/ocorrencias/SecoesColapsaveis.vue')['default']
     SectionHeader: typeof import('./src/components/ui/SectionHeader.vue')['default']
     SlaBadge: typeof import('./src/components/atendimento/SlaBadge.vue')['default']
+    Sparkline: typeof import('./src/components/gestor/Sparkline.vue')['default']
+    StackedBarList: typeof import('./src/components/gestor/StackedBarList.vue')['default']
     StatusBadge: typeof import('./src/components/atendimento/StatusBadge.vue')['default']
     StickyPeriodo: typeof import('./src/components/gestor/StickyPeriodo.vue')['default']
     TimelineJornada: typeof import('./src/components/ocorrencias/TimelineJornada.vue')['default']

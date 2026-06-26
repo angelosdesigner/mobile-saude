@@ -65,6 +65,8 @@ export interface MetricTile {
   delta: string
   deltaTone: 'up' | 'down' | 'neutral'
   target: CardTarget
+  /** Série da mini-tendência (sparkline) — últimos 7 pontos. */
+  trend?: number[]
 }
 
 export const metricTiles: MetricTile[] = [
@@ -74,6 +76,7 @@ export const metricTiles: MetricTile[] = [
     delta: '+4 hoje',
     deltaTone: 'up',
     target: { type: 'atendimentos', filtro: 'todos' },
+    trend: [22, 24, 23, 27, 26, 29, 31],
   },
   {
     label: 'TMA',
@@ -81,6 +84,7 @@ export const metricTiles: MetricTile[] = [
     delta: '↓ 1.2min hoje',
     deltaTone: 'up',
     target: { type: 'indicador', ind: 'tma' },
+    trend: [18, 17, 17, 16, 15, 14, 14],
   },
   {
     label: 'Tempo médio na fila',
@@ -88,6 +92,7 @@ export const metricTiles: MetricTile[] = [
     delta: '↓ 1.2min hoje',
     deltaTone: 'up',
     target: { type: 'indicador', ind: 'tmef' },
+    trend: [7, 6.2, 6, 5.4, 5, 4.6, 4.2],
   },
   {
     label: 'TME',
@@ -95,6 +100,7 @@ export const metricTiles: MetricTile[] = [
     delta: '↓ 1min hoje',
     deltaTone: 'up',
     target: { type: 'indicador', ind: 'tme' },
+    trend: [16, 15, 15, 14, 13, 12, 12],
   },
 ]
 

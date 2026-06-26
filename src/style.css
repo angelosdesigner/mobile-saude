@@ -303,6 +303,26 @@ html.dark {
   --el-color-danger-dark-2: color-mix(in srgb, var(--ms-red-soft) 80%, #000);
 }
 
+/* ── Sidebar "navy de marca" (validado com o usuário) ────────────────────────
+   A sidebar (casca do produto, vale p/ atendente e gestor) ganha um fundo
+   azul-marinho de marca. Em vez de reescrever cada classe, reapontamos os
+   TOKENS dentro de `.sidebar-brand` (aplicada na <aside>): as utilitárias
+   bg-ms-surface / text-ms-* / border-ms-* já existentes passam a resolver os
+   valores claros sobre o navy. Vale nos dois temas (claro/escuro). Os popovers
+   de indicador são portados ao body (fora desta classe) → seguem claros. */
+.sidebar-brand {
+  --color-ms-surface: #102a5e; /* fundo navy da sidebar */
+  --color-ms-text-primary: #eaf0fb; /* títulos/ícones fortes */
+  --color-ms-text-regular: #b6c6e4; /* itens de menu */
+  --color-ms-text-secondary: #93a6cc; /* rótulos secundários */
+  --color-ms-text-placeholder: #6f82aa; /* desabilitado / "em breve" */
+  --color-ms-fill-light: #1a3870; /* hover de item */
+  --color-ms-primary-light: #1f3f7d; /* fundo do item ATIVO */
+  --color-ms-primary: #8fb8ff; /* acento ativo/hover (azul claro p/ contraste no navy) */
+  --color-ms-border: #213a6e; /* divisores / borda direita */
+  --color-ms-border-light: #213a6e;
+}
+
 /* Customizações de componentes na layer `components`: ficam ACIMA do
    Element Plus (não são achatadas) e ABAIXO das utilities do Tailwind
    (uma classe utilitária ainda sobrepõe, se necessário). */

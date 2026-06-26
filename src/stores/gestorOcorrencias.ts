@@ -137,7 +137,11 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     // Canal normalizado: "Chat/WhatsApp" casa cards com channel 'Chat' ou 'WhatsApp'.
     if (f.canal && normalizeCanal(c.channel) !== normalizeCanal(f.canal)) return false
     if (f.stage && c.stage !== f.stage) return false
-    if (f.atendente && c.atendente !== f.atendente) return false
+    // Atendente aceita 1 ou vários (lista separada por vírgula) — match em OU.
+    if (f.atendente) {
+      const sel = f.atendente.split(',').map((s) => s.trim()).filter(Boolean)
+      if (sel.length && !sel.includes(c.atendente ?? '')) return false
+    }
     // "Fila" casa tanto o tipo de fila quanto o fluxo (Reembolso, Autorização…),
     // pois um mesmo assunto aparece como `fluxo` no BOT e `filaTipo` na fila.
     // Normaliza os dois lados (taxonomia única) para tolerar variações de grafia.
