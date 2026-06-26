@@ -12,7 +12,6 @@ import type { ChipTone, FilterChip } from '@/components/ui/filterChips'
 import { useActionFeedback } from '@/composables/useActionFeedback'
 import { useOcorrenciasStore, type StatTone } from '@/stores/ocorrencias'
 import {
-  prioridadeOptions,
   slaOptions,
   tipoOcorrenciaOptions,
   tipoAtendimentoOptions,
@@ -61,9 +60,8 @@ const viewMode = computed<'quadro' | 'lista'>({
   set: (v) => router.replace({ query: { ...route.query, view: v } }),
 })
 
-type FilterKey = 'prioridade' | 'sla' | 'tipoOcorrencia' | 'tipoAtendimento' | 'atendente'
+type FilterKey = 'sla' | 'tipoOcorrencia' | 'tipoAtendimento' | 'atendente'
 const filterDefs: { key: FilterKey; label: string; options: readonly string[]; width: string }[] = [
-  { key: 'prioridade', label: 'Prioridade', options: prioridadeOptions, width: '!w-36' },
   { key: 'sla', label: 'SLA', options: slaOptions, width: '!w-32' },
   {
     key: 'tipoOcorrencia',

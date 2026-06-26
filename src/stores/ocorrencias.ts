@@ -44,13 +44,11 @@ export const useOcorrenciasStore = defineStore('ocorrencias', () => {
     'sla-reg': (o) => o.sla === 'Crítico',
     'sla-int': (o) => o.sla === 'Vencido',
     atencao: (o) => o.sla === 'Atenção',
-    alta: (o) => o.prioridade === 'Alta',
     'nao-atrib': (o) => o.atendente === 'Não atribuídos',
   }
 
   // ── Filtros salvos (presets) ────────────────────────────────────────────────
   const savedFilters: SavedFilter[] = [
-    { name: 'Prioridade alta + Vencido', apply: { prioridade: ['Alta'], sla: ['Vencido'] } },
     { name: 'Reembolsos críticos', apply: { tipoOcorrencia: ['Reembolso'], sla: ['Crítico'] } },
     { name: 'Não atribuídos', apply: { atendente: ['Não atribuídos'] } },
   ]
@@ -203,13 +201,6 @@ export const useOcorrenciasStore = defineStore('ocorrencias', () => {
           label: 'Atenção',
           value: list.filter((o) => o.sla === 'Atenção').length,
           tone: 'warning',
-          filterable: true,
-        },
-        {
-          key: 'alta',
-          label: 'Alta prioridade',
-          value: list.filter((o) => o.prioridade === 'Alta').length,
-          tone: 'danger',
           filterable: true,
         },
         {

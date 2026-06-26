@@ -70,10 +70,6 @@ function onEditar(o: Ocorrencia) {
           <dd class="text-ms-text-primary">{{ row.sla }}</dd>
         </div>
         <div>
-          <dt class="text-ms-text-secondary">Prioridade</dt>
-          <dd class="text-ms-text-primary">{{ row.prioridade }}</dd>
-        </div>
-        <div>
           <dt class="text-ms-text-secondary">Tempo</dt>
           <dd class="text-ms-text-primary">{{ row.time }}</dd>
         </div>

@@ -87,7 +87,6 @@ describe('useOcorrenciasStore', () => {
     expect(store.stats.find((s) => s.label === 'Total')?.value).toBe(6)
     store.filters.prioridade = ['Alta']
     expect(store.stats.find((s) => s.label === 'Total')?.value).toBe(3)
-    expect(store.stats.find((s) => s.label === 'Alta prioridade')?.value).toBe(3)
   })
 
   it('filteredBoard agrupa por coluna respeitando filtros', () => {
