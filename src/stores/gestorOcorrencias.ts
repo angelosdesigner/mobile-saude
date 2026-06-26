@@ -20,6 +20,12 @@ function minutes(s?: string): number {
   return s ? (parseInt(s, 10) || 0) : 0
 }
 
+// Valores de um filtro multi (o campo guarda "a,b,c"). Vazio → []. O match de
+// cada filtro é em OU sobre esta lista.
+function selList(v?: string): string[] {
+  return v ? v.split(',').map((s) => s.trim()).filter(Boolean) : []
+}
+
 // Predicados dos chips, derivados dos campos REAIS dos cards (não dos números
 // agregados do Figma) — assim a contagem do chip bate com o que o filtro mostra.
 // `total` não filtra: limpa a seleção.
@@ -66,13 +72,14 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
   // Filtros rápidos (chips) — combinam em OR entre si, em AND com a busca.
   const quickFilters = ref<string[]>([])
 
-  // Filtros de contexto vindos do drill-down (query params do dashboard):
-  // canal/fila/atendente/estágio. Cada um combina em AND com os demais.
+  // Filtros de contexto (drill-down do dashboard via query params + selects da
+  // tela). Cada campo aceita 1 ou vários valores (lista separada por vírgula):
+  // match em OU dentro do mesmo filtro, em E entre filtros distintos.
   interface ContextFilters {
     canal?: string
     fila?: string
     atendente?: string
-    stage?: GestorStage
+    stage?: string
     prioridade?: string
     tipo?: string
   }
@@ -132,26 +139,45 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     return quickFilters.value.some((k) => chipDefs.find((d) => d.key === k)?.pred(c))
   }
 
+  // Cada filtro casa em OU sobre seus valores selecionados; filtros distintos
+  // combinam em E. Sem seleção naquele filtro = não restringe.
   function passesContext(c: GestorCard): boolean {
     const f = contextFilters.value
+
     // Canal normalizado: "Chat/WhatsApp" casa cards com channel 'Chat' ou 'WhatsApp'.
-    if (f.canal && normalizeCanal(c.channel) !== normalizeCanal(f.canal)) return false
-    if (f.stage && c.stage !== f.stage) return false
-    // Atendente aceita 1 ou vários (lista separada por vírgula) — match em OU.
-    if (f.atendente) {
-      const sel = f.atendente.split(',').map((s) => s.trim()).filter(Boolean)
-      if (sel.length && !sel.includes(c.atendente ?? '')) return false
-    }
+    const canais = selList(f.canal)
+    if (canais.length && !canais.some((s) => normalizeCanal(c.channel) === normalizeCanal(s)))
+      return false
+
+    // Etapa (estágio do atendimento).
+    const etapas = selList(f.stage)
+    if (etapas.length && !etapas.includes(c.stage)) return false
+
+    // Atendente.
+    const atendentes = selList(f.atendente)
+    if (atendentes.length && !atendentes.includes(c.atendente ?? '')) return false
+
     // "Fila" casa tanto o tipo de fila quanto o fluxo (Reembolso, Autorização…),
     // pois um mesmo assunto aparece como `fluxo` no BOT e `filaTipo` na fila.
     // Normaliza os dois lados (taxonomia única) para tolerar variações de grafia.
-    if (f.fila) {
-      const alvo = normalizeFila(f.fila)
-      if (normalizeFila(c.filaTipo ?? '') !== alvo && normalizeFila(c.fluxo ?? '') !== alvo)
-        return false
-    }
-    if (f.prioridade && c.prioridade !== f.prioridade) return false
-    if (f.tipo && c.tipo !== f.tipo) return false
+    const filas = selList(f.fila)
+    if (
+      filas.length &&
+      !filas.some((s) => {
+        const alvo = normalizeFila(s)
+        return normalizeFila(c.filaTipo ?? '') === alvo || normalizeFila(c.fluxo ?? '') === alvo
+      })
+    )
+      return false
+
+    // Prioridade.
+    const prioridades = selList(f.prioridade)
+    if (prioridades.length && !prioridades.includes(c.prioridade ?? '')) return false
+
+    // Tipo de ocorrência.
+    const tipos = selList(f.tipo)
+    if (tipos.length && !tipos.includes(c.tipo ?? '')) return false
+
     return true
   }
 

@@ -6,10 +6,9 @@ import { ElMessage } from 'element-plus'
 import KanbanBoard from '@/components/ui/KanbanBoard.vue'
 import KanbanCard from '@/components/ui/KanbanCard.vue'
 import ChannelTag from '@/components/ui/ChannelTag.vue'
-import PrioridadeTag from '@/components/ui/PrioridadeTag.vue'
 import type { KanbanColumn } from '@/components/ui/kanbanBoard'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
-import { stages, type GestorStage, type PillTone, type SlaState, type Prioridade } from '@/types/gestorOcorrencias'
+import { stages, type GestorStage, type PillTone, type SlaState } from '@/types/gestorOcorrencias'
 
 const store = useGestorOcorrenciasStore()
 const { board, headerByStage } = storeToRefs(store)
@@ -57,14 +56,14 @@ const showFilterFila = ref(false)
 const showFilterHumano = ref(false)
 
 const filterAutomat = ref({ beneficiario: '', fluxo: '', no: '' })
-const filterFila = ref({ beneficiario: '', filaTipo: '', prioridade: '' as '' | Prioridade })
+const filterFila = ref({ beneficiario: '', filaTipo: '' })
 const filterHumano = ref({ beneficiario: '', atendente: '', sla: '' as '' | SlaState })
 
 const hasFilterAutomat = computed(() =>
   !!(filterAutomat.value.beneficiario || filterAutomat.value.fluxo || filterAutomat.value.no),
 )
 const hasFilterFila = computed(() =>
-  !!(filterFila.value.beneficiario || filterFila.value.filaTipo || filterFila.value.prioridade),
+  !!(filterFila.value.beneficiario || filterFila.value.filaTipo),
 )
 const hasFilterHumano = computed(() =>
   !!(filterHumano.value.beneficiario || filterHumano.value.atendente || filterHumano.value.sla),
@@ -84,8 +83,7 @@ const filteredBoard = computed(() => ({
   fila: (board.value.fila ?? []).filter(
     (c) =>
       matchText(c.beneficiary, filterFila.value.beneficiario) &&
-      matchText(c.filaTipo, filterFila.value.filaTipo) &&
-      (!filterFila.value.prioridade || c.prioridade === filterFila.value.prioridade),
+      matchText(c.filaTipo, filterFila.value.filaTipo),
   ),
   humano: (board.value.humano ?? []).filter(
     (c) =>
@@ -97,7 +95,7 @@ const filteredBoard = computed(() => ({
 
 function clearFilter(col: string) {
   if (col === 'automatizado') filterAutomat.value = { beneficiario: '', fluxo: '', no: '' }
-  else if (col === 'fila') filterFila.value = { beneficiario: '', filaTipo: '', prioridade: '' }
+  else if (col === 'fila') filterFila.value = { beneficiario: '', filaTipo: '' }
   else if (col === 'humano') filterHumano.value = { beneficiario: '', atendente: '', sla: '' }
 }
 
@@ -221,14 +219,6 @@ function cancelTransfer() {
             <label class="block text-2xs text-ms-text-secondary">Tipo de fila</label>
             <el-input v-model="filterFila.filaTipo" size="small" clearable placeholder="Ex: Reembolso" />
           </div>
-          <div class="space-y-1.5">
-            <label class="block text-2xs text-ms-text-secondary">Prioridade</label>
-            <el-select v-model="filterFila.prioridade" size="small" clearable placeholder="Todas">
-              <el-option label="Alta" value="Alta" />
-              <el-option label="Média" value="Média" />
-              <el-option label="Baixa" value="Baixa" />
-            </el-select>
-          </div>
         </div>
       </el-popover>
 
@@ -293,7 +283,6 @@ function cancelTransfer() {
           <div class="flex items-start justify-between gap-2">
             <span class="text-sm font-semibold leading-snug text-ms-text-primary">{{ item.beneficiary }}</span>
             <div class="flex shrink-0 items-center gap-1.5">
-              <PrioridadeTag v-if="item.prioridade" :prioridade="item.prioridade" />
               <span v-if="item.tempoBot" class="text-2xs font-medium text-ms-text-secondary">{{ item.tempoBot }}</span>
             </div>
           </div>
@@ -315,7 +304,6 @@ function cancelTransfer() {
         <template v-else-if="item.stage === 'fila'">
           <div class="flex items-start justify-between gap-2">
             <span class="text-sm font-semibold leading-snug text-ms-text-primary">{{ item.beneficiary }}</span>
-            <PrioridadeTag v-if="item.prioridade" :prioridade="item.prioridade" class="shrink-0" />
           </div>
           <div class="mt-2 space-y-0.5 text-xs text-ms-text-regular">
             <div>Fila: <span class="text-ms-text-secondary">{{ item.filaTipo }}</span></div>
@@ -337,7 +325,6 @@ function cancelTransfer() {
           <div class="flex items-start justify-between gap-2">
             <span class="text-sm font-semibold leading-snug text-ms-text-primary">{{ item.beneficiary }}</span>
             <div class="flex shrink-0 items-center gap-1.5">
-              <PrioridadeTag v-if="item.prioridade" :prioridade="item.prioridade" />
               <span
                 v-if="item.sla"
                 class="flex items-center gap-1 text-2xs font-medium"
@@ -358,7 +345,6 @@ function cancelTransfer() {
           <div class="flex items-start justify-between gap-2">
             <span class="text-sm font-semibold leading-snug text-ms-text-primary">{{ item.beneficiary }}</span>
             <div class="flex shrink-0 items-center gap-1.5">
-              <PrioridadeTag v-if="item.prioridade" :prioridade="item.prioridade" />
               <span class="text-2xs text-ms-text-secondary">Concluído {{ item.concluidoHora }}</span>
             </div>
           </div>

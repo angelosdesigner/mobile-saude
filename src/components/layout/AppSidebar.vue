@@ -48,8 +48,6 @@ const atendenteItems = computed<NavItem[]>(() =>
 const gestorItems: NavItem[] = [
   { to: '/gestor/tempo-real', label: 'Início', icon: 'home' },
   { to: '/gestor/ocorrencias', label: 'Ocorrências', icon: 'alert' },
-  // Entrada fixa p/ abandono — independe dos cards/indicadores do dashboard.
-  { to: '/gestor/tempo-real?tab=abandonos', label: 'Abandonos', icon: 'trending-down' },
   { to: '/notificacoes', label: 'Notificações', icon: 'bell' },
   { to: '/gestor/relatorios', label: 'Relatórios', icon: 'grid', comingSoon: true },
 ]

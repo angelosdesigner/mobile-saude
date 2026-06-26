@@ -6,13 +6,13 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import OperacionalBoard from '@/components/gestor/OperacionalBoard.vue'
 import DataList from '@/components/ui/DataList.vue'
 import ChannelTag from '@/components/ui/ChannelTag.vue'
-import PrioridadeTag from '@/components/ui/PrioridadeTag.vue'
+import BaseBadge from '@/components/base/BaseBadge.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import FilterChips from '@/components/ui/FilterChips.vue'
 import { useActionFeedback } from '@/composables/useActionFeedback'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
-import { FILAS_CANONICAS, CANAIS_CANONICOS, TIPOS_OCORRENCIA, PRIORIDADES } from '@/data/gestorTaxonomia'
-import { stages, type StageTone, type GestorStage, type GestorCard, type Prioridade } from '@/types/gestorOcorrencias'
+import { FILAS_CANONICAS, CANAIS_CANONICOS, TIPOS_OCORRENCIA } from '@/data/gestorTaxonomia'
+import { stages, type StageTone, type GestorCard } from '@/types/gestorOcorrencias'
 
 const route = useRoute()
 const router = useRouter()
@@ -34,8 +34,7 @@ function syncContextFromRoute() {
     canal: typeof q.canal === 'string' ? q.canal : undefined,
     fila: typeof q.fila === 'string' ? q.fila : undefined,
     atendente: typeof q.atendente === 'string' ? q.atendente : undefined,
-    stage: typeof q.stage === 'string' ? (q.stage as GestorStage) : undefined,
-    prioridade: typeof q.prioridade === 'string' ? q.prioridade : undefined,
+    stage: typeof q.stage === 'string' ? q.stage : undefined,
     tipo: typeof q.tipo === 'string' ? q.tipo : undefined,
   })
 }
@@ -56,8 +55,7 @@ function removeContext(key: keyof typeof contextFilters.value) {
 // Limpa todos os filtros de contexto de uma vez.
 function clearAllContext() {
   store.clearContext()
-  const { canal: _c, fila: _f, atendente: _a, stage: _s, prioridade: _p, tipo: _t, ...rest } =
-    route.query
+  const { canal: _c, fila: _f, atendente: _a, stage: _s, tipo: _t, ...rest } = route.query
   router.replace({ query: rest })
 }
 
@@ -65,13 +63,20 @@ function clearAllContext() {
 const contextBadges = computed(() => {
   const f = contextFilters.value
   const out: { key: keyof typeof f; label: string }[] = []
-  if (f.canal) out.push({ key: 'canal', label: `Canal: ${f.canal}` })
-  if (f.fila) out.push({ key: 'fila', label: `Fila: ${f.fila}` })
-  if (f.atendente)
-    out.push({ key: 'atendente', label: `Atendente: ${f.atendente.split(',').join(', ')}` })
-  if (f.stage) out.push({ key: 'stage', label: `Etapa atual: ${etapaLabel[f.stage] ?? f.stage}` })
-  if (f.prioridade) out.push({ key: 'prioridade', label: `Prioridade: ${f.prioridade}` })
-  if (f.tipo) out.push({ key: 'tipo', label: `Tipo: ${f.tipo}` })
+  // Cada filtro pode ter vários valores (multi) — junta com vírgula no badge.
+  const join = (v: string) => v.split(',').map((s) => s.trim()).filter(Boolean).join(', ')
+  if (f.canal) out.push({ key: 'canal', label: `Canal: ${join(f.canal)}` })
+  if (f.fila) out.push({ key: 'fila', label: `Fila: ${join(f.fila)}` })
+  if (f.atendente) out.push({ key: 'atendente', label: `Atendente: ${join(f.atendente)}` })
+  if (f.stage)
+    out.push({
+      key: 'stage',
+      label: `Etapa atual: ${f.stage
+        .split(',')
+        .map((s) => etapaLabel[s.trim() as GestorCard['stage']] ?? s.trim())
+        .join(', ')}`,
+    })
+  if (f.tipo) out.push({ key: 'tipo', label: `Tipo: ${join(f.tipo)}` })
   return out
 })
 
@@ -89,19 +94,11 @@ const listColumns: DataListColumn[] = [
     sortBy: (r) => (r as unknown as GestorCard).channel },
   { key: 'tipo', label: 'Tipo de ocorrência', width: 178,
     sortBy: (r) => (r as unknown as GestorCard).tipo ?? '' },
-  { key: 'prioridade', label: 'Prioridade', width: 132,
-    sortBy: (r) => prioRankOf((r as unknown as GestorCard).prioridade) },
   { key: 'atendente', label: 'Atendente', minWidth: 200,
     sortBy: (r) => (r as unknown as GestorCard).atendente ?? '' },
   { key: 'tempoAtual', label: 'Tempo atual', width: 120,
     sortBy: (r) => parseTempoSec(r as unknown as GestorCard) },
 ]
-
-// Severidade da prioridade para ordenação (Alta > Média > Baixa).
-const prioRank: Record<Prioridade, number> = { Alta: 3, Média: 2, Baixa: 1 }
-function prioRankOf(p?: Prioridade): number {
-  return p ? prioRank[p] : 0
-}
 
 const stageMeta = Object.fromEntries(stages.map((s) => [s.key, s])) as Record<
   GestorCard['stage'],
@@ -180,10 +177,8 @@ const viewMode = computed({
   set: (v) => router.replace({ query: { ...route.query, view: v } }),
 })
 
-// Filtros single-select atrelados ao contexto (store + URL). Atendente saiu
-// daqui: virou multi-seleção própria (ver atendenteModel).
+// Filtros multi-seleção atrelados ao contexto (store + URL).
 const filterDefs = [
-  { label: 'Prioridade', ctxKey: 'prioridade' as const, options: [...PRIORIDADES] },
   {
     label: 'Fila',
     ctxKey: 'fila' as const,
@@ -198,16 +193,22 @@ const filterDefs = [
 ]
 const atendenteOptions = ['Ana Silva', 'Lucas Mendes', 'Ana Souza']
 
-// Lê/escreve o valor de um filtro de contexto a partir do select (sincroniza
-// store + query param). Mantém a URL como fonte de verdade do drill-down.
-type CtxKey = 'canal' | 'fila' | 'atendente' | 'prioridade' | 'tipo'
+// Todos os filtros são MULTI-seleção. O store guarda cada um como lista separada
+// por vírgula (1 ou vários valores); aqui convertemos de/para array p/ o
+// el-select `multiple`. A URL é a fonte de verdade do drill-down (sincroniza
+// store + query param). Match: OU dentro do filtro, E entre filtros distintos.
+type CtxKey = 'canal' | 'fila' | 'atendente' | 'stage' | 'tipo'
 function ctxModel(key: CtxKey) {
-  return computed<string | undefined>({
-    get: () => contextFilters.value[key],
-    set: (v) => {
-      store.setContext({ ...contextFilters.value, [key]: v || undefined })
+  return computed<string[]>({
+    get: () => {
+      const v = contextFilters.value[key]
+      return v ? v.split(',') : []
+    },
+    set: (arr) => {
+      const val = arr.length ? arr.join(',') : undefined
+      store.setContext({ ...contextFilters.value, [key]: val })
       const next = { ...route.query }
-      if (v) next[key] = v
+      if (val) next[key] = val
       else delete next[key]
       router.replace({ query: next })
     },
@@ -217,35 +218,9 @@ const ctxModels: Record<CtxKey, ReturnType<typeof ctxModel>> = {
   canal: ctxModel('canal'),
   fila: ctxModel('fila'),
   atendente: ctxModel('atendente'),
-  prioridade: ctxModel('prioridade'),
+  stage: ctxModel('stage'),
   tipo: ctxModel('tipo'),
 }
-
-// Filtro por Etapa (estágio) — atrelado ao contexto (store + URL), como os demais.
-const etapaModel = computed<string | undefined>({
-  get: () => contextFilters.value.stage,
-  set: (v) => {
-    store.setContext({ ...contextFilters.value, stage: (v as GestorStage) || undefined })
-    const next = { ...route.query }
-    if (v) next.stage = v
-    else delete next.stage
-    router.replace({ query: next })
-  },
-})
-
-// Atendente: MULTI-seleção. O store guarda os nomes como lista separada por
-// vírgula (1 ou vários); aqui convertemos de/para array p/ o el-select multiple.
-const atendenteModel = computed<string[]>({
-  get: () => (contextFilters.value.atendente ? contextFilters.value.atendente.split(',') : []),
-  set: (arr) => {
-    const val = arr.length ? arr.join(',') : undefined
-    store.setContext({ ...contextFilters.value, atendente: val })
-    const next = { ...route.query }
-    if (val) next.atendente = val
-    else delete next.atendente
-    router.replace({ query: next })
-  },
-})
 
 const pillDot: Record<StageTone | 'info', string> = {
   primary: 'bg-ms-primary',
@@ -333,19 +308,30 @@ const pillDot: Record<StageTone | 'info', string> = {
         v-for="f in filterDefs"
         :key="f.label"
         v-model="ctxModels[f.ctxKey].value"
+        multiple
+        collapse-tags
+        collapse-tags-tooltip
         :placeholder="f.label"
-        class="!w-40"
+        class="!w-44"
         clearable
       >
         <el-option v-for="o in f.options" :key="o" :label="o" :value="o" />
       </el-select>
       <!-- Filtro por Etapa (estágio do atendimento) -->
-      <el-select v-model="etapaModel" placeholder="Etapa" class="!w-44" clearable>
+      <el-select
+        v-model="ctxModels.stage.value"
+        multiple
+        collapse-tags
+        collapse-tags-tooltip
+        placeholder="Etapa"
+        class="!w-44"
+        clearable
+      >
         <el-option v-for="s in stages" :key="s.key" :label="etapaLabel[s.key]" :value="s.key" />
       </el-select>
       <!-- Atendente (multi-seleção) -->
       <el-select
-        v-model="atendenteModel"
+        v-model="ctxModels.atendente.value"
         multiple
         collapse-tags
         collapse-tags-tooltip
@@ -426,12 +412,6 @@ const pillDot: Record<StageTone | 'info', string> = {
           <span class="text-xs text-ms-text-regular">{{ row.tipo ?? '—' }}</span>
         </template>
 
-        <!-- Prioridade (ícone estilo Jira + rótulo) -->
-        <template #cell-prioridade="{ row }">
-          <PrioridadeTag v-if="row.prioridade" :prioridade="row.prioridade" show-label />
-          <span v-else class="text-ms-text-placeholder">—</span>
-        </template>
-
         <!-- Etapa atual (status legítimo: dot + texto colorido, sem fundo cheio) -->
         <template #cell-etapaAtual="{ row }">
           <span class="inline-flex items-center gap-1.5 text-xs font-medium"
@@ -441,12 +421,11 @@ const pillDot: Record<StageTone | 'info', string> = {
               :class="stageDotClass[stageMeta[row.stage].tone]" />{{ etapaLabel[row.stage] }}</span>
         </template>
 
-        <!-- Detalhe da etapa (posição na fila em destaque) -->
+        <!-- Detalhe da etapa — posição na fila como tag do DS (BaseBadge, tom
+             âmbar): compacta e consistente com os demais rótulos da lista. -->
         <template #cell-detalheEtapa="{ row }">
-          <span v-if="row.stage === 'fila'" class="flex items-center gap-1.5 text-xs">
-            <span class="rounded bg-ms-warning/15 px-1.5 py-0.5 text-2xs font-bold text-ms-warning"
-              >{{ row.posicao ?? '—' }}º na fila</span
-            >
+          <span v-if="row.stage === 'fila'" class="flex items-center gap-2 text-xs">
+            <BaseBadge tone="warning" :label="`${row.posicao ?? '—'}º na fila`" />
             <span class="text-ms-text-secondary">{{ row.filaTipo ?? '—' }}</span>
           </span>
           <span v-else class="text-xs text-ms-text-regular">{{ detalheEtapa(row) }}</span>

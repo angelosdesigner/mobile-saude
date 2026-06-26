@@ -332,7 +332,9 @@ const status = ref<'Disponível' | 'Ocupado'>('Disponível')
             </svg>
           </el-avatar>
           <div class="hidden leading-tight sm:block">
-            <div class="text-xs font-medium text-ms-text-primary">Juliana Santos</div>
+            <div class="text-xs font-medium text-ms-text-primary">
+              {{ isGestor ? 'Paulo' : 'Juliana Santos' }}
+            </div>
             <div class="text-2xs text-ms-text-secondary">
               {{ isGestor ? roleLabel.gestor : profileLabel[profile] }}
             </div>
