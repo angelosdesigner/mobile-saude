@@ -347,7 +347,7 @@ const autoValue = 'text-ms-text-primary'
       </ChartCard>
 
       <ChartCard
-        title="Setores onde o BOT é Mais Eficiente"
+        title="Setores mais eficientes no automatizado"
         subtitle="% resolvidos sem transbordo"
         to="/gestor/automacao-bot"
       >
@@ -374,7 +374,7 @@ const autoValue = 'text-ms-text-primary'
 
       <ChartCard
         title="Fluxos com Maior Taxa de Abandono"
-        subtitle="% de abandono dentro do bot"
+        subtitle="% de abandono no atendimento automatizado"
         to="/gestor/automacao-bot"
       >
         <div class="h-44 w-full">

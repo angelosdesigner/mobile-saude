@@ -1,12 +1,14 @@
 // Fixtures mock da tela operacional do gestor (Figma 8074:4666).
 import type { GestorCard, StatusPill, GestorStat, StageHeader } from '@/types/gestorOcorrencias'
 
+// Estado atual ("ativos agora") = automatizado + fila + humano (84+23+56=163).
+// "Concluídos hoje" é separado na UI (não é estado atual — ver OcorrenciasView).
 export const statusPills: StatusPill[] = [
-  { label: 'ATIVOS AGORA', value: 247, tone: 'primary' },
-  { label: 'EM CHATBOT', value: 84, tone: 'info' },
+  { label: 'ATIVOS AGORA', value: 163, tone: 'primary' },
+  { label: 'EM ATENDIMENTO AUTOMATIZADO', value: 84, tone: 'info' },
   { label: 'EM FILA', value: 23, tone: 'warning' },
-  { label: 'EM ATENDIMENTO', value: 56, tone: 'success' },
-  { label: 'CONCLUÍDOS', value: 412, tone: 'teal' },
+  { label: 'EM ATENDIMENTO HUMANO', value: 56, tone: 'success' },
+  { label: 'CONCLUÍDOS HOJE', value: 412, tone: 'teal' },
 ]
 
 export const gestorStats: GestorStat[] = [

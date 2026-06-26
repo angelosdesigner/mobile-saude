@@ -99,8 +99,8 @@ export const metricTiles: MetricTile[] = [
 ]
 
 export const andamento = [
-  { label: 'Automatizado', value: 84, tone: 'primary' as const, filtro: 'automatizado' },
-  { label: 'Aguardando fila', value: 23, tone: 'warning' as const, filtro: 'fila' },
+  { label: 'Atendimento automatizado', value: 84, tone: 'primary' as const, filtro: 'automatizado' },
+  { label: 'Em espera na fila', value: 23, tone: 'warning' as const, filtro: 'fila' },
   { label: 'Atendimento humano', value: 56, tone: 'success' as const, filtro: 'humano' },
 ]
 

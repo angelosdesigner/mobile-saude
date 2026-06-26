@@ -81,9 +81,9 @@ export interface AutomatizadoMetric {
 }
 
 export const automatizado: AutomatizadoMetric[] = [
-  { label: 'Taxa de retenção no bot', value: '68%', pct: 68, tone: 'success', delta: '↑ 2% hoje' },
+  { label: 'Taxa de retenção no automatizado', value: '68%', pct: 68, tone: 'success', delta: '↑ 2% hoje' },
   { label: 'Transferência para atendente', value: '32%', pct: 32, tone: 'warning' },
-  { label: 'Taxa de abandono no bot', value: '9.3%', pct: 9.3, tone: 'danger' },
+  { label: 'Taxa de abandono no automatizado', value: '9.3%', pct: 9.3, tone: 'danger' },
   { label: 'Tempo médio no fluxo', value: '4min', pct: null, tone: 'neutral' },
 ]
 

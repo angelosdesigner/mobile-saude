@@ -16,13 +16,17 @@ const { board, headerByStage } = storeToRefs(store)
 const router = useRouter()
 
 // ── Colunas ──────────────────────────────────────────────────────────────────
+// O Kanban mostra apenas o ESTADO ATUAL (automatizado/fila/humano). Concluídos
+// (histórico do dia) saem do quadro e ficam só na visão de Lista.
 const columns = computed<KanbanColumn[]>(() =>
-  stages.map((s) => ({
-    key: s.key,
-    label: s.label,
-    tone: s.tone,
-    meta: headerByStage.value[s.key]?.meta ?? [],
-  })),
+  stages
+    .filter((s) => s.key !== 'concluido')
+    .map((s) => ({
+      key: s.key,
+      label: s.label,
+      tone: s.tone,
+      meta: headerByStage.value[s.key]?.meta ?? [],
+    })),
 )
 
 // ── Estilos por tom ───────────────────────────────────────────────────────────
@@ -51,12 +55,10 @@ const slaDot: Record<SlaState, string> = {
 const showFilterAutomat = ref(false)
 const showFilterFila = ref(false)
 const showFilterHumano = ref(false)
-const showFilterConcluido = ref(false)
 
 const filterAutomat = ref({ beneficiario: '', fluxo: '', no: '' })
 const filterFila = ref({ beneficiario: '', filaTipo: '', prioridade: '' as '' | Prioridade })
 const filterHumano = ref({ beneficiario: '', atendente: '', sla: '' as '' | SlaState })
-const filterConcluido = ref({ beneficiario: '', atendente: '' })
 
 const hasFilterAutomat = computed(() =>
   !!(filterAutomat.value.beneficiario || filterAutomat.value.fluxo || filterAutomat.value.no),
@@ -66,9 +68,6 @@ const hasFilterFila = computed(() =>
 )
 const hasFilterHumano = computed(() =>
   !!(filterHumano.value.beneficiario || filterHumano.value.atendente || filterHumano.value.sla),
-)
-const hasFilterConcluido = computed(
-  () => !!(filterConcluido.value.beneficiario || filterConcluido.value.atendente),
 )
 
 function matchText(val: string | undefined, q: string) {
@@ -94,18 +93,12 @@ const filteredBoard = computed(() => ({
       matchText(c.atendente, filterHumano.value.atendente) &&
       (!filterHumano.value.sla || c.sla === filterHumano.value.sla),
   ),
-  concluido: (board.value.concluido ?? []).filter(
-    (c) =>
-      matchText(c.beneficiary, filterConcluido.value.beneficiario) &&
-      matchText(c.atendente, filterConcluido.value.atendente),
-  ),
 }))
 
 function clearFilter(col: string) {
   if (col === 'automatizado') filterAutomat.value = { beneficiario: '', fluxo: '', no: '' }
   else if (col === 'fila') filterFila.value = { beneficiario: '', filaTipo: '', prioridade: '' }
   else if (col === 'humano') filterHumano.value = { beneficiario: '', atendente: '', sla: '' }
-  else if (col === 'concluido') filterConcluido.value = { beneficiario: '', atendente: '' }
 }
 
 // ── Drag-and-drop com modal de transferência ──────────────────────────────────
@@ -285,42 +278,6 @@ function cancelTransfer() {
         </div>
       </el-popover>
 
-      <!-- Concluído -->
-      <el-popover
-        v-else-if="col.key === 'concluido'"
-        v-model:visible="showFilterConcluido"
-        placement="bottom-end"
-        :width="220"
-        trigger="click"
-        popper-class="!p-0"
-      >
-        <template #reference>
-          <button
-            class="relative flex h-6 w-6 items-center justify-center rounded-md text-ms-text-placeholder transition hover:bg-ms-fill-light hover:text-ms-text-secondary"
-            :class="hasFilterConcluido ? '!text-ms-primary' : ''"
-            title="Filtrar coluna"
-          >
-            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-            </svg>
-            <span v-if="hasFilterConcluido" class="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-ms-primary" />
-          </button>
-        </template>
-        <div class="p-3 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-ms-text-primary">Filtrar</span>
-            <button class="text-2xs text-ms-primary hover:underline" @click="clearFilter('concluido')">Limpar</button>
-          </div>
-          <div class="space-y-1.5">
-            <label class="block text-2xs text-ms-text-secondary">Beneficiário</label>
-            <el-input v-model="filterConcluido.beneficiario" size="small" clearable placeholder="Nome..." />
-          </div>
-          <div class="space-y-1.5">
-            <label class="block text-2xs text-ms-text-secondary">Atendente</label>
-            <el-input v-model="filterConcluido.atendente" size="small" clearable placeholder="Nome..." />
-          </div>
-        </div>
-      </el-popover>
     </template>
 
     <!-- ── Cards ─────────────────────────────────────────────────────────── -->

@@ -21,6 +21,11 @@ const store = useGestorOcorrenciasStore()
 const { statusPills, stats, loading, search, filtered, quickFilters, contextFilters, hasContext } =
   storeToRefs(store)
 
+// "Concluídos hoje" é separado do estado atual: não compõe a visão "ativos
+// agora" (histórico fica na lista). A barra de status renderiza os dois grupos.
+const ativosPills = computed(() => statusPills.value.filter((p) => p.label !== 'CONCLUÍDOS HOJE'))
+const concluidosPill = computed(() => statusPills.value.find((p) => p.label === 'CONCLUÍDOS HOJE'))
+
 // Lê os filtros de contexto da URL (drill-down vindo do dashboard) e os aplica
 // ao store. Reage a navegações posteriores para a mesma rota com outra query.
 function syncContextFromRoute() {
@@ -70,21 +75,23 @@ const contextBadges = computed(() => {
 })
 
 // ── Modo Lista (mesma fonte do Kanban; colunas próprias da visão do gestor) ──
+// Ordem prioriza leitura rápida do estado: Protocolo · Contato · ETAPA ATUAL ·
+// DETALHE DA ETAPA primeiro; depois canal/classificação/atendente/tempo.
 const listColumns: DataListColumn[] = [
   { key: 'protocolo', label: 'Protocolo', width: 148, locked: true,
     sortBy: (r) => (r as unknown as GestorCard).protocolo ?? '' },
   { key: 'contato', label: 'Contato', minWidth: 240,
     sortBy: (r) => (r as unknown as GestorCard).beneficiary },
-  { key: 'atendente', label: 'Atendente', minWidth: 200,
-    sortBy: (r) => (r as unknown as GestorCard).atendente ?? '' },
+  { key: 'etapaAtual', label: 'Etapa atual', width: 168 },
+  { key: 'detalheEtapa', label: 'Detalhe da etapa', minWidth: 210 },
   { key: 'canal', label: 'Canal', width: 160,
     sortBy: (r) => (r as unknown as GestorCard).channel },
   { key: 'tipo', label: 'Tipo de ocorrência', width: 178,
     sortBy: (r) => (r as unknown as GestorCard).tipo ?? '' },
   { key: 'prioridade', label: 'Prioridade', width: 132,
     sortBy: (r) => prioRankOf((r as unknown as GestorCard).prioridade) },
-  { key: 'etapaAtual', label: 'Etapa atual', width: 168 },
-  { key: 'detalheEtapa', label: 'Detalhe da etapa', minWidth: 200 },
+  { key: 'atendente', label: 'Atendente', minWidth: 200,
+    sortBy: (r) => (r as unknown as GestorCard).atendente ?? '' },
   { key: 'tempoAtual', label: 'Tempo atual', width: 120,
     sortBy: (r) => parseTempoSec(r as unknown as GestorCard) },
 ]
@@ -213,6 +220,18 @@ const ctxModels: Record<CtxKey, ReturnType<typeof ctxModel>> = {
   tipo: ctxModel('tipo'),
 }
 
+// Filtro por Etapa (estágio) — atrelado ao contexto (store + URL), como os demais.
+const etapaModel = computed<string | undefined>({
+  get: () => contextFilters.value.stage,
+  set: (v) => {
+    store.setContext({ ...contextFilters.value, stage: (v as GestorStage) || undefined })
+    const next = { ...route.query }
+    if (v) next.stage = v
+    else delete next.stage
+    router.replace({ query: next })
+  },
+})
+
 const pillDot: Record<StageTone | 'info', string> = {
   primary: 'bg-ms-primary',
   info: 'bg-ms-text-secondary',
@@ -244,10 +263,11 @@ const pillDot: Record<StageTone | 'info', string> = {
       </div>
     </div>
 
-    <!-- Barra de status agregada -->
-    <div class="mb-4 flex flex-wrap gap-3">
+    <!-- Barra de status: estado atual ("ativos agora") + concluídos do dia
+         (separado, histórico fica na lista) -->
+    <div class="mb-4 flex flex-wrap items-center gap-3">
       <div
-        v-for="p in statusPills"
+        v-for="p in ativosPills"
         :key="p.label"
         class="flex items-center gap-2 rounded-lg border border-ms-border-light bg-ms-surface px-3 py-2"
       >
@@ -256,6 +276,18 @@ const pillDot: Record<StageTone | 'info', string> = {
           p.label
         }}</span>
         <span class="text-base font-bold text-ms-text-primary">{{ p.value }}</span>
+      </div>
+      <!-- Concluídos hoje — fora do "estado atual" (não é "agora") -->
+      <div
+        v-if="concluidosPill"
+        class="ml-auto flex items-center gap-2 rounded-lg border border-dashed border-ms-border bg-ms-fill-light px-3 py-2"
+      >
+        <span class="h-2.5 w-2.5 rounded-full" :class="pillDot[concluidosPill.tone]" />
+        <span class="text-2xs font-semibold uppercase tracking-wide text-ms-text-secondary">{{
+          concluidosPill.label
+        }}</span>
+        <span class="text-base font-bold text-ms-text-primary">{{ concluidosPill.value }}</span>
+        <span class="text-2xs text-ms-text-placeholder">· histórico na lista</span>
       </div>
     </div>
 
@@ -291,6 +323,10 @@ const pillDot: Record<StageTone | 'info', string> = {
         clearable
       >
         <el-option v-for="o in f.options" :key="o" :label="o" :value="o" />
+      </el-select>
+      <!-- Filtro por Etapa (estágio do atendimento) -->
+      <el-select v-model="etapaModel" placeholder="Etapa" class="!w-44" clearable>
+        <el-option v-for="s in stages" :key="s.key" :label="etapaLabel[s.key]" :value="s.key" />
       </el-select>
       <div class="ml-auto flex items-center gap-2">
         <!-- No modo lista a configuração de colunas fica no ▥ da própria tabela. -->
@@ -378,9 +414,15 @@ const pillDot: Record<StageTone | 'info', string> = {
               :class="stageDotClass[stageMeta[row.stage].tone]" />{{ etapaLabel[row.stage] }}</span>
         </template>
 
-        <!-- Detalhe da etapa -->
+        <!-- Detalhe da etapa (posição na fila em destaque) -->
         <template #cell-detalheEtapa="{ row }">
-          <span class="text-xs text-ms-text-regular">{{ detalheEtapa(row) }}</span>
+          <span v-if="row.stage === 'fila'" class="flex items-center gap-1.5 text-xs">
+            <span class="rounded bg-ms-warning/15 px-1.5 py-0.5 text-2xs font-bold text-ms-warning"
+              >{{ row.posicao ?? '—' }}º na fila</span
+            >
+            <span class="text-ms-text-secondary">{{ row.filaTipo ?? '—' }}</span>
+          </span>
+          <span v-else class="text-xs text-ms-text-regular">{{ detalheEtapa(row) }}</span>
         </template>
 
         <!-- Tempo atual -->
