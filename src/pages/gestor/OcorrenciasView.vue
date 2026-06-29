@@ -162,7 +162,7 @@ function parseTempoSec(c: GestorCard): number {
   return 0
 }
 
-const { comingSoon } = useActionFeedback()
+const { comingSoon, done } = useActionFeedback()
 
 // Visualizar/Editar abrem a tela de detalhe/jornada da ocorrência (compartilhada
 // Gestor + Atendente). ctx=gestor garante a resolução pela store do gestor.
@@ -207,6 +207,23 @@ const ctxModels: Record<CtxKey, ReturnType<typeof ctxModel>> = {
   atendente: ctxModel('atendente'),
   stage: ctxModel('stage'),
   tipo: ctxModel('tipo'),
+}
+
+// Filtros salvos (presets) — combinações comuns aplicadas de uma vez. Mesmo
+// padrão da visão do Atendente; reusam os filtros de contexto (store + URL).
+const savedFilters: { name: string; apply: Partial<Record<CtxKey, string>> }[] = [
+  { name: 'Em espera na fila', apply: { stage: 'fila' } },
+  { name: 'No atendimento humano', apply: { stage: 'humano' } },
+  { name: 'Reembolso — no automatizado', apply: { fila: 'Reembolso', stage: 'automatizado' } },
+  { name: 'Chat/WhatsApp em atendimento humano', apply: { canal: 'Chat/WhatsApp', stage: 'humano' } },
+]
+function applyPreset(p: (typeof savedFilters)[number]) {
+  store.setContext({ ...p.apply })
+  const next = { ...route.query }
+  for (const k of ['canal', 'fila', 'atendente', 'stage', 'tipo', 'prioridade'] as const) delete next[k]
+  Object.assign(next, p.apply)
+  router.replace({ query: next })
+  done(`Filtro "${p.name}" aplicado`)
 }
 
 // Tipos disponíveis em cascata: selecionar uma fila restringe as opções de tipo
@@ -346,6 +363,20 @@ const pillDot: Record<StageTone | 'info', string> = {
         <el-option v-for="o in atendenteOptions" :key="o" :label="o" :value="o" />
       </el-select>
       <div class="ml-auto flex items-center gap-2">
+        <!-- Filtros salvos (presets) — aplica uma combinação comum de uma vez. -->
+        <el-dropdown trigger="click" @command="applyPreset">
+          <el-button>
+            Filtros salvos
+            <AppIcon name="chevron-down" class="ml-1 h-3 w-3" />
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item v-for="p in savedFilters" :key="p.name" :command="p">{{
+                p.name
+              }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
         <!-- No modo lista a configuração de colunas fica no ▥ da própria tabela. -->
         <el-button v-if="viewMode === 'quadro'" @click="comingSoon('Configurar colunas')"
           >Configurar colunas</el-button

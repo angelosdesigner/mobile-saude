@@ -11,7 +11,7 @@ export const contexto = {
   badge: '1 FLUXO COM ALERTA',
   resumoAlerta: 'Envio de Documentos com 15% de abandono',
   titulo: 'Central de Automação',
-  subtitulo: 'BOT principal · 8 fluxos · 12.847 interações hoje · 65% retidas sem humano',
+  subtitulo: 'Atendimento automatizado · 8 fluxos · 12.847 interações hoje · 65% retidas sem humano',
 }
 
 // ── 1) Indicadores do BOT (KPIs) ──────────────────────────────────────────────
@@ -28,9 +28,9 @@ export interface BotKpi {
 // Transbordo, redundante) nem "Eficiência" (sem fórmula clara) — pedido G7.
 export const indicadoresBot: BotKpi[] = [
   { label: 'Transbordo', value: '35', unit: '%', status: 'warning', delta: '35% vão ao humano', deltaTone: 'neutral' },
-  { label: 'Abandono BOT', value: '8.2', unit: '%', status: 'warning', delta: 'concentrado em 1 fluxo', deltaTone: 'down' },
+  { label: 'Abandono no automatizado', value: '8.2', unit: '%', status: 'warning', delta: 'concentrado em 1 fluxo', deltaTone: 'down' },
   { label: 'Tempo Médio', value: '2:14', unit: '', status: 'ok' },
-  { label: 'NPS do BOT', value: '4.3', unit: '/5', status: 'ok', delta: '+0.2 vs humano', deltaTone: 'up' },
+  { label: 'NPS do automatizado', value: '4.3', unit: '/5', status: 'ok', delta: '+0.2 vs humano', deltaTone: 'up' },
 ]
 
 // ── 3) Evolução dos indicadores do BOT ────────────────────────────────────────
@@ -90,7 +90,7 @@ export type FluxoCorrel = {
 }
 export const correlacaoBot: FluxoCorrel[] = [
   { fluxo: 'Envio de Documentos', volume: 2847, retencao: 59, abandono: 15, transbordo: 26, gargalo: 'Abandono alto na etapa Documentação', status: 'Crítico' },
-  { fluxo: 'Cancelamento', volume: 892, retencao: 42, abandono: 6, transbordo: 52, gargalo: 'Baixa retenção → BOT não cobre os motivos', status: 'Crítico' },
+  { fluxo: 'Cancelamento', volume: 892, retencao: 42, abandono: 6, transbordo: 52, gargalo: 'Baixa retenção → automação não cobre os motivos', status: 'Crítico' },
   { fluxo: 'Atualização Cadastral', volume: 1247, retencao: 68, abandono: 7, transbordo: 25, gargalo: 'Transbordo elevado (25%)', status: 'Alto' },
   { fluxo: 'Reembolso Status', volume: 1685, retencao: 78, abandono: 4, transbordo: 18, gargalo: 'NPS baixo (3.7) apesar da retenção', status: 'Médio' },
   { fluxo: 'Autorização Prévia', volume: 2103, retencao: 72, abandono: 4, transbordo: 24, gargalo: 'Estável; leve transbordo', status: 'Médio' },
@@ -99,7 +99,7 @@ export const correlacaoBot: FluxoCorrel[] = [
   { fluxo: '2ª via de Boleto', volume: 1845, retencao: 91, abandono: 2, transbordo: 7, gargalo: 'Fluxo modelo (alta retenção)', status: 'OK' },
 ]
 export const comoInterpretarBot =
-  'Score Crítico = 2+ dimensões fora do limite simultaneamente. Fluxos com baixa retenção (<60%) E abandono alto (>10%) indicam falha de UX na automação. Transbordo alto (>40%) com baixa retenção sugere que o fluxo não deveria permanecer no BOT.'
+  'Score Crítico = 2+ dimensões fora do limite simultaneamente. Fluxos com baixa retenção (<60%) E abandono alto (>10%) indicam falha de UX na automação. Transbordo alto (>40%) com baixa retenção sugere que o fluxo não deveria permanecer no atendimento automatizado.'
 
 // ── 5) BOT vs Atendimento Humano (comparativo) ───────────────────────────────
 export interface BotVsHumano {
@@ -113,9 +113,9 @@ export interface BotVsHumano {
 
 export const botVsHumano: BotVsHumano[] = [
   { metrica: 'TME', bot: '2:14 min', humano: '8:32 min', delta: '74% mais rápido', tone: 'success' },
-  { metrica: 'NPS', bot: '4.3 /5', humano: '4.1 /5', delta: '+0.2 BOT', tone: 'success' },
+  { metrica: 'NPS', bot: '4.3 /5', humano: '4.1 /5', delta: '+0.2 automatizado', tone: 'success' },
   { metrica: 'Resolução', bot: '65%', humano: '87%', delta: '+22pp humano', tone: 'warning' },
-  { metrica: 'Volume', bot: '8.420 atend', humano: '2.103 atend', delta: '80% via BOT', tone: 'neutral' },
+  { metrica: 'Volume', bot: '8.420 atend', humano: '2.103 atend', delta: '80% via automatizado', tone: 'neutral' },
 ]
 
 // ── 5) Jornada do BOT (funil por fluxo) ──────────────────────────────────────
@@ -147,7 +147,7 @@ export const jornadaFluxos: JornadaFluxo[] = [
     ],
     gargalo: {
       titulo: 'Maior gargalo: etapa "Documentação" (15% abandono)',
-      corpo: 'Usuários abandonam após receber instruções de upload. Tempo médio elevado sugere instruções confusas ou validação muito rígida. 425 abandonos representam 15% do volume diário do BOT.',
+      corpo: 'Usuários abandonam após receber instruções de upload. Tempo médio elevado sugere instruções confusas ou validação muito rígida. 425 abandonos representam 15% do volume diário do atendimento automatizado.',
     },
   },
   {
@@ -194,7 +194,7 @@ export const jornadaFluxos: JornadaFluxo[] = [
 // ── 6) Recomendações IA ───────────────────────────────────────────────────────
 export const diagnosticoBot = {
   confianca: 'confiança 92% · análise sobre 12.847 jornadas',
-  texto: 'O BOT performa acima da meta (65% retenção, meta 60%), mas o fluxo Envio de Documentos concentra 38% de todo o abandono. A análise de UX dos abandonos sugere instruções de upload pouco claras na etapa Documentação. Cancelamento também merece atenção: retenção de apenas 42% indica que o BOT não cobre bem os motivos de cancelamento.',
+  texto: 'O atendimento automatizado performa acima da meta (65% retenção, meta 60%), mas o fluxo Envio de Documentos concentra 38% de todo o abandono. A análise de UX dos abandonos sugere instruções de upload pouco claras na etapa Documentação. Cancelamento também merece atenção: retenção de apenas 42% indica que a automação não cobre bem os motivos de cancelamento.',
 }
 
 export const recomendacoesBot: RecomendacaoIA[] = [
@@ -207,12 +207,12 @@ export const recomendacoesBot: RecomendacaoIA[] = [
   },
   {
     titulo: 'Roteamento direto Cancelamento',
-    corpo: 'Detectar intenção "cancelamento" nas primeiras 2 interações e direcionar diretamente para humano. Retenção atual é falsa positiva (cliente fica preso no BOT).',
+    corpo: 'Detectar intenção "cancelamento" nas primeiras 2 interações e direcionar diretamente para humano. Retenção atual é falsa positiva (cliente fica preso no atendimento automatizado).',
     impacto: 'NPS +3 pts · CSAT no canal',
     acao: 'Detalhar',
   },
   {
-    titulo: 'Expandir fluxos BOT em alta retenção',
+    titulo: 'Expandir fluxos automatizados em alta retenção',
     corpo: '2ª via (91%) e Carência (84%) com excelente retenção. Adicionar templates similares para Reagendamento e Dúvidas de Plano.',
     impacto: 'Retenção geral +4 pp · 30d',
     acao: 'Detalhar',

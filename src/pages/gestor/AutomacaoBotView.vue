@@ -249,7 +249,7 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
 
     <!-- 1) Indicadores do BOT -->
     <div class="mb-1 text-xs font-bold uppercase tracking-wide text-ms-text-secondary">
-      Indicadores do BOT · {{ periodoAtivo }}
+      Indicadores do atendimento automatizado · {{ periodoAtivo }}
     </div>
     <p class="mb-3 text-xs text-ms-text-secondary">
       Transbordo, abandono e satisfação · vs período anterior
@@ -269,7 +269,7 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
 
     <!-- 2) Todos os fluxos do BOT -->
     <ChartCard
-      title="Todos os fluxos BOT · ordenados por abandono"
+      title="Todos os fluxos automatizados · ordenados por abandono"
       subtitle="Clique em “Ver jornada” para abrir a jornada detalhada do fluxo"
       class="mb-5"
     >
@@ -304,7 +304,7 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
 
     <!-- 3) Evolução -->
     <ChartCard
-      title="Evolução dos indicadores do BOT"
+      title="Evolução dos indicadores do atendimento automatizado"
       subtitle="Comparativo período anterior · Meta"
       class="mb-5"
     >
@@ -361,7 +361,7 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
     <!-- BOT vs Humano + Jornada do BOT — ocultos por enquanto (5 seções) -->
     <template v-if="false">
     <div class="mb-1 text-xs font-bold uppercase tracking-wide text-ms-text-secondary">
-      BOT vs Atendimento Humano
+      Atendimento automatizado vs Humano
     </div>
     <p class="mb-3 text-xs text-ms-text-secondary">
       Comparativo de eficiência entre automação e atendentes · Hoje
@@ -379,7 +379,7 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
         </div>
         <div class="mt-2 flex items-baseline gap-2">
           <span class="text-xl font-bold text-ms-primary">{{ c.bot }}</span>
-          <span class="text-2xs text-ms-text-secondary">BOT</span>
+          <span class="text-2xs text-ms-text-secondary">Automatizado</span>
         </div>
         <div class="mt-0.5 flex items-baseline gap-2">
           <span class="text-sm font-semibold text-ms-text-regular">{{ c.humano }}</span>
@@ -392,7 +392,7 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
     <!-- 5) Jornada do BOT -->
     <div ref="jornadaEl" class="mb-5">
     <ChartCard
-      title="Jornada do BOT · fluxos"
+      title="Jornada do atendimento automatizado · fluxos"
       subtitle="Volume, tempo e abandono em cada etapa · escolha o fluxo para detalhar"
     >
       <!-- Abas de fluxo -->
@@ -459,7 +459,7 @@ const vsTone: Record<'success' | 'warning' | 'neutral', string> = {
     <!-- 5) Insights da IA -->
     <RecomendacoesIA
       subtitle="Otimizações para reduzir abandono e aumentar retenção"
-      diagnostico-titulo="Diagnóstico do BOT"
+      diagnostico-titulo="Diagnóstico do atendimento automatizado"
       :confianca="diagnosticoBot.confianca"
       :texto="diagnosticoBot.texto"
       :recomendacoes="recomendacoesBot"
