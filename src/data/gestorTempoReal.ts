@@ -138,11 +138,11 @@ export const canalResumo = {
   slaConformidade: '96%',
 }
 
-// Filas de abandono — BOT vs Humano (%). (Rótulos = filas.)
+// Filas de abandono — Automatizado vs Em espera (%). (Rótulos = filas.)
 export const abandonoFluxo = {
   fluxos: ['Dúvidas Adm.', 'Reembolso', 'Autorizações', 'Financeiro (Boleto)'],
-  bot: [8, 15, 2, 10],
-  humano: [4, 2, 0, 12],
+  automatizado: [8, 15, 2, 10],
+  emEspera: [4, 2, 0, 12],
 }
 
 // Demanda × capacidade ao longo do dia.

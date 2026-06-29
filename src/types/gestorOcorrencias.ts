@@ -43,6 +43,7 @@ export interface GestorCard {
   perfilTipo?: string     // ex.: "Titular", "Dependente"
   // classificação (aplica-se a todas as etapas)
   tipo?: string           // tipo de ocorrência (Reembolso, Autorização…)
+  assunto?: string        // assunto específico (ex.: "Recurso negado", "Internação")
   prioridade?: Prioridade // prioridade (Alta/Média/Baixa)
   // automatizado
   fluxo?: string

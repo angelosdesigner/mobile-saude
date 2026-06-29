@@ -18,12 +18,19 @@ import {
 } from '@/data/gestorAbandonos'
 import { abandonoFluxo } from '@/data/gestorTempoReal'
 import { useChartColors } from '@/plugins/echarts'
-import { canalCor, atendimentoCor, normalizeCanal, normalizeFila } from '@/data/gestorTaxonomia'
+import { canalCor, normalizeCanal, normalizeFila } from '@/data/gestorTaxonomia'
 
 const C = useChartColors()
 const router = useRouter()
 
-// Drill-down: fatia do donut → Ocorrências do canal; ponto do scatter → fila.
+// ── Drill-down ────────────────────────────────────────────────────────────────
+// Padrão 3 níveis: indicador/gráfico → assunto (fila) + etapa → protocolo/jornada.
+// `etapa` é o stage da ocorrência: 'automatizado' | 'fila' | 'humano'.
+function abrirEtapa(stage: 'automatizado' | 'fila', fila?: string) {
+  const query: Record<string, string> = { view: 'lista', stage }
+  if (fila) query.fila = normalizeFila(fila)
+  router.push({ path: '/gestor/ocorrencias', query })
+}
 function abrirFila(fila: string) {
   router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', fila: normalizeFila(fila) } })
 }
@@ -34,12 +41,23 @@ function abrirCanal(params: { name?: string }) {
       query: { view: 'lista', canal: normalizeCanal(params.name) },
     })
 }
-// Clique num ponto do scatter (cada ponto = uma fila) → Ocorrências da fila.
+
+// Clique num item "No automatizado": extrai a fila do label ("Fila → Etapa").
+function abrirBotItem(item: { label: string }) {
+  const fila = item.label.split('→')[0].trim()
+  abrirEtapa('automatizado', fila)
+}
+// Clique num item "Em espera": label é diretamente o nome da fila.
+function abrirEsperaItem(item: { label: string }) {
+  abrirEtapa('fila', item.label)
+}
+// Clique num ponto do scatter (por assunto) → Ocorrências da fila.
 function abrirScatter(params: { value?: unknown }) {
   const v = params?.value as [number, number, number, string] | undefined
   if (v && v[3]) abrirFila(v[3])
 }
 
+// ── Gráficos ──────────────────────────────────────────────────────────────────
 const canalOption = computed(() => ({
   tooltip: { trigger: 'item', formatter: '{b}: {c}' },
   series: [
@@ -56,9 +74,8 @@ const canalOption = computed(() => ({
   ],
 }))
 
-// Abandono por fluxo — BOT × Humano (barras agrupadas). Reusa o fixture canônico
-// já exibido no resumo do Início (fonte única); legenda BOT/Humano em HTML para
-// não sobrepor os rótulos do eixo X.
+// Abandono por etapa — Automatizado × Humano (barras agrupadas por assunto).
+// Legenda em HTML p/ não sobrepor os rótulos do eixo X.
 const fluxoBotHumanoOption = computed(() => ({
   tooltip: { trigger: 'axis', valueFormatter: (v: number) => `${v}%` },
   grid: { left: 32, right: 8, top: 12, bottom: 34 },
@@ -82,34 +99,34 @@ const fluxoBotHumanoOption = computed(() => ({
   },
   series: [
     {
-      name: 'BOT',
+      name: 'Automatizado',
       type: 'bar',
-      data: abandonoFluxo.bot,
-      itemStyle: { color: atendimentoCor(C).bot, borderRadius: [3, 3, 0, 0] },
+      data: abandonoFluxo.automatizado,
+      itemStyle: { color: C.primary, borderRadius: [3, 3, 0, 0] },
     },
     {
       name: 'Humano',
       type: 'bar',
-      data: abandonoFluxo.humano,
-      itemStyle: { color: atendimentoCor(C).humano, borderRadius: [3, 3, 0, 0] },
+      data: abandonoFluxo.emEspera,
+      itemStyle: { color: C.warning, borderRadius: [3, 3, 0, 0] },
     },
   ],
 }))
 const fluxoBotHumanoLegend = computed(() => [
-  { label: 'BOT', color: atendimentoCor(C).bot },
-  { label: 'Humano', color: atendimentoCor(C).humano },
+  { label: 'Automatizado', color: C.primary },
+  { label: 'Humano',       color: C.warning },
 ])
 
 const abandonoScatterOption = computed(() => ({
   tooltip: {
     trigger: 'item',
     formatter: (p: { value: [number, number, number, string] }) =>
-      `${p.value[3]}<br/>BOT ${p.value[0]}% · Humana ${p.value[1]}% · vol ${p.value[2]}`,
+      `${p.value[3]}<br/>Automatizado ${p.value[0]}% · Humano ${p.value[1]}% · vol ${p.value[2]}`,
   },
   grid: { left: 44, right: 16, top: 16, bottom: 36 },
   xAxis: {
     type: 'value',
-    name: 'Taxa de Abandono no BOT (%) →',
+    name: 'Abandono no automatizado (%) →',
     nameLocation: 'middle',
     nameGap: 24,
     nameTextStyle: { color: C.axis, fontSize: 10 },
@@ -118,7 +135,7 @@ const abandonoScatterOption = computed(() => ({
   },
   yAxis: {
     type: 'value',
-    name: 'Abandono na Fila Humana (%)',
+    name: 'Abandono humano (%)',
     nameTextStyle: { color: C.axis, fontSize: 10, align: 'left' },
     axisLabel: { color: C.axis, fontSize: 10 },
     splitLine: { lineStyle: { color: C.split } },
@@ -157,12 +174,12 @@ const ringStyle = (pct: number, color: string) => ({
     <IndicadoresGerais :items="indicadoresGerais" />
 
     <SectionHeader
-      title="Gestão de Abandono"
-      subtitle="Monitoramento das desistências e identificação de pontos críticos da jornada."
+      title="Onde o atendimento foi abandonado"
+      subtitle="Etapa da jornada em que o beneficiário desistiu · por assunto e por canal."
       action-to="/gestor/abandonos-detalhe"
     />
 
-    <!-- Linha 1: Por Canal · Por Fluxo (BOT) · Por Fila Humana -->
+    <!-- Linha 1: Por Canal · No automatizado · Em espera na fila -->
     <div class="grid gap-4 lg:grid-cols-3">
       <ChartCard title="Por Canal" :subtitle="`Total: ${porCanal.total} abandonos`">
         <div class="relative h-36 w-full">
@@ -191,75 +208,95 @@ const ringStyle = (pct: number, color: string) => ({
         </div>
       </ChartCard>
 
-      <ChartCard title="Por Fluxo (BOT)" subtitle="etapa onde o cliente desiste">
-        <StackedBarList :items="porFluxoBot" :max="20" bar-class="bg-ms-primary" />
+      <ChartCard
+        title="No atendimento automatizado"
+        subtitle="Etapa do fluxo onde o beneficiário desistiu · clique para abrir os protocolos"
+      >
+        <StackedBarList
+          :items="porFluxoBot"
+          :max="20"
+          bar-class="bg-ms-primary"
+          clickable
+          @item-click="abrirBotItem"
+        />
       </ChartCard>
 
-      <ChartCard title="Por Fila Humana" subtitle="% de abandono na fila">
-        <StackedBarList :items="porFilaHumana" :max="40" bar-class="bg-ms-success" />
+      <ChartCard
+        title="Em espera na fila"
+        subtitle="% dos beneficiários que aguardavam e desistiram antes do atendimento · clique para abrir"
+      >
+        <StackedBarList
+          :items="porFilaHumana"
+          :max="40"
+          bar-class="bg-ms-warning"
+          clickable
+          @item-click="abrirEsperaItem"
+        />
       </ChartCard>
     </div>
 
-    <!-- Linha 2: Comparativo BOT vs Humano · Abandono por Fluxo (BOT × Humano) -->
+    <!-- Linha 2: Comparativo por etapa · Abandono por assunto (barras) -->
     <div class="grid gap-4 lg:grid-cols-2">
       <ChartCard
-        title="Comparativo: Abandono BOT vs Humano"
+        title="Comparativo: abandono por etapa da jornada"
         :subtitle="`Distribuição dos ${comparativo.total} casos de abandono`"
       >
         <div class="flex items-center justify-center gap-6 py-2">
           <div class="text-center">
             <div
               class="relative mx-auto h-20 w-20 rounded-full"
-              :style="ringStyle(comparativo.bot.pct, C.primary)"
+              :style="ringStyle(comparativo.automatizado.pct, C.primary)"
             >
               <div
                 class="absolute inset-[6px] flex flex-col items-center justify-center rounded-full bg-ms-surface"
               >
                 <span class="text-2xs font-semibold uppercase text-ms-text-secondary"
-                  >BOT {{ comparativo.bot.pct }}%</span
+                  >Automat. {{ comparativo.automatizado.pct }}%</span
                 >
-                <span class="text-xl font-bold text-ms-primary">{{ comparativo.bot.casos }}</span>
+                <span class="text-xl font-bold text-ms-primary">{{ comparativo.automatizado.casos }}</span>
               </div>
             </div>
+            <p class="mt-1 text-2xs text-ms-text-secondary">No automatizado</p>
           </div>
           <span class="text-sm font-medium text-ms-text-secondary">VS</span>
           <div class="text-center">
             <div
               class="relative mx-auto h-20 w-20 rounded-full"
-              :style="ringStyle(comparativo.humano.pct, C.success)"
+              :style="ringStyle(comparativo.emEspera.pct, C.warning)"
             >
               <div
                 class="absolute inset-[6px] flex flex-col items-center justify-center rounded-full bg-ms-surface"
               >
                 <span class="text-2xs font-semibold uppercase text-ms-text-secondary"
-                  >Humano {{ comparativo.humano.pct }}%</span
+                  >Em espera {{ comparativo.emEspera.pct }}%</span
                 >
-                <span class="text-xl font-bold text-ms-success">{{ comparativo.humano.casos }}</span>
+                <span class="text-xl font-bold text-ms-warning">{{ comparativo.emEspera.casos }}</span>
               </div>
             </div>
+            <p class="mt-1 text-2xs text-ms-text-secondary">Em espera</p>
           </div>
         </div>
         <div class="mt-auto space-y-1 border-t border-ms-border-lighter pt-2 text-xs">
           <div class="flex justify-between">
-            <span class="text-ms-text-secondary">Humano abandona</span>
+            <span class="text-ms-text-secondary">Proporção</span>
             <span class="font-semibold text-ms-text-primary">{{ comparativo.mult }}</span>
           </div>
           <div class="flex justify-between">
             <span class="text-ms-text-secondary">TME desistência médio</span>
             <span class="text-ms-text-primary"
-              >BOT {{ comparativo.tmeBot }} · Humano {{ comparativo.tmeHumano }}</span
+              >Automat. {{ comparativo.tmeAutomatizado }} · Em espera {{ comparativo.tmeEmEspera }}</span
             >
           </div>
           <div class="flex justify-between gap-4">
             <span class="shrink-0 text-ms-text-secondary">Insight</span>
-            <span class="text-right font-medium text-ms-success">{{ comparativo.insight }}</span>
+            <span class="text-right font-medium text-ms-warning">{{ comparativo.insight }}</span>
           </div>
         </div>
       </ChartCard>
 
       <ChartCard
-        title="Abandono por Fluxo — BOT vs Humano"
-        subtitle="% de abandono em cada canal por fluxo"
+        title="Abandono por assunto — Automatizado × Humano"
+        subtitle="% de abandono em cada etapa por assunto"
       >
         <div class="w-full flex-1" style="min-height: 200px">
           <VChart class="h-full w-full" :option="fluxoBotHumanoOption" autoresize />
@@ -268,10 +305,10 @@ const ringStyle = (pct: number, color: string) => ({
       </ChartCard>
     </div>
 
-    <!-- Scatter diagnóstico (por fluxo) -->
+    <!-- Scatter diagnóstico (por assunto) -->
     <ChartCard
-      title="Abandono BOT × Humano por Fluxo"
-      subtitle="tamanho do ponto = volume do fluxo · matriz de diagnóstico da jornada"
+      title="Automatizado × Humano por assunto"
+      subtitle="tamanho do ponto = volume do assunto · matriz de diagnóstico da jornada · clique para abrir"
     >
       <div class="h-72 w-full">
         <VChart

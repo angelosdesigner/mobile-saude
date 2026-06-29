@@ -54,8 +54,8 @@ function abrirCanal(params: { name?: string }) {
     router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', canal: params.name } })
 }
 
-// "Chamadas abandonadas" → aba Abandonos (agrupador "Filas de abandono"), de
-// onde se drilla por fila até os protocolos. Padrão indicador → fila → registro.
+// "Chamadas abandonadas" → aba Abandonos (visão por etapa da jornada), de
+// onde se drilla por assunto/etapa até os protocolos. Padrão: indicador → etapa → registro.
 function abrirAbandonos() {
   router.push({ path: '/gestor/tempo-real', query: { tab: 'abandonos' } })
 }
@@ -99,7 +99,7 @@ const canalLegend = computed(() =>
   })),
 )
 const abandonoLegend = computed(() => [
-  { label: 'BOT', color: atendimentoCor(C).bot },
+  { label: 'Automatizado', color: atendimentoCor(C).bot },
   { label: 'Humano', color: atendimentoCor(C).humano },
 ])
 const demandaLegend = computed(() => [
@@ -127,7 +127,7 @@ const canalOption = computed(() => ({
 
 const abandonoOption = computed(() => ({
   tooltip: { trigger: 'axis', valueFormatter: (v: number) => `${v}%` },
-  // Legenda BOT/Humano renderizada em HTML (ChartLegend) no rodapé do card —
+  // Legenda Automatizado/Em espera renderizada em HTML (ChartLegend) no rodapé —
   // evita a sobreposição com os rótulos do eixo X.
   grid: { left: 32, right: 8, top: 12, bottom: 34 },
   xAxis: {
@@ -150,15 +150,15 @@ const abandonoOption = computed(() => ({
   },
   series: [
     {
-      name: 'BOT',
+      name: 'Automatizado',
       type: 'bar',
-      data: abandonoFluxo.bot,
+      data: abandonoFluxo.automatizado,
       itemStyle: { color: atendimentoCor(C).bot, borderRadius: [3, 3, 0, 0] },
     },
     {
       name: 'Humano',
       type: 'bar',
-      data: abandonoFluxo.humano,
+      data: abandonoFluxo.emEspera,
       itemStyle: { color: atendimentoCor(C).humano, borderRadius: [3, 3, 0, 0] },
     },
   ],
@@ -354,8 +354,8 @@ const demandaOption = computed(() => ({
       </ChartCard>
 
       <ChartCard
-        title="Filas de abandono — BOT vs Humano"
-        subtitle="% de abandono em cada fila · ver agrupador de filas"
+        title="Abandono por assunto — Automatizado × Humano"
+        subtitle="% de abandono em cada tipo de assunto · clique para ver o detalhe"
         :to="{ path: '/gestor/tempo-real', query: { tab: 'abandonos' } }"
       >
         <div class="w-full flex-1" style="min-height: 200px">

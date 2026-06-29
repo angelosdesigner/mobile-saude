@@ -286,7 +286,12 @@ function cancelTransfer() {
               <span v-if="item.tempoBot" class="text-2xs font-medium text-ms-text-secondary">{{ item.tempoBot }}</span>
             </div>
           </div>
-          <div class="mt-2 space-y-1 text-xs text-ms-text-regular">
+          <div class="mt-1.5 flex items-baseline gap-0.5 text-xs">
+            <span class="font-medium text-ms-text-primary">{{ item.tipo }}</span>
+            <span v-if="item.assunto" class="text-ms-text-placeholder"> › </span>
+            <span v-if="item.assunto" class="text-2xs text-ms-text-secondary">{{ item.assunto }}</span>
+          </div>
+          <div class="mt-1.5 space-y-1 text-xs text-ms-text-regular">
             <div>Fluxo: <span class="text-ms-text-secondary">{{ item.fluxo }}</span></div>
             <div v-if="item.no" class="inline-flex items-center gap-1 rounded border border-ms-border-light bg-ms-surface px-1.5 py-0.5 text-2xs text-ms-text-secondary">
               Nó: {{ item.no }}
@@ -305,7 +310,12 @@ function cancelTransfer() {
           <div class="flex items-start justify-between gap-2">
             <span class="text-sm font-semibold leading-snug text-ms-text-primary">{{ item.beneficiary }}</span>
           </div>
-          <div class="mt-2 space-y-0.5 text-xs text-ms-text-regular">
+          <div class="mt-1.5 flex items-baseline gap-0.5 text-xs">
+            <span class="font-medium text-ms-text-primary">{{ item.tipo }}</span>
+            <span v-if="item.assunto" class="text-ms-text-placeholder"> › </span>
+            <span v-if="item.assunto" class="text-2xs text-ms-text-secondary">{{ item.assunto }}</span>
+          </div>
+          <div class="mt-1.5 space-y-0.5 text-xs text-ms-text-regular">
             <div>Fila: <span class="text-ms-text-secondary">{{ item.filaTipo }}</span></div>
             <div class="flex items-center gap-2">
               <span>Posição: <b class="text-ms-text-primary">{{ item.posicao }}º</b></span>
@@ -334,7 +344,12 @@ function cancelTransfer() {
               </span>
             </div>
           </div>
-          <div class="mt-2 space-y-0.5 text-xs text-ms-text-regular">
+          <div class="mt-1.5 flex items-baseline gap-0.5 text-xs">
+            <span class="font-medium text-ms-text-primary">{{ item.tipo }}</span>
+            <span v-if="item.assunto" class="text-ms-text-placeholder"> › </span>
+            <span v-if="item.assunto" class="text-2xs text-ms-text-secondary">{{ item.assunto }}</span>
+          </div>
+          <div class="mt-1.5 space-y-0.5 text-xs text-ms-text-regular">
             <div>Atendente: <span class="text-ms-text-secondary">{{ item.atendente }}</span></div>
             <div>Tempo: <span class="text-ms-text-secondary">{{ item.tempoAtendimento }}</span></div>
           </div>

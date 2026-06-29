@@ -11,7 +11,7 @@ import type { DataListColumn } from '@/components/ui/dataList'
 import FilterChips from '@/components/ui/FilterChips.vue'
 import { useActionFeedback } from '@/composables/useActionFeedback'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
-import { FILAS_CANONICAS, CANAIS_CANONICOS, TIPOS_OCORRENCIA } from '@/data/gestorTaxonomia'
+import { FILAS_CANONICAS, CANAIS_CANONICOS, TIPOS_OCORRENCIA, tiposDaFila } from '@/data/gestorTaxonomia'
 import { stages, type StageTone, type GestorCard } from '@/types/gestorOcorrencias'
 
 const route = useRoute()
@@ -107,9 +107,10 @@ const stageMeta = Object.fromEntries(stages.map((s) => [s.key, s])) as Record<
 
 // Rótulos da coluna "Etapa atual" (lista) — distintos dos headers do Kanban.
 // "Atendimento automatizado" engloba Chatbot e URA (conceito da operação).
+// "Em espera na fila" é mais descritivo que "Fila" no contexto de abandono.
 const etapaLabel: Record<GestorCard['stage'], string> = {
   automatizado: 'Atendimento automatizado',
-  fila: 'Fila',
+  fila: 'Em espera na fila',
   humano: 'Atendimento humano',
   concluido: 'Concluídos no dia',
 }
@@ -177,20 +178,6 @@ const viewMode = computed({
   set: (v) => router.replace({ query: { ...route.query, view: v } }),
 })
 
-// Filtros multi-seleção atrelados ao contexto (store + URL).
-const filterDefs = [
-  {
-    label: 'Fila',
-    ctxKey: 'fila' as const,
-    options: [...FILAS_CANONICAS],
-  },
-  { label: 'Tipo de ocorrência', ctxKey: 'tipo' as const, options: [...TIPOS_OCORRENCIA] },
-  {
-    label: 'Canal',
-    ctxKey: 'canal' as const,
-    options: [...CANAIS_CANONICOS],
-  },
-]
 const atendenteOptions = ['Ana Silva', 'Lucas Mendes', 'Ana Souza']
 
 // Todos os filtros são MULTI-seleção. O store guarda cada um como lista separada
@@ -221,6 +208,23 @@ const ctxModels: Record<CtxKey, ReturnType<typeof ctxModel>> = {
   stage: ctxModel('stage'),
   tipo: ctxModel('tipo'),
 }
+
+// Tipos disponíveis em cascata: selecionar uma fila restringe as opções de tipo
+// aos tipos pertencentes àquela fila (vínculo fila ↔ tipo da taxonomia).
+// Sem fila selecionada, todos os tipos ficam disponíveis.
+const tipoOptions = computed(() => {
+  const filasSelecionadas = ctxModels.fila.value
+  if (!filasSelecionadas.length) return [...TIPOS_OCORRENCIA]
+  const tipos = new Set(filasSelecionadas.flatMap((f) => tiposDaFila(f)))
+  return tipos.size > 0 ? [...tipos] : [...TIPOS_OCORRENCIA]
+})
+
+// Filtros atrelados ao contexto (store + URL). Tipo cascateia com Fila.
+const filterDefs = computed(() => [
+  { label: 'Fila', ctxKey: 'fila' as const, options: [...FILAS_CANONICAS] },
+  { label: 'Tipo de ocorrência', ctxKey: 'tipo' as const, options: tipoOptions.value },
+  { label: 'Canal', ctxKey: 'canal' as const, options: [...CANAIS_CANONICOS] },
+])
 
 const pillDot: Record<StageTone | 'info', string> = {
   primary: 'bg-ms-primary',
@@ -409,7 +413,10 @@ const pillDot: Record<StageTone | 'info', string> = {
 
         <!-- Tipo de ocorrência -->
         <template #cell-tipo="{ row }">
-          <span class="text-xs text-ms-text-regular">{{ row.tipo ?? '—' }}</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-xs font-medium text-ms-text-primary">{{ row.tipo ?? '—' }}</span>
+            <span v-if="row.assunto" class="text-2xs text-ms-text-secondary">{{ row.assunto }}</span>
+          </div>
         </template>
 
         <!-- Etapa atual (status legítimo: dot + texto colorido, sem fundo cheio) -->

@@ -114,3 +114,32 @@ export const TIPOS_OCORRENCIA = [
 // ── Prioridade ────────────────────────────────────────────────────────────────
 /** Prioridades canônicas (estilo Jira) — usadas na coluna, no kanban e no filtro. */
 export const PRIORIDADES = ['Alta', 'Média', 'Baixa'] as const
+
+// ── Vínculo fila → tipos de ocorrência ────────────────────────────────────────
+// Define explicitamente quais tipos de ocorrência pertencem a cada fila. Usado
+// para: (1) cascata de filtro (selecionar fila → restringe opções de tipo);
+// (2) casamento de cards em stage humano/concluido pelo passesContext, onde
+// filaTipo e fluxo não existem — só tipo está disponível.
+export const FILA_TIPOS_MAP: Record<string, readonly string[]> = {
+  'Reembolso': ['Reembolso'],
+  'Autorização': ['Autorização'],
+  'Financeiro': ['Financeiro', '2ª via de boleto'],
+  'Dúvidas Administrativas': ['Dúvida contratual', 'Carência'],
+}
+
+/** Mapa inverso: tipo de ocorrência → fila canônica. */
+export const TIPO_FILA_MAP: Record<string, string> = Object.fromEntries(
+  (Object.entries(FILA_TIPOS_MAP) as [string, readonly string[]][]).flatMap(([fila, tipos]) =>
+    tipos.map((t) => [t, fila]),
+  ),
+)
+
+/** Fila canônica de um tipo de ocorrência. Sem match: retorna o próprio tipo. */
+export function filaDoTipo(tipo: string): string {
+  return TIPO_FILA_MAP[tipo] ?? tipo
+}
+
+/** Tipos de ocorrência pertencentes a uma fila canônica. */
+export function tiposDaFila(fila: string): string[] {
+  return [...(FILA_TIPOS_MAP[fila] ?? [])]
+}

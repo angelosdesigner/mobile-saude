@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useGestorOcorrenciasStore } from './gestorOcorrencias'
-import { normalizeFila, normalizeCanal } from '@/data/gestorTaxonomia'
+import { normalizeFila, normalizeCanal, filaDoTipo } from '@/data/gestorTaxonomia'
 
 describe('gestorTaxonomia · normalização', () => {
   it('normalizeFila colapsa sinônimos no nome canônico', () => {
@@ -46,23 +46,26 @@ describe('useGestorOcorrenciasStore · filtros de contexto (drill-down)', () => 
     expect(store.filtered.every((c) => c.stage === 'fila')).toBe(true)
   })
 
-  it('filtra por fila casando filaTipo ou fluxo (normalizado)', () => {
+  it('filtra por fila casando filaTipo, fluxo ou mapeamento tipo→fila', () => {
     store.setContext({ fila: 'Reembolso' })
     expect(store.filtered.length).toBeGreaterThan(0)
     expect(
       store.filtered.every(
-        (c) => normalizeFila(c.filaTipo ?? '') === 'Reembolso' || normalizeFila(c.fluxo ?? '') === 'Reembolso',
+        (c) =>
+          normalizeFila(c.filaTipo ?? '') === 'Reembolso' ||
+          normalizeFila(c.fluxo ?? '') === 'Reembolso' ||
+          (c.tipo ? normalizeFila(filaDoTipo(c.tipo)) === 'Reembolso' : false),
       ),
     ).toBe(true)
   })
 
-  it('fila tolera sinônimos: "Dúvidas Adm." e "Dúvida contratual" dão o mesmo conjunto', () => {
+  it('fila tolera sinônimos: "Dúvidas Adm." casa os mesmos cards que "Dúvidas Administrativas"', () => {
     store.setContext({ fila: 'Dúvidas Administrativas' })
     const canonico = store.filtered.map((c) => c.id).sort()
     store.setContext({ fila: 'Dúvidas Adm.' })
     expect(store.filtered.map((c) => c.id).sort()).toEqual(canonico)
-    // e casa o card cujo filaTipo é "Dúvida contratual"
-    expect(store.filtered.some((c) => c.filaTipo === 'Dúvida contratual')).toBe(true)
+    // inclui o card cujo filaTipo é o nome canônico da fila
+    expect(store.filtered.some((c) => c.filaTipo === 'Dúvidas Administrativas')).toBe(true)
   })
 
   it('filtra por canal agrupando Chat e WhatsApp', () => {

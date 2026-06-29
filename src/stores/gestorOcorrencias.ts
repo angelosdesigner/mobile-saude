@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { GestorCard, GestorStage, StatusPill, StageHeader } from '@/types/gestorOcorrencias'
 import { stages } from '@/types/gestorOcorrencias'
-import { normalizeFila, normalizeCanal } from '@/data/gestorTaxonomia'
+import { normalizeFila, normalizeCanal, filaDoTipo } from '@/data/gestorTaxonomia'
 import { fetchGestorBoard } from '@/services/gestorService'
 import type { ChipTone } from '@/components/ui/filterChips'
 
@@ -157,15 +157,20 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     const atendentes = selList(f.atendente)
     if (atendentes.length && !atendentes.includes(c.atendente ?? '')) return false
 
-    // "Fila" casa tanto o tipo de fila quanto o fluxo (Reembolso, Autorização…),
-    // pois um mesmo assunto aparece como `fluxo` no BOT e `filaTipo` na fila.
-    // Normaliza os dois lados (taxonomia única) para tolerar variações de grafia.
+    // "Fila" casa: filaTipo (stage fila), fluxo (stage automatizado) ou o
+    // mapeamento tipo→fila da taxonomia (cobre stages humano/concluido, onde
+    // filaTipo e fluxo não são definidos). Normaliza ambos os lados para tolerar
+    // variações de grafia.
     const filas = selList(f.fila)
     if (
       filas.length &&
       !filas.some((s) => {
         const alvo = normalizeFila(s)
-        return normalizeFila(c.filaTipo ?? '') === alvo || normalizeFila(c.fluxo ?? '') === alvo
+        return (
+          normalizeFila(c.filaTipo ?? '') === alvo ||
+          normalizeFila(c.fluxo ?? '') === alvo ||
+          (c.tipo ? normalizeFila(filaDoTipo(c.tipo)) === alvo : false)
+        )
       })
     )
       return false

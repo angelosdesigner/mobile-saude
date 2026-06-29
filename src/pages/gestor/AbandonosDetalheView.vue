@@ -26,6 +26,7 @@ import {
   proximaAcao,
   type EvolucaoMetrica,
   type AbandonoStatus,
+  type EtapaAbandono,
 } from '@/data/gestorAbandonosDetalhe'
 import { normalizeFila } from '@/data/gestorTaxonomia'
 import { escalarVolume } from '@/data/gestorPeriodo'
@@ -55,7 +56,7 @@ const indicadoresPeriodo = computed(() =>
 // ── 3) Evolução: abandonos por hora (contagem) ───────────────────────────────
 const evolucaoOption = computed(() => {
   const serie = evolucao.series[metrica.value]
-  const cor = metrica.value === 'Humano' ? C.success : C.primary
+  const cor = metrica.value === 'Em espera' ? C.warning : C.primary
   return {
     tooltip: { trigger: 'axis' },
     grid: { left: 32, right: 16, top: 20, bottom: 36 },
@@ -106,39 +107,40 @@ const evolucaoOption = computed(() => {
   }
 })
 
-// ── 2) Tabela — Filas de abandono ────────────────────────────────────────────
-// Sem coluna Volume (decisão do gestor): foco em total de abandono · BOT% · humano%.
+// ── 2) Tabela — ponto de abandono por assunto ────────────────────────────────
+// Foco: onde o abandono ocorreu (automatizado vs em espera) e para qual assunto.
 const statusOrder: Record<AbandonoStatus, number> = { OK: 0, Médio: 1, Alto: 2, Crítico: 3 }
 const filaColumns: DataListColumn[] = [
-  { key: 'fila', label: 'Fila', minWidth: 200, sortable: true },
-  { key: 'abandonos', label: 'Abandonos', align: 'right', width: 120, sortable: true },
-  { key: 'bot', label: 'Aband. BOT', align: 'right', width: 120, sortBy: (r) => r.bot as number },
-  { key: 'humana', label: 'Aband. humana', align: 'right', width: 140, sortBy: (r) => r.humana as number },
-  { key: 'origem', label: 'Origem', width: 110 },
-  { key: 'status', label: 'Status', width: 120, sortBy: (r) => statusOrder[r.status as AbandonoStatus] },
+  { key: 'fila',      label: 'Assunto',         minWidth: 200, sortable: true },
+  { key: 'abandonos', label: 'Abandonos',        align: 'right', width: 120, sortable: true },
+  { key: 'bot',       label: 'No automatizado',  align: 'right', width: 148, sortBy: (r) => r.bot as number },
+  { key: 'humana',    label: 'Em espera',        align: 'right', width: 130, sortBy: (r) => r.humana as number },
+  { key: 'origem',    label: 'Ponto principal',  width: 140 },
+  { key: 'status',    label: 'Status',           width: 120, sortBy: (r) => statusOrder[r.status as AbandonoStatus] },
 ]
 
 // ── 4) Correlação ────────────────────────────────────────────────────────────
 const correlColumns: DataListColumn[] = [
-  { key: 'fila', label: 'Fila', minWidth: 200, sortable: true },
-  { key: 'bot', label: 'Aband. BOT', align: 'right', width: 120, sortBy: (r) => r.bot as number },
-  { key: 'humana', label: 'Aband. humana', align: 'right', width: 140, sortBy: (r) => r.humana as number },
-  { key: 'gargalo', label: 'Gargalo', minWidth: 260 },
-  { key: 'status', label: 'Status', width: 120, sortBy: (r) => statusOrder[r.status as AbandonoStatus] },
+  { key: 'fila',   label: 'Assunto',        minWidth: 200, sortable: true },
+  { key: 'bot',    label: 'No automatizado',align: 'right', width: 148, sortBy: (r) => r.bot as number },
+  { key: 'humana', label: 'Em espera',      align: 'right', width: 130, sortBy: (r) => r.humana as number },
+  { key: 'gargalo',label: 'Diagnóstico',    minWidth: 260 },
+  { key: 'status', label: 'Status',         width: 120, sortBy: (r) => statusOrder[r.status as AbandonoStatus] },
 ]
 
 const statusTone: Record<AbandonoStatus, { text: string; dot: string }> = {
-  Crítico: { text: 'text-ms-danger', dot: 'bg-ms-danger' },
-  Alto: { text: 'text-ms-warning', dot: 'bg-ms-warning' },
-  Médio: { text: 'text-ms-warning', dot: 'bg-ms-warning/60' },
-  OK: { text: 'text-ms-success', dot: 'bg-ms-success' },
+  Crítico: { text: 'text-ms-danger',  dot: 'bg-ms-danger'      },
+  Alto:    { text: 'text-ms-warning', dot: 'bg-ms-warning'     },
+  Médio:   { text: 'text-ms-warning', dot: 'bg-ms-warning/60'  },
+  OK:      { text: 'text-ms-success', dot: 'bg-ms-success'     },
 }
-const origemTone: Record<'BOT' | 'Humano' | 'Misto', string> = {
-  BOT: 'text-ms-primary',
-  Humano: 'text-ms-success',
-  Misto: 'text-ms-text-secondary',
+// "Ponto principal" = etapa onde o abandono predomina.
+const etapaTone: Record<EtapaAbandono, string> = {
+  Automatizado: 'text-ms-primary',
+  'Em espera':  'text-ms-warning',
+  Misto:        'text-ms-text-secondary',
 }
-const botTone = (v: number) => (v >= 10 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
+const botTone    = (v: number) => (v >= 10 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
 const humanaTone = (v: number) => (v >= 10 ? 'text-ms-danger font-medium' : 'text-ms-text-regular')
 </script>
 
@@ -197,10 +199,10 @@ const humanaTone = (v: number) => (v >= 10 ? 'text-ms-danger font-medium' : 'tex
       />
     </div>
 
-    <!-- 2) Tabela — Filas de abandono -->
+    <!-- 2) Tabela — Ponto de abandono por assunto -->
     <ChartCard
-      title="Filas de abandono"
-      subtitle="Onde o beneficiário desiste · por fila · clique numa fila para abrir os protocolos"
+      title="Onde o atendimento foi abandonado"
+      subtitle="Por assunto · etapa onde o beneficiário desistiu · clique num assunto para abrir os protocolos"
       class="mb-5"
     >
       <DataList
@@ -227,7 +229,7 @@ const humanaTone = (v: number) => (v >= 10 ? 'text-ms-danger font-medium' : 'tex
           <span class="font-medium" :class="humanaTone(row.humana)">{{ row.humana }}%</span>
         </template>
         <template #cell-origem="{ row }">
-          <span class="text-xs font-semibold" :class="origemTone[row.origem]">{{ row.origem }}</span>
+          <span class="text-xs font-semibold" :class="etapaTone[row.origem as EtapaAbandono]">{{ row.origem }}</span>
         </template>
         <template #cell-status="{ row }">
           <span class="flex items-center gap-1.5 text-xs font-semibold" :class="statusTone[row.status].text">
@@ -254,7 +256,7 @@ const humanaTone = (v: number) => (v >= 10 ? 'text-ms-danger font-medium' : 'tex
     <!-- 4) Correlação -->
     <ChartCard
       title="Correlação operacional"
-      subtitle="Abandono BOT × Abandono humano · Por fila · Identificação de gargalos"
+      subtitle="No automatizado × Em espera · por assunto · identificação de gargalos por etapa"
       class="mb-3"
     >
       <DataList
