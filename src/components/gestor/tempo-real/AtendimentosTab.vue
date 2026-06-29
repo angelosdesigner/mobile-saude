@@ -254,12 +254,12 @@ const autoValue = 'text-ms-text-primary'
             @click="abrirCanal"
           />
         </div>
-        <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-2xs text-ms-text-secondary">
+        <div class="mt-auto flex flex-wrap items-center justify-center gap-3 pt-3 text-2xs text-ms-text-secondary">
           <span class="flex items-center gap-1"
             ><span class="h-2 w-2 rounded-full bg-ms-success" />&lt; 70% saudável</span
           >
           <span class="flex items-center gap-1"
-            ><span class="h-2 w-2 rounded-full bg-ms-warning" />70-89% atenção</span
+            ><span class="h-2 w-2 rounded-full bg-ms-warning" />70–89% atenção</span
           >
           <span class="flex items-center gap-1"
             ><span class="h-2 w-2 rounded-full bg-ms-danger" />&gt; 90% crítico</span

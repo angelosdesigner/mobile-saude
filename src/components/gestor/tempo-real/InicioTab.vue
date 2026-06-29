@@ -361,7 +361,7 @@ const demandaOption = computed(() => ({
         <div class="w-full flex-1" style="min-height: 200px">
           <VChart class="h-full w-full" :option="abandonoOption" autoresize />
         </div>
-        <ChartLegend :items="abandonoLegend" class="mt-3" />
+        <ChartLegend :items="abandonoLegend" class="mt-auto pt-3" />
       </ChartCard>
 
       <ChartCard
@@ -372,7 +372,7 @@ const demandaOption = computed(() => ({
         <div class="w-full flex-1" style="min-height: 200px">
           <VChart class="h-full w-full" :option="demandaOption" autoresize />
         </div>
-        <ChartLegend :items="demandaLegend" class="mt-3" />
+        <ChartLegend :items="demandaLegend" class="mt-auto pt-3" />
       </ChartCard>
     </div>
   </div>
