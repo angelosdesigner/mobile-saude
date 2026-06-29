@@ -2,7 +2,7 @@
 // Ação flutuante GLOBAL do gestor: "Status atual das Equipes". Fechado = widget
 // compacto (barra segmentada + 3 stats); aberto = quick panel com filtros por
 // equipe e canal, breakdown por equipe e CTA para a aba Equipe.
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   equipeStatusResumo,
@@ -96,6 +96,15 @@ onMounted(() => {
   } catch {
     /* ignore */
   }
+  // Garante que a posição salva caiba na viewport atual: a janela pode ter
+  // diminuído (ou a posição ter sido salva fora) desde o último uso — sem isto
+  // o widget renderiza fora da tela e parece ter "sumido". Persiste o ajuste.
+  nextTick(() => {
+    if (pos.value && el.value) {
+      pos.value = clamp(pos.value.left, pos.value.top)
+      savePos()
+    }
+  })
 })
 onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize)
