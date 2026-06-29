@@ -27,7 +27,7 @@ withDefaults(defineProps<{ title: string; subtitle?: string; to?: RouteLocationR
         v-if="to"
         :to="to"
         class="shrink-0 whitespace-nowrap text-2xs font-medium text-ms-primary no-underline hover:underline"
-        >Ver detalhes →</router-link
+        >Detalhes →</router-link
       >
     </div>
     <div class="flex flex-1 flex-col">

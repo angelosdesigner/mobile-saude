@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
@@ -9,6 +9,7 @@ import ChannelTag from '@/components/ui/ChannelTag.vue'
 import BaseBadge from '@/components/base/BaseBadge.vue'
 import type { DataListColumn } from '@/components/ui/dataList'
 import FilterChips from '@/components/ui/FilterChips.vue'
+import GestorFiltrosAvancados from '@/components/gestor/GestorFiltrosAvancados.vue'
 import { useActionFeedback } from '@/composables/useActionFeedback'
 import { useGestorOcorrenciasStore } from '@/stores/gestorOcorrencias'
 import { FILAS_CANONICAS, CANAIS_CANONICOS, TIPOS_OCORRENCIA, tiposDaFila } from '@/data/gestorTaxonomia'
@@ -17,14 +18,16 @@ import { stages, type StageTone, type GestorCard } from '@/types/gestorOcorrenci
 const route = useRoute()
 const router = useRouter()
 
+const showAvancados = ref(false)
+
 const store = useGestorOcorrenciasStore()
 const { statusPills, stats, loading, search, filtered, quickFilters, contextFilters, hasContext } =
   storeToRefs(store)
 
 // "Concluídos hoje" é separado do estado atual: não compõe a visão "ativos
 // agora" (histórico fica na lista). A barra de status renderiza os dois grupos.
-const ativosPills = computed(() => statusPills.value.filter((p) => p.label !== 'CONCLUÍDOS HOJE'))
-const concluidosPill = computed(() => statusPills.value.find((p) => p.label === 'CONCLUÍDOS HOJE'))
+const ativosPills = computed(() => statusPills.value.filter((p) => p.label !== 'CONCLUÍDOS NO DIA'))
+const concluidosPill = computed(() => statusPills.value.find((p) => p.label === 'CONCLUÍDOS NO DIA'))
 
 // Lê os filtros de contexto da URL (drill-down vindo do dashboard) e os aplica
 // ao store. Reage a navegações posteriores para a mesma rota com outra query.
@@ -377,10 +380,7 @@ const pillDot: Record<StageTone | 'info', string> = {
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <!-- No modo lista a configuração de colunas fica no ▥ da própria tabela. -->
-        <el-button v-if="viewMode === 'quadro'" @click="comingSoon('Configurar colunas')"
-          >Configurar colunas</el-button
-        >
+        <el-button @click="showAvancados = true">Filtros avançados</el-button>
       </div>
     </div>
 
@@ -511,5 +511,7 @@ const pillDot: Record<StageTone | 'info', string> = {
         </template>
       </DataList>
     </div>
+
+    <GestorFiltrosAvancados v-model="showAvancados" />
   </DashboardLayout>
 </template>

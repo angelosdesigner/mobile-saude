@@ -110,6 +110,8 @@ export const andamento = [
   { label: 'Atendimento humano', value: 56, tone: 'success' as const, filtro: 'humano' },
 ]
 
+export const concluidosNoDia = 47
+
 export const ocupacaoFila = [
   { label: 'Financeiro (Boleto)', value: 92, caption: '92% (20min)' },
   { label: 'Reembolso', value: 90, caption: '90% (15min)' },

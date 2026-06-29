@@ -13,11 +13,13 @@ const props = withDefaults(
     action?: string
     /** Rota de destino do CTA. Quando ausente, o botão só dá feedback (toast). */
     actionTo?: RouteLocationRaw
+    showAction?: boolean
   }>(),
   {
     subtitle: undefined,
-    action: 'Acessar detalhes',
+    action: 'Detalhes',
     actionTo: undefined,
+    showAction: true,
   },
 )
 
@@ -36,6 +38,6 @@ function onAction() {
       <h2 class="text-sm font-bold uppercase tracking-wide text-ms-text-primary">{{ title }}</h2>
       <p v-if="subtitle" class="text-xs text-ms-text-secondary">{{ subtitle }}</p>
     </div>
-    <el-button size="small" @click="onAction">{{ props.action }}</el-button>
+    <el-button v-if="showAction" size="small" @click="onAction">{{ props.action }}</el-button>
   </div>
 </template>

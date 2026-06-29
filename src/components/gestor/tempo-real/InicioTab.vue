@@ -13,6 +13,7 @@ import {
   chamadasNaFila,
   metricTiles,
   andamento,
+  concluidosNoDia,
   ocupacaoFila,
   ocupacaoAtendente,
   canalDistribuicao,
@@ -58,6 +59,10 @@ function abrirCanal(params: { name?: string }) {
 // onde se drilla por assunto/etapa até os protocolos. Padrão: indicador → etapa → registro.
 function abrirAbandonos() {
   router.push({ path: '/gestor/tempo-real', query: { tab: 'abandonos' } })
+}
+
+function abrirConcluidos() {
+  router.push({ path: '/gestor/ocorrencias', query: { view: 'lista', stage: 'concluido' } })
 }
 
 // Drill-down das ocupações: fila (normalizada) e atendente.
@@ -217,61 +222,81 @@ const demandaOption = computed(() => ({
     <SectionHeader
       title="Resumo Executivo da Operação"
       subtitle="Visão consolidada dos indicadores mais importantes da central de atendimento."
-      action-to="/gestor/indicadores"
+      :show-action="false"
     />
 
-    <!-- KPIs — todos no mesmo padrão (anel + número + infos), via KpiRingCard. -->
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <KpiRingCard
-        v-for="k in kpiGauges"
-        :key="k.label"
-        :value="k.value"
-        :display="k.display"
-        :label="k.label"
-        :delta="k.delta"
-        :delta-tone="k.deltaTone"
-        :meta="k.meta"
-        :tone="k.tone"
-        clickable
-        @click="goTarget(k.target)"
-      />
-      <!-- Chamadas abandonadas — taxa de abandono, mesmo padrão dos demais. -->
-      <KpiRingCard
-        :value="chamadasNaFila.abandono"
-        :display="`${ptNum(chamadasNaFila.abandono)}%`"
-        label="Chamadas abandonadas"
-        :delta="`${chamadasNaFila.delta}${chamadasNaFila.critico ? ' (crítico)' : ''}`"
-        delta-tone="danger"
-        tone="danger"
-        :legend="[
-          { label: `Abandonadas ${ptNum(chamadasNaFila.abandono)}%`, tone: 'danger' },
-          { label: `Atendidas ${ptNum(chamadasNaFila.atendidas)}%`, tone: 'success' },
-        ]"
-        clickable
-        @click="abrirAbandonos"
-      />
+    <!-- Layout 2 colunas: Atendimentos + Abandonados (esq) | Indicadores por importância (dir) -->
+    <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+      <!-- Coluna esquerda: volume de atendimentos e taxa de abandono -->
+      <div class="flex flex-col gap-4">
+        <p class="text-xs font-semibold uppercase tracking-wide text-ms-text-secondary">Atendimentos</p>
+        <MetricCard
+          :label="metricTiles[0].label"
+          :value="metricTiles[0].value"
+          :delta="metricTiles[0].delta"
+          :delta-tone="metricTiles[0].deltaTone"
+          :trend="metricTiles[0].trend"
+          class="cursor-pointer transition hover:shadow-md"
+          @click="goTarget(metricTiles[0].target)"
+        />
+        <KpiRingCard
+          :value="chamadasNaFila.abandono"
+          :display="`${ptNum(chamadasNaFila.abandono)}%`"
+          label="Chamadas abandonadas"
+          :delta="`${chamadasNaFila.delta}${chamadasNaFila.critico ? ' (crítico)' : ''}`"
+          delta-tone="danger"
+          tone="danger"
+          :legend="[
+            { label: `Abandonadas ${ptNum(chamadasNaFila.abandono)}%`, tone: 'danger' },
+            { label: `Atendidas ${ptNum(chamadasNaFila.atendidas)}%`, tone: 'success' },
+          ]"
+          clickable
+          @click="abrirAbandonos"
+        />
+      </div>
+
+      <!-- Coluna direita: indicadores por grau de importância (qualidade → eficiência) -->
+      <div class="flex flex-col gap-4">
+        <p class="text-xs font-semibold uppercase tracking-wide text-ms-text-secondary">Indicadores</p>
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <!-- Qualidade: FCR, Resolução de Chamados, NPS/Satisfação -->
+        <KpiRingCard
+          v-for="k in kpiGauges"
+          :key="k.label"
+          :value="k.value"
+          :display="k.display"
+          :label="k.label"
+          :delta="k.delta"
+          :delta-tone="k.deltaTone"
+          :meta="k.meta"
+          :tone="k.tone"
+          clickable
+          @click="goTarget(k.target)"
+        />
+        <!-- Eficiência: TMA, Tempo médio na fila, TME -->
+        <MetricCard
+          v-for="m in metricTiles.slice(1)"
+          :key="m.label"
+          :label="m.label"
+          :value="m.value"
+          :delta="m.delta"
+          :delta-tone="m.deltaTone"
+          :trend="m.trend"
+          class="cursor-pointer transition hover:shadow-md"
+          @click="goTarget(m.target)"
+        />
+        </div>
+      </div>
     </div>
 
-    <!-- Métricas -->
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <MetricCard
-        v-for="m in metricTiles"
-        :key="m.label"
-        :label="m.label"
-        :value="m.value"
-        :delta="m.delta"
-        :delta-tone="m.deltaTone"
-        :trend="m.trend"
-        class="cursor-pointer transition hover:shadow-md"
-        @click="goTarget(m.target)"
-      />
-    </div>
+    <div class="border-t border-ms-border-light" />
 
     <!-- Andamento + ocupações -->
     <div class="grid gap-4 lg:grid-cols-3">
       <ChartCard
         title="Ativos agora"
         subtitle="Tudo em atendimento agora · automatizado, fila e humano"
+        :to="{ path: '/gestor/ocorrencias', query: { view: 'lista' } }"
       >
         <!-- Total + barra de proporção das etapas ativas -->
         <div class="mb-3">
@@ -309,13 +334,30 @@ const demandaOption = computed(() => ({
             <span class="text-xl font-bold text-ms-text-primary">{{ a.value }}</span>
           </div>
         </div>
+        <!-- Concluídos no dia: total encerrado, separado dos estados ativos -->
+        <div class="mt-2 border-t border-ms-border-lighter pt-2">
+          <div
+            role="button"
+            tabindex="0"
+            :aria-label="`Concluídos no dia: ${concluidosNoDia} — abrir lista`"
+            class="flex cursor-pointer items-center justify-between rounded-lg border border-ms-border-light bg-ms-surface px-3 py-2 text-ms-teal transition hover:brightness-95"
+            @click="abrirConcluidos"
+            @keydown.enter.prevent="abrirConcluidos"
+            @keydown.space.prevent="abrirConcluidos"
+          >
+            <span class="flex items-center gap-2 text-xs font-semibold uppercase">
+              <span class="h-2 w-2 shrink-0 rounded-full bg-ms-teal" />Concluídos no dia
+            </span>
+            <span class="text-xl font-bold text-ms-text-primary">{{ concluidosNoDia }}</span>
+          </div>
+        </div>
       </ChartCard>
 
-      <ChartCard title="Ocupação por fila" subtitle="% de uso da capacidade e TMEF · clique para detalhar">
+      <ChartCard title="Ocupação por fila" subtitle="% de uso da capacidade e TMEF · clique para detalhar" :to="{ path: '/gestor/tempo-real', query: { tab: 'filas' } }">
         <BarList :items="ocupacaoFila" threshold-legend clickable @item-click="abrirFilaLista" />
       </ChartCard>
 
-      <ChartCard title="Ocupação por atendente" subtitle="% de uso da capacidade · clique para detalhar">
+      <ChartCard title="Ocupação por atendente" subtitle="% de uso da capacidade · clique para detalhar" :to="{ path: '/gestor/tempo-real', query: { tab: 'equipe' } }">
         <BarList :items="ocupacaoAtendente" rank rank-hint clickable @item-click="abrirAtendente" />
       </ChartCard>
     </div>
@@ -325,6 +367,7 @@ const demandaOption = computed(() => ({
       <ChartCard
         title="Distribuição de atendimentos por canal"
         subtitle="Total: 118 atendimentos ativos · clique numa fatia para detalhar"
+        :to="{ path: '/gestor/tempo-real', query: { tab: 'atendimentos' } }"
       >
         <div class="relative h-44 w-full">
           <VChart
@@ -367,7 +410,7 @@ const demandaOption = computed(() => ({
       <ChartCard
         title="Demanda × Capacidade"
         subtitle="Distribuição ao longo do dia · pico 14h-16h"
-        to="/gestor/performance-detalhe"
+        :to="{ path: '/gestor/tempo-real', query: { tab: 'performance' } }"
       >
         <div class="w-full flex-1" style="min-height: 200px">
           <VChart class="h-full w-full" :option="demandaOption" autoresize />

@@ -17,7 +17,7 @@ export const stages: StageMeta[] = [
   { key: 'automatizado', label: 'Atendimento Automatizado', tone: 'primary' },
   { key: 'fila', label: 'Fila', tone: 'warning' },
   { key: 'humano', label: 'Atendimento Humano', tone: 'success' },
-  { key: 'concluido', label: 'Concluídos hoje', tone: 'teal' },
+  { key: 'concluido', label: 'Concluídos no dia', tone: 'teal' },
 ]
 
 export type Canal = 'WhatsApp' | 'Portal' | 'App' | 'Telefone' | 'Balcão/Presencial' | 'URA'

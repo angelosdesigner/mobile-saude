@@ -15,17 +15,14 @@ const { board, headerByStage } = storeToRefs(store)
 const router = useRouter()
 
 // ── Colunas ──────────────────────────────────────────────────────────────────
-// O Kanban mostra apenas o ESTADO ATUAL (automatizado/fila/humano). Concluídos
-// (histórico do dia) saem do quadro e ficam só na visão de Lista.
+// Todas as 4 colunas do estágio: automatizado, fila, humano e concluídos no dia.
 const columns = computed<KanbanColumn[]>(() =>
-  stages
-    .filter((s) => s.key !== 'concluido')
-    .map((s) => ({
-      key: s.key,
-      label: s.label,
-      tone: s.tone,
-      meta: headerByStage.value[s.key]?.meta ?? [],
-    })),
+  stages.map((s) => ({
+    key: s.key,
+    label: s.label,
+    tone: s.tone,
+    meta: headerByStage.value[s.key]?.meta ?? [],
+  })),
 )
 
 // ── Estilos por tom ───────────────────────────────────────────────────────────
@@ -91,6 +88,7 @@ const filteredBoard = computed(() => ({
       matchText(c.atendente, filterHumano.value.atendente) &&
       (!filterHumano.value.sla || c.sla === filterHumano.value.sla),
   ),
+  concluido: board.value.concluido ?? [],
 }))
 
 function clearFilter(col: string) {
@@ -355,7 +353,7 @@ function cancelTransfer() {
           </div>
         </template>
 
-        <!-- ── Concluídos hoje ────────────────────────────────────────── -->
+        <!-- ── Concluídos no dia ─────────────────────────────────────── -->
         <template v-else>
           <div class="flex items-start justify-between gap-2">
             <span class="text-sm font-semibold leading-snug text-ms-text-primary">{{ item.beneficiary }}</span>

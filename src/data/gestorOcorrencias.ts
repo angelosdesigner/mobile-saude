@@ -8,7 +8,7 @@ export const statusPills: StatusPill[] = [
   { label: 'EM ATENDIMENTO AUTOMATIZADO', value: 84, tone: 'info' },
   { label: 'EM FILA', value: 23, tone: 'warning' },
   { label: 'EM ATENDIMENTO HUMANO', value: 56, tone: 'success' },
-  { label: 'CONCLUÍDOS HOJE', value: 412, tone: 'teal' },
+  { label: 'CONCLUÍDOS NO DIA', value: 412, tone: 'teal' },
 ]
 
 export const gestorStats: GestorStat[] = [

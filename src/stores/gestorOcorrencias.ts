@@ -82,6 +82,8 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     stage?: string
     prioridade?: string
     tipo?: string
+    sla?: string   // 'Dentro', 'Atenção', 'Limite', 'Estourou' (vírgula-separado)
+    risco?: string // 'sim' | 'nao'
   }
   const contextFilters = ref<ContextFilters>({})
 
@@ -94,6 +96,8 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
       stage: ctx.stage || undefined,
       prioridade: ctx.prioridade || undefined,
       tipo: ctx.tipo || undefined,
+      sla: ctx.sla || undefined,
+      risco: ctx.risco || undefined,
     }
   }
 
@@ -182,6 +186,14 @@ export const useGestorOcorrenciasStore = defineStore('gestorOcorrencias', () => 
     // Tipo de ocorrência.
     const tipos = selList(f.tipo)
     if (tipos.length && !tipos.includes(c.tipo ?? '')) return false
+
+    // SLA (filtra apenas stages que possuem o campo definido).
+    const slas = selList(f.sla)
+    if (slas.length && !slas.includes(c.sla ?? '')) return false
+
+    // Risco jurídico.
+    if (f.risco === 'sim' && !c.risco) return false
+    if (f.risco === 'nao' && c.risco) return false
 
     return true
   }
