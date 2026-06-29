@@ -185,32 +185,22 @@ function verEquipe() {
         : { right: '24px', bottom: '24px' }
     "
   >
-    <!-- ── Minimizado (pílula compacta, identificável) ──────────────────────
-         Antes era só um ícone de pessoas — fácil de confundir com "sumiu".
-         Agora mostra ícone + rótulo "Equipe" + os 3 dots de status. -->
+    <!-- ── Minimizado: só o ícone (mesmo padrão do FilaFab) ─────────────── -->
     <button
       v-if="minimized"
-      class="flex h-11 cursor-grab items-center gap-2 rounded-full border border-ms-border-light bg-ms-surface pl-3 pr-3.5 text-ms-primary shadow-xl transition hover:shadow-2xl active:cursor-grabbing"
+      class="relative flex h-12 w-12 cursor-grab items-center justify-center rounded-full border border-ms-border-light bg-ms-surface text-ms-primary shadow-xl transition hover:shadow-2xl active:cursor-grabbing"
       style="touch-action: none"
       title="Arraste para mover · clique para abrir o status das equipes"
       aria-label="Mostrar status das equipes"
       @pointerdown="onDown($event, true)"
       @keydown.enter="setMinimized(false)"
     >
-      <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
         <circle cx="9" cy="7" r="4" />
         <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
-      <span class="text-2xs font-semibold text-ms-text-primary">Equipe</span>
-      <span class="flex items-center gap-1">
-        <span
-          v-for="l in widgetLines"
-          :key="l.short"
-          class="h-2 w-2 rounded-full"
-          :class="bgTone[l.tone]"
-        />
-      </span>
+      <span class="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-ms-primary px-1 text-[10px] font-semibold text-white">{{ equipeStatusResumo.totalAgentes }}</span>
     </button>
 
     <!-- ── Quick panel (aberto) ─────────────────────────────────────────── -->
